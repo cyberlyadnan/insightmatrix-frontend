@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +35,9 @@ export default function Navbar() {
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         isScrolled 
           ? "bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm py-2" 
-          : "bg-transparent py-4 border-b border-transparent"
+          : isHomePage 
+            ? "bg-transparent py-4 border-b border-transparent"
+            : "bg-white/70 backdrop-blur-md py-3 border-b border-gray-100"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,19 +46,19 @@ export default function Navbar() {
           <div className="flex-shrink-0 flex items-center gap-4">
             <Link 
               href="/" 
-              className={`text-2xl font-black tracking-tight ${
-                isScrolled ? "text-brand-primary" : "text-white"
+              className={`text-2xl font-black tracking-tight transition-colors ${
+                isScrolled || !isHomePage ? "text-brand-primary" : "text-white"
               }`}
             >
               InsightMatrix<span className="text-xl align-top font-normal">&reg;</span>
             </Link>
             
             {/* Country Selector (mock) */}
-            <button className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border ${
-              isScrolled 
+            <button className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors text-sm font-medium ${
+              isScrolled || !isHomePage
                 ? "border-gray-200 text-gray-700 hover:bg-gray-50" 
                 : "border-white/30 text-white hover:bg-white/10"
-            } transition-colors text-sm font-medium`}>
+            }`}>
               <span>🇬🇧</span> UK
             </button>
           </div>
@@ -65,7 +70,7 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 className={`font-semibold transition-colors ${
-                  isScrolled 
+                  isScrolled || !isHomePage
                     ? "text-gray-700 hover:text-brand-primary" 
                     : "text-white/90 hover:text-white"
                 }`}
@@ -80,7 +85,7 @@ export default function Navbar() {
             <Link
               href="/contact"
               className={`px-5 py-2 rounded-full font-bold border transition-all ${
-                isScrolled
+                isScrolled || !isHomePage
                   ? "border-gray-200 text-gray-700 hover:bg-gray-50"
                   : "border-white/40 text-white hover:bg-white/10"
               }`}
@@ -90,7 +95,7 @@ export default function Navbar() {
             <Link
               href="/register"
               className={`px-5 py-2 rounded-full font-bold border transition-all ${
-                isScrolled
+                isScrolled || !isHomePage
                   ? "border-gray-200 text-gray-700 hover:bg-gray-50"
                   : "border-white/40 text-white hover:bg-white/10"
               }`}
@@ -99,7 +104,7 @@ export default function Navbar() {
             </Link>
             <button
               className={`p-2.5 rounded-full border transition-all flex items-center justify-center ${
-                isScrolled
+                isScrolled || !isHomePage
                   ? "border-gray-200 text-gray-700 hover:bg-gray-50"
                   : "border-white/40 text-white hover:bg-white/10"
               }`}
@@ -113,7 +118,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className={`focus:outline-none ${
-                isScrolled ? "text-gray-900" : "text-white"
+                isScrolled || !isHomePage ? "text-gray-900" : "text-white"
               }`}
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}

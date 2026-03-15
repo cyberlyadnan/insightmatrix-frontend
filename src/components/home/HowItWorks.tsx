@@ -1,29 +1,26 @@
-import { UserPlus, ClipboardCheck, Gift, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function HowItWorks() {
   const steps = [
     {
       title: "Register & Profile",
       description: "Create your free account and complete your demographic profile to get matched with the most relevant studies.",
-      icon: UserPlus,
-      color: "bg-pink-100 text-pink-600",
-      border: "border-pink-200",
+      image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop",
+      color: "bg-pink-100",
       accent: "from-pink-500/20 to-rose-500/20",
     },
     {
       title: "Participate in Studies",
       description: "Receive invitations to high-quality market research studies, exclusive product tests, and insightful opinion polls.",
-      icon: ClipboardCheck,
-      color: "bg-violet-100 text-violet-600",
-      border: "border-violet-200",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      color: "bg-violet-100",
       accent: "from-violet-500/20 to-purple-500/20",
     },
     {
       title: "Earn Rewards",
       description: "Get compensated for your time and insights. Redeem points for cash, premium gift cards, or local charitable donations.",
-      icon: Gift,
-      color: "bg-sky-100 text-sky-600",
-      border: "border-sky-200",
+      image: "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?q=80&w=800&auto=format&fit=crop",
+      color: "bg-sky-100",
       accent: "from-sky-500/20 to-cyan-500/20",
     },
   ];
@@ -53,30 +50,36 @@ export default function HowItWorks() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
             {steps.map((step, index) => {
-              const Icon = step.icon;
               return (
                 <div key={index} className="group flex flex-col items-center text-center">
-                  {/* Step Icon Container */}
-                  <div className="relative mb-8">
+                  {/* Step Image Container */}
+                  <div className="relative mb-10 w-full max-w-[280px]">
                     {/* Number Badge */}
-                    <div className="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-white shadow-xl flex items-center justify-center text-gray-900 font-black text-sm z-20 border border-gray-100">
-                      0{index + 1}
+                    <div className="absolute -top-3 -right-3 w-12 h-12 rounded-full bg-white shadow-2xl flex items-center justify-center text-gray-900 font-extrabold text-lg z-20 border border-gray-100 transition-transform group-hover:scale-110">
+                      {index + 1}
                     </div>
 
-                    {/* Icon Circle */}
-                    <div className={`relative w-24 h-24 rounded-[2rem] ${step.color} flex items-center justify-center shadow-lg transition-transform duration-500 group-hover:rotate-[10deg] group-hover:scale-110`}>
-                      <Icon className="w-10 h-10" />
+                    {/* Image Circle/Frame */}
+                    <div className={`relative aspect-square rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl transition-all duration-500 group-hover:shadow-brand-primary/20 group-hover:-translate-y-2`}>
+                      <img 
+                        src={step.image} 
+                        alt={step.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
                       
-                      {/* Animated Glow */}
-                      <div className={`absolute inset-0 rounded-[2rem] bg-gradient-to-br ${step.accent} blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`} />
+                      {/* Gradient Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     </div>
+
+                    {/* Decorative accent behind image */}
+                    <div className={`absolute inset-0 -z-10 rounded-[3rem] bg-gradient-to-br ${step.accent} blur-2xl opacity-40 group-hover:opacity-80 transition-opacity duration-500 transform scale-90 group-hover:scale-105`} />
                   </div>
 
                   {/* Text Content */}
                   <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight group-hover:text-brand-primary transition-colors">
                     {step.title}
                   </h3>
-                  <p className="text-gray-500 text-lg leading-relaxed font-medium mb-6">
+                  <p className="text-gray-500 text-lg leading-relaxed font-medium mb-6 px-4">
                     {step.description}
                   </p>
 

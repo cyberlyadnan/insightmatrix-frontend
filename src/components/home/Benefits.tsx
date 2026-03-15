@@ -42,7 +42,7 @@ export default function Benefits() {
         <div className="lg:grid lg:grid-cols-2 lg:gap-24 items-start">
           
           {/* Left Side: Content */}
-          <div className="sticky top-32">
+          <div className="sticky top-32 ">
             <span className="inline-block mb-4 px-4 py-1.5 rounded-full bg-brand-subtle border border-brand-light text-brand-primary text-xs font-black tracking-widest uppercase">
               The InsightMatrix Advantage
             </span>
@@ -53,7 +53,7 @@ export default function Benefits() {
               We bridge the gap between visionary brands and insightful consumers. Our platform offers a premium experience for both participants and researchers.
             </p>
             
-            <div className="relative group">
+            <div className="relative group ">
                <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary to-brand-accent1 rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
                <div className="relative bg-gray-900 rounded-[2rem] p-10 text-white overflow-hidden">
                   <Sparkles className="absolute -top-10 -right-10 w-40 h-40 opacity-10 text-white" />
@@ -88,7 +88,7 @@ export default function Benefits() {
               return (
                 <div 
                   key={index} 
-                  className={`group p-10 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden ${index % 2 === 1 ? 'lg:translate-y-12' : ''}`}
+                  className={`group p-10 ${index === 0 ? 'mt-16':''} rounded-[2.5rem] bg-white border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden ${index % 2 === 1 ? 'lg:translate-y-12' : ''}`}
                 >
                   {/* Hover Accent Blob */}
                   <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full ${benefit.bg} opacity-50 blur-2xl group-hover:scale-150 transition-transform duration-700`} />

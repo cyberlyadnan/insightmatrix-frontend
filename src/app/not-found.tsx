@@ -53,7 +53,7 @@ export default function NotFound() {
       </div>
       
       {/* Bottom Footer Mockup Line */}
-      <div className="absolute text-center bottom-10 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+      <div className="absolute text-center bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase tracking-widest text-gray-400">
           InsightMatrix Global Error Management
       </div>
     </div>

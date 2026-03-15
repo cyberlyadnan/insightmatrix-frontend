@@ -1,6 +1,7 @@
 import Hero from "@/components/hero/Hero";
 import WhyInsightMatrix from "@/components/home/WhyInsightMatrix";
 import PanelCommunity from "@/components/home/PanelCommunity";
+import TrustedBy from "@/components/home/TrustedBy";
 import HowItWorks from "@/components/home/HowItWorks";
 import Benefits from "@/components/home/Benefits";
 import FeaturedSurveys from "@/components/home/FeaturedSurveys";
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <WhyInsightMatrix />
       <PanelCommunity />
+      <TrustedBy />
       <HowItWorks />
       <Benefits />
       <FeaturedSurveys />

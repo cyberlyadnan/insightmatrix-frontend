@@ -5,7 +5,7 @@
   --foreground: #171717;
 }
 
-@theme inline {
+@theme {
   --color-brand-primary: #db2777;
   --color-brand-hover: #be185d;
   --color-brand-light: #fbcfe8;

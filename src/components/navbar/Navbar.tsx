@@ -1,55 +1,122 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, Search } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Services", href: "/services" },
-    { name: "Contact", href: "/contact" },
+    { name: "Data & research", href: "/research" },
+    { name: "Solutions", href: "/services" },
+    { name: "Why InsightMatrix", href: "/about" },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <nav 
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+        isScrolled 
+          ? "bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm py-2" 
+          : "bg-transparent py-4 border-b border-transparent"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-2xl font-bold text-brand-primary tracking-tight">
-              InsightMatrix
+        <div className="flex justify-between items-center h-12">
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center gap-4">
+            <Link 
+              href="/" 
+              className={`text-2xl font-black tracking-tight ${
+                isScrolled ? "text-brand-primary" : "text-white"
+              }`}
+            >
+              InsightMatrix<span className="text-xl align-top font-normal">&reg;</span>
             </Link>
+            
+            {/* Country Selector (mock) */}
+            <button className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border ${
+              isScrolled 
+                ? "border-gray-200 text-gray-700 hover:bg-gray-50" 
+                : "border-white/30 text-white hover:bg-white/10"
+            } transition-colors text-sm font-medium`}>
+              <span>🇬🇧</span> UK
+            </button>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8 items-center">
+          <div className="hidden lg:flex space-x-6 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-gray-600 hover:text-brand-primary font-medium transition-colors"
+                className={`font-semibold transition-colors ${
+                  isScrolled 
+                    ? "text-gray-700 hover:text-brand-primary" 
+                    : "text-white/90 hover:text-white"
+                }`}
               >
                 {link.name}
               </Link>
             ))}
+          </div>
+
+          {/* Right Actions */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Link
+              href="/contact"
+              className={`px-5 py-2 rounded-full font-bold border transition-all ${
+                isScrolled
+                  ? "border-gray-200 text-gray-700 hover:bg-gray-50"
+                  : "border-white/40 text-white hover:bg-white/10"
+              }`}
+            >
+              Contact
+            </Link>
             <Link
               href="/register"
-              className="bg-brand-primary text-white px-5 py-2 rounded-md font-medium hover:bg-brand-hover transition"
+              className={`px-5 py-2 rounded-full font-bold border transition-all ${
+                isScrolled
+                  ? "border-gray-200 text-gray-700 hover:bg-gray-50"
+                  : "border-white/40 text-white hover:bg-white/10"
+              }`}
             >
-              Sign Up Free
+              Sign in
             </Link>
+            <button
+              className={`p-2.5 rounded-full border transition-all flex items-center justify-center ${
+                isScrolled
+                  ? "border-gray-200 text-gray-700 hover:bg-gray-50"
+                  : "border-white/40 text-white hover:bg-white/10"
+              }`}
+            >
+              <Search size={18} />
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 focus:outline-none"
+              className={`focus:outline-none ${
+                isScrolled ? "text-gray-900" : "text-white"
+              }`}
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
@@ -57,25 +124,34 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-gray-100">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden bg-white border-b border-gray-100 absolute top-full left-0 w-full shadow-lg">
+          <div className="px-4 pt-2 pb-6 space-y-2 sm:px-6">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-brand-primary hover:bg-brand-subtle rounded-md"
+                className="block px-3 py-3 text-base font-bold text-gray-800 hover:text-brand-primary border-b border-gray-50"
               >
                 {link.name}
               </Link>
             ))}
-            <Link
-              href="/register"
-              onClick={() => setIsOpen(false)}
-              className="block w-full text-center mt-4 bg-brand-primary text-white px-5 py-2 rounded-md font-medium hover:bg-brand-hover transition"
-            >
-              Sign Up Free
-            </Link>
+            <div className="pt-4 flex flex-col gap-3">
+              <Link
+                href="/contact"
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-center border border-gray-200 text-gray-800 px-5 py-3 rounded-full font-bold hover:bg-gray-50 transition"
+              >
+                Contact
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setIsOpen(false)}
+                className="block w-full text-center border border-gray-200 text-gray-800 px-5 py-3 rounded-full font-bold hover:bg-gray-50 transition"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
         </div>
       )}

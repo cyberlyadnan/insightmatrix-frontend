@@ -193,7 +193,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                         <Link href="/register" className="inline-flex items-center justify-center px-10 py-4 text-base font-black rounded-full text-white bg-brand-primary hover:bg-brand-hover shadow-xl shadow-brand-primary/20 transition-all hover:scale-105">
                             Get Started Now
                         </Link>
-                        <Link href="/contact" className="inline-flex items-center justify-center px-10 py-4 text-base font-black rounded-full text-gray-900 border-2 border-gray-100 hover:bg-gray-50 transition-all">
+                        <Link href="/contact" className="inline-flex items-center justify-center px-10 py-4 text-base font-black rounded-full text-gray-900 border-2 border-gray-900 hover:bg-gray-900 hover:text-white transition-all">
                             Talk to an Expert
                         </Link>
                     </div>
@@ -294,7 +294,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                          <Link href="/register" className="w-full sm:w-auto px-10 py-5 bg-gray-900 text-white rounded-full font-black text-base hover:bg-black transition-colors shadow-2xl">
                             Unlock Dashboard
                          </Link>
-                         <Link href="/contact" className="w-full sm:w-auto px-10 py-5 border-2 border-gray-200 rounded-full font-black text-base hover:bg-gray-50 transition-colors">
+                         <Link href="/contact" className="w-full sm:w-auto px-10 py-5 border-2 border-gray-950 text-gray-950 rounded-full font-black text-base hover:bg-gray-950 hover:text-white transition-all shadow-lg active:scale-95">
                             Schedule a Demo
                          </Link>
                     </div>

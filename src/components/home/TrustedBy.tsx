@@ -206,16 +206,6 @@ export default function TrustedBy() {
           />
 
         </div>
-
-        {/* Bottom Logo Cloud (Simplified) */}
-        <div className="mt-20 pt-10 border-t border-gray-100 flex flex-wrap justify-center items-center gap-x-12 gap-y-8 opacity-40 grayscale hover:grayscale-0 transition-all">
-          <span className="text-xl font-bold tracking-tighter">NIKE</span>
-          <span className="text-xl font-bold tracking-tighter">SAMSUNG</span>
-          <span className="text-xl font-bold tracking-tighter">ADIDAS</span>
-          <span className="text-xl font-bold tracking-tighter">SPOTIFY</span>
-          <span className="text-xl font-bold tracking-tighter">SONY</span>
-          <span className="text-xl font-bold tracking-tighter">L'ORÉAL</span>
-        </div>
       </div>
     </section>
   );

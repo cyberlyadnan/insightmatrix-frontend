@@ -1,5 +1,6 @@
 import Hero from "@/components/hero/Hero";
 import WhyInsightMatrix from "@/components/home/WhyInsightMatrix";
+import PanelCommunity from "@/components/home/PanelCommunity";
 import HowItWorks from "@/components/home/HowItWorks";
 import Benefits from "@/components/home/Benefits";
 import FeaturedSurveys from "@/components/home/FeaturedSurveys";
@@ -11,6 +12,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Hero />
       <WhyInsightMatrix />
+      <PanelCommunity />
       <HowItWorks />
       <Benefits />
       <FeaturedSurveys />

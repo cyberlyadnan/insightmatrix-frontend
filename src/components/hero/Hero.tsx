@@ -1,95 +1,130 @@
 import Link from "next/link";
-import { ArrowRight, BarChart2, Users, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck, Star } from "lucide-react";
 
 export default function Hero() {
   return (
-    <div className="relative bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto">
-        <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32 pt-10 sm:pt-16 lg:pt-20">
-          <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-            <div className="sm:text-center lg:text-left">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-600 mb-4">
-                <span className="flex h-2 w-2 rounded-full bg-indigo-600 mr-2"></span>
-                The leading global research platform
-              </span>
-              <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl max-w-3xl">
-                <span className="block xl:inline">Shape the future of</span>{" "}
-                <span className="block text-indigo-600 xl:inline">products & services</span>
-              </h1>
-              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                Join our premium community of participants. Share your insights, influence major brands, and earn meaningful rewards for your valuable time.
-              </p>
-              <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                <div className="rounded-md shadow">
-                  <Link
-                    href="/register"
-                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg transition-all"
-                  >
-                    Get Started Now
-                    <ArrowRight className="ml-2" size={20} />
-                  </Link>
+    <div className="relative bg-[#fafafa] overflow-hidden">
+      {/* Background Gradients */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full overflow-hidden z-0 pointer-events-none">
+        <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-brand-light/40 blur-3xl opacity-50 mix-blend-multiply"></div>
+        <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-brand-accent1/40 blur-3xl opacity-50 mix-blend-multiply"></div>
+        <div className="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] rounded-full bg-brand-accent2/40 blur-3xl opacity-50 mix-blend-multiply"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="pt-20 pb-16 md:pt-20 md:pb-24 lg:pt-16 lg:pb-32 flex flex-col lg:flex-row items-center gap-16">
+          
+          {/* Left Content */}
+          <div className="flex-1 text-center lg:text-left">
+            <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white border border-gray-200 shadow-sm text-gray-800 mb-8 mt-4 lg:mt-0">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-brand-primary mr-2 animate-pulse"></span>
+              Join 2M+ Creators & Brands
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 tracking-tight leading-[1.1] mb-6">
+              Connect. <br className="hidden lg:block"/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent1">
+                Collaborate.
+              </span><br className="hidden lg:block"/>
+              Influence.
+            </h1>
+            
+            <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              The premier social platform bridging the gap between innovative brands and insightful creators. Share your voice, test new products, and get rewarded.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-12">
+              <Link
+                href="/register"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-full text-white bg-gray-900 hover:bg-gray-800 shadow-xl shadow-gray-900/20 transition-all hover:-translate-y-0.5"
+              >
+                Start Collaborating
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Link>
+              <Link
+                href="/about"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-full text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"
+              >
+                Explore Platform
+              </Link>
+            </div>
+
+            <div className="flex items-center justify-center lg:justify-start gap-8">
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <img
+                    key={i}
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                    src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                    alt="User avatar"
+                  />
+                ))}
+              </div>
+              <div className="text-left">
+                <div className="flex items-center text-yellow-400 mb-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-current" />
+                  ))}
                 </div>
-                <div className="mt-3 sm:mt-0 sm:ml-3">
-                  <Link
-                    href="/about"
-                    className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-50 hover:bg-indigo-100 md:py-4 md:text-lg transition-all"
-                  >
-                    Learn More
-                  </Link>
+                <p className="text-sm font-medium text-gray-600">Rated 4.9/5 by our community</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Visuals - Social Media Collab Vibe */}
+          <div className="flex-1 relative w-full w-max-md lg:w-auto">
+            <div className="relative w-full aspect-[4/3] lg:aspect-square flex items-center justify-center">
+              {/* Main Floating Card */}
+              <div className="absolute w-full max-w-[340px] bg-white rounded-3xl shadow-2xl shadow-brand-light/50 border border-gray-100 p-6 z-20 transition-transform hover:scale-105 duration-300">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <img src="https://i.pravatar.cc/100?img=5" alt="Brand" className="w-12 h-12 rounded-xl object-cover" />
+                    <div>
+                      <h4 className="font-bold text-gray-900 leading-tight">NextGen Tech UX</h4>
+                      <p className="text-xs font-medium text-brand-primary bg-brand-subtle inline-block px-2 py-0.5 rounded-full mt-1">Collab Request</p>
+                    </div>
+                  </div>
+                  <span className="text-sm font-bold text-gray-900 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">$50</span>
+                </div>
+                <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                  We are looking for product enthusiasts to test our new interface and provide detailed feedback.
+                </p>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                  <div className="flex -space-x-2">
+                    {[1,2,3].map((i) => (
+                      <img key={i} src={`https://i.pravatar.cc/100?img=${i + 20}`} className="w-8 h-8 rounded-full border-2 border-white" alt="avatar" />
+                    ))}
+                    <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">+12</div>
+                  </div>
+                  <button className="text-sm font-semibold text-white bg-brand-primary px-4 py-2 rounded-full hover:bg-brand-hover transition">
+                    Accept
+                  </button>
                 </div>
               </div>
 
-              <div className="mt-10 grid grid-cols-3 gap-4 border-t border-gray-100 pt-8 sm:w-max sm:mx-auto lg:mx-0">
-                <div className="flex flex-col items-center lg:items-start">
-                  <div className="flex items-center text-gray-900 font-bold text-xl">
-                    <Users className="text-indigo-500 mr-2" size={20} />
-                    <span>2M+</span>
-                  </div>
-                  <span className="text-sm text-gray-500">Active Panelists</span>
-                </div>
-                <div className="flex flex-col items-center lg:items-start pl-4 border-l border-gray-100">
-                  <div className="flex items-center text-gray-900 font-bold text-xl">
-                    <BarChart2 className="text-indigo-500 mr-2" size={20} />
-                    <span>10k+</span>
-                  </div>
-                  <span className="text-sm text-gray-500">Surveys</span>
-                </div>
-                <div className="flex flex-col items-center lg:items-start pl-4 border-l border-gray-100">
-                  <div className="flex items-center text-gray-900 font-bold text-xl">
-                    <ShieldCheck className="text-indigo-500 mr-2" size={20} />
-                    <span>100%</span>
-                  </div>
-                  <span className="text-sm text-gray-500">Data Privacy</span>
+              {/* Smaller floating elements */}
+              <div className="absolute top-[5%] md:top-[10%] right-[5%] lg:-right-[5%] bg-white p-3 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 flex items-center gap-3 z-30 animate-[bounce_6s_infinite]">
+                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xl font-bold">
+                   <ShieldCheck className="w-5 h-5" />
+                 </div>
+                 <div>
+                   <p className="text-xs text-gray-500 font-medium">Verified</p>
+                   <p className="text-sm font-bold text-gray-900">100% Secure</p>
+                 </div>
+              </div>
+
+              <div className="absolute bottom-[5%] md:bottom-[10%] left-[0%] lg:-left-[10%] bg-white p-4 rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 z-30 animate-[bounce_5s_infinite_100ms]">
+                <div className="flex items-center gap-3">
+                   <img src="https://i.pravatar.cc/100?img=3" alt="avatar" className="w-10 h-10 rounded-full object-cover"/>
+                   <div>
+                     <p className="text-sm font-bold text-gray-900">Sarah J.</p>
+                     <p className="text-xs font-semibold text-green-600">Earned $120 today</p>
+                   </div>
                 </div>
               </div>
+
             </div>
-          </main>
-        </div>
-      </div>
-      <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-gray-50 flex items-center justify-center p-10 lg:p-0">
-        <div className="relative w-full max-w-lg lg:max-w-none lg:w-full lg:h-full flex items-center justify-center">
-            {/* Abstract visual representation replacing image */}
-            <div className="w-full max-w-md aspect-square rounded-full bg-gradient-to-tr from-indigo-100 to-indigo-50 relative">
-              <div className="absolute top-1/4 left-10 p-4 bg-white rounded-xl shadow-lg border border-gray-100">
-                <div className="w-32 h-4 bg-gray-200 rounded animate-pulse mb-3"></div>
-                <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-              <div className="absolute top-1/2 right-10 p-4 bg-white rounded-xl shadow-lg opacity-90 border border-gray-100">
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm">✓</div>
-                  <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-                <div className="w-32 h-4 bg-indigo-100 rounded animate-pulse"></div>
-              </div>
-              <div className="absolute bottom-1/4 left-1/4 p-4 bg-white rounded-xl shadow-lg border border-gray-100">
-                <div className="flex space-x-2">
-                   <div className="w-4 h-12 bg-indigo-500 rounded-t"></div>
-                   <div className="w-4 h-16 bg-indigo-400 rounded-t"></div>
-                   <div className="w-4 h-8 bg-indigo-300 rounded-t"></div>
-                   <div className="w-4 h-20 bg-indigo-600 rounded-t"></div>
-                </div>
-              </div>
-            </div>
+          </div>
         </div>
       </div>
     </div>

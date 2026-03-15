@@ -6,10 +6,12 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-brand-primary: #db2777;
+  --color-brand-hover: #be185d;
+  --color-brand-light: #fbcfe8;
+  --color-brand-subtle: #fdf2f8;
+  --color-brand-accent1: #e11d48;
+  --color-brand-accent2: #c026d3;
 }
 
 @media (prefers-color-scheme: dark) {

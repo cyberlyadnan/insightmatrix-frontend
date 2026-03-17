@@ -153,7 +153,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       </main>
 
       {/* Mobile Navbar (Bottom) */}
-      <nav className="lg:hidden fixed bottom-6 left-6 right-6 h-20 bg-white/80 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] shadow-2xl z-[100] px-8 flex items-center justify-between">
+      <nav className="lg:hidden fixed bottom-4 left-6 right-6 h-18 bg-white/80 backdrop-blur-2xl border border-white/20 rounded-[1.5rem] shadow-2xl z-[100] px-8 flex items-center justify-between">
          {navLinks.map((link) => {
            const isActive = pathname === link.href;
            const Icon = link.icon;

@@ -35,7 +35,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex overflow-x-hidden">
       {/* Premium Side Panel */}
       <aside 
         className={`hidden lg:flex flex-col bg-white transition-all duration-500 border-r border-brand-primary/5 relative z-40 ${
@@ -48,7 +48,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
           </div>
           {isSidebarOpen && (
             <span className="font-black tracking-tighter text-2xl text-gray-900">
-               Panel<span className="text-brand-primary">Matrix</span>
+               Insight<span className="text-brand-primary">Matrix</span>
             </span>
           )}
         </div>
@@ -109,17 +109,32 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50">
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50 w-full">
         {/* Header */}
-        <header className="h-24 px-6 lg:px-12 flex items-center justify-between shrink-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 transition-all">
-          <div className="flex items-center gap-6">
+        <header className="h-24 px-4 sm:px-6 lg:px-12 flex items-center justify-between shrink-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 transition-all w-full">
+          <div className="flex items-center gap-4 sm:gap-6">
+             {/* Mobile & Desktop Toggle */}
              <button 
-               onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-               className="hidden lg:flex w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 items-center justify-center text-gray-400 hover:text-brand-primary transition-all hover:shadow-md"
+               onClick={() => {
+                 if (window.innerWidth < 1024) {
+                   setIsMobileMenuOpen(true);
+                 } else {
+                   setIsSidebarOpen(!isSidebarOpen);
+                 }
+               }} 
+               className="flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white shadow-sm border border-gray-100 items-center justify-center text-gray-400 hover:text-brand-primary transition-all hover:shadow-md"
              >
                 <Menu size={20} />
              </button>
-             <h2 className="text-xl font-black text-gray-900 hidden sm:block">
+             
+             {/* Mobile Logo */}
+             <Link href="/panel" className="lg:hidden">
+                <span className="font-black tracking-tighter text-xl sm:text-2xl text-gray-900">
+                   Insight<span className="text-brand-primary">Matrix</span>
+                </span>
+             </Link>
+
+             <h2 className="text-xl font-black text-gray-900 hidden lg:block">
                 Welcome back, <span className="text-brand-primary">Adnan</span> 👋
              </h2>
           </div>

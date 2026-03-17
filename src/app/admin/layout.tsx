@@ -23,6 +23,7 @@ const sidebarLinks = [
   { name: "Overview", icon: LayoutDashboard, href: "/admin" },
   { name: "Case Studies", icon: FileText, href: "/admin/case-studies" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
+  { name: "Testimonials", icon: MessageSquare, href: "/admin/testimonials" },
   { name: "Queries", icon: MessageSquare, href: "/admin/queries" },
   { name: "Settings", icon: Settings, href: "/admin/settings" },
 ];
@@ -79,13 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Mobile Menu Button */}
-      <button 
-        onClick={() => setIsMobileMenuOpen(true)}
-        className="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-brand-primary text-white shadow-2xl z-50 flex items-center justify-center"
-      >
-        <Menu size={24} />
-      </button>
+      {/* Mobile Menu Button - Removed from bottom and moved to header */}
 
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
@@ -133,15 +128,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        <header className="h-20 bg-white border-b border-gray-100 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-30">
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden w-full">
+        <header className="h-20 bg-white border-b border-gray-100 px-4 sm:px-6 lg:px-10 flex items-center justify-between sticky top-0 z-30 w-full">
           <div className="flex items-center gap-4 lg:gap-8 flex-1">
              <button 
-               onClick={() => setIsSidebarOpen(!isSidebarOpen)} 
-               className="hidden lg:flex w-10 h-10 rounded-xl bg-gray-50 items-center justify-center text-gray-400 hover:text-brand-primary transition-colors"
+               onClick={() => {
+                 if (window.innerWidth < 1024) {
+                   setIsMobileMenuOpen(true);
+                 } else {
+                   setIsSidebarOpen(!isSidebarOpen);
+                 }
+               }} 
+               className="flex w-10 h-10 rounded-xl bg-gray-50 items-center justify-center text-gray-400 hover:text-brand-primary transition-colors"
              >
                 <Menu size={20} />
              </button>
+             
+             {/* Admin Home Logo */}
+             <Link href="/admin">
+                <span className="font-black tracking-tighter text-xl sm:text-2xl text-gray-900">
+                   Insight<span className="text-brand-primary">Matrix</span>
+                </span>
+             </Link>
              <div className="relative max-w-md w-full hidden md:block">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input 

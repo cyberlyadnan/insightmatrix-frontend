@@ -51,7 +51,7 @@ export default function Footer() {
               <input 
                 type="email" 
                 placeholder="Email address" 
-                className="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 text-sm focus:outline-none focus:border-brand-primary transition-colors pr-12"
+                className="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-brand-primary transition-colors pr-12"
               />
               <button className="absolute right-1 top-1 bottom-1 w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center hover:bg-brand-hover transition-colors">
                 <ArrowRight size={18} />

@@ -113,20 +113,6 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
         {/* Header */}
         <header className="h-24 px-4 sm:px-6 lg:px-12 flex items-center justify-between shrink-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 transition-all w-full">
           <div className="flex items-center gap-4 sm:gap-6">
-             {/* Mobile & Desktop Toggle */}
-             <button 
-               onClick={() => {
-                 if (window.innerWidth < 1024) {
-                   setIsMobileMenuOpen(true);
-                 } else {
-                   setIsSidebarOpen(!isSidebarOpen);
-                 }
-               }} 
-               className="flex w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white shadow-sm border border-gray-100 items-center justify-center text-gray-400 hover:text-brand-primary transition-all hover:shadow-md"
-             >
-                <Menu size={20} />
-             </button>
-             
              {/* Mobile Logo */}
              <Link href="/panel" className="lg:hidden">
                 <span className="font-black tracking-tighter text-xl sm:text-2xl text-gray-900">
@@ -178,9 +164,10 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
              </Link>
            );
          })}
-         <button className="w-10 h-10 rounded-2xl bg-brand-primary text-white flex items-center justify-center shadow-lg shadow-brand-primary/20">
+         <Link href="/panel/settings" className={`relative flex flex-col items-center gap-1 ${pathname === '/panel/settings' ? "text-brand-primary" : "text-gray-400"}`}>
             <UserCircle size={24} />
-         </button>
+            {pathname === '/panel/settings' && <motion.div layoutId="mobileActive" className="w-1 h-1 bg-brand-primary rounded-full mt-1" />}
+         </Link>
       </nav>
     </div>
   );

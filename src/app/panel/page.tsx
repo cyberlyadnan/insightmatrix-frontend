@@ -35,33 +35,33 @@ export default function PanelHome() {
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
           alt="Featured Mission"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
         
-        <div className="absolute bottom-10 left-10 right-10">
-           <div className="flex flex-wrap items-center gap-4 mb-6">
-              <span className="px-4 py-1.5 rounded-full bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/40">Premium Mission</span>
-              <span className="flex items-center gap-2 text-white/80 text-xs font-bold backdrop-blur-md bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
-                 <Clock size={14} className="text-brand-primary" /> 15 mins remaining
+        <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10">
+           <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-4 md:mb-6">
+              <span className="px-3 py-1 md:px-4 md:py-1.5 rounded-full bg-brand-primary text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/40 text-center">Premium Mission</span>
+              <span className="flex items-center gap-2 text-white/80 text-[10px] md:text-xs font-bold backdrop-blur-md bg-white/10 px-3 py-1 md:px-4 md:py-1.5 rounded-full border border-white/10">
+                 <Clock size={12} className="text-brand-primary" /> 15 mins remaining
               </span>
            </div>
-           <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-6 max-w-2xl">
+           <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-white leading-[1.1] mb-6 max-w-2xl">
               Global Tech Trends <br /> 
               <span className="text-brand-light">2024 Audit.</span>
            </h1>
-           <div className="flex items-center justify-between">
+           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div className="flex items-center gap-6">
                  <div>
-                    <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">Reward</p>
-                    <p className="text-2xl font-black text-white">$15.50</p>
+                    <p className="text-[9px] md:text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">Reward</p>
+                    <p className="text-xl md:text-2xl font-black text-white">$15.50</p>
                  </div>
-                 <div className="w-px h-10 bg-white/20" />
+                 <div className="w-px h-8 md:h-10 bg-white/20" />
                  <div>
-                    <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">XP Points</p>
-                    <p className="text-2xl font-black text-white">+250</p>
+                    <p className="text-[9px] md:text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">XP Points</p>
+                    <p className="text-xl md:text-2xl font-black text-white">+250</p>
                  </div>
               </div>
-              <button className="px-8 py-4 bg-white text-gray-900 font-black rounded-2xl flex items-center gap-3 hover:bg-brand-primary hover:text-white transition-all group/btn">
-                 Start Mission <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+              <button className="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-4 bg-white text-gray-900 font-black rounded-2xl flex items-center justify-center gap-3 hover:bg-brand-primary hover:text-white transition-all group/btn active:scale-95 shadow-lg shadow-black/20">
+                 Start Mission <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
               </button>
            </div>
         </div>
@@ -77,36 +77,45 @@ export default function PanelHome() {
               </Link>
            </div>
 
-           <div className="space-y-4">
+            <div className="space-y-4">
               {missions.map((mission, i) => (
                 <motion.div 
                   key={mission.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-center gap-6 p-6 bg-white rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-brand-primary/5 hover:border-brand-primary/20 transition-all group cursor-pointer"
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-6 p-6 bg-white rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-brand-primary/5 hover:border-brand-primary/20 transition-all group cursor-pointer relative"
                 >
-                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${mission.color} flex items-center justify-center text-white shrink-0 shadow-lg`}>
+                   <div className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${mission.color} flex items-center justify-center text-white shrink-0 shadow-lg`}>
                       <Star size={24} fill="currentColor" />
                    </div>
-                   <div className="flex-1 min-w-0">
+                   <div className="flex-1 min-w-0 w-full">
                       <div className="flex items-center gap-3 mb-1">
                          <span className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{mission.category}</span>
                          <span className="w-1 h-1 bg-gray-200 rounded-full" />
                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{mission.time}</span>
                       </div>
                       <h3 className="text-lg font-black text-gray-900 truncate group-hover:text-brand-primary transition-colors">{mission.title}</h3>
+                      <div className="mt-2 sm:hidden flex justify-between items-end">
+                         <div>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Reward</p>
+                            <p className="text-lg font-black text-gray-900">{mission.reward}</p>
+                         </div>
+                         <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                            <ArrowRight size={16} />
+                         </div>
+                      </div>
                    </div>
-                   <div className="text-right">
+                   <div className="hidden sm:block text-right">
                       <p className="text-xl font-black text-gray-900">{mission.reward}</p>
                       <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Guaranteed</p>
                    </div>
-                   <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all">
+                   <div className="hidden sm:flex w-10 h-10 rounded-full bg-gray-50 items-center justify-center text-gray-300 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all">
                       <ArrowRight size={18} />
                    </div>
                 </motion.div>
               ))}
-           </div>
+            </div>
         </div>
 
         {/* Sidebar Stats */}

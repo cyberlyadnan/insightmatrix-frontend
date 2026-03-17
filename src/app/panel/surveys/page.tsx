@@ -32,29 +32,31 @@ export default function PanelSurveys() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
            <div className="flex items-center gap-2 mb-2">
               <ClipboardList className="text-brand-primary" size={20} />
               <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary/60">Live Feed</span>
            </div>
-           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Available Missions</h1>
+           <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Available Missions</h1>
         </div>
         
-        <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-gray-100 shadow-sm">
-           {surveyCategories.map(cat => (
-             <button 
-               key={cat}
-               onClick={() => setActiveCategory(cat)}
-               className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all ${
-                 activeCategory === cat 
-                   ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" 
-                   : "text-gray-400 hover:text-gray-900"
-               }`}
-             >
-                {cat}
-             </button>
-           ))}
+        <div className="flex items-center gap-2 bg-white p-1.5 rounded-2xl border border-gray-100 shadow-sm overflow-x-auto scrollbar-hide max-w-full lg:max-w-none">
+           <div className="flex items-center gap-1 min-w-max">
+             {surveyCategories.map(cat => (
+               <button 
+                 key={cat}
+                 onClick={() => setActiveCategory(cat)}
+                 className={`px-4 sm:px-5 py-2 md:py-2.5 rounded-xl text-[10px] md:text-xs font-black transition-all ${
+                   activeCategory === cat 
+                     ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20" 
+                     : "text-gray-400 hover:text-gray-900 hover:bg-gray-50"
+                 }`}
+               >
+                  {cat}
+               </button>
+             ))}
+           </div>
         </div>
       </div>
 

@@ -31,11 +31,11 @@ export default function PanelWallet() {
            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Your Wallet</h1>
            <p className="text-gray-500 font-medium">Manage your earnings and redemption milestones.</p>
         </div>
-        <div className="flex gap-3">
-           <button className="px-6 py-3 bg-gray-900 text-white font-black text-xs rounded-xl shadow-xl shadow-gray-200 transition-all hover:bg-black active:scale-95">
+        <div className="flex flex-wrap gap-3">
+           <button className="flex-1 sm:flex-none px-6 py-3.5 bg-gray-900 text-white font-black text-xs rounded-xl shadow-xl shadow-gray-200 transition-all hover:bg-black active:scale-95 text-center">
               Withdraw Funds
            </button>
-           <button className="px-6 py-3 bg-white border border-gray-100 text-gray-900 font-black text-xs rounded-xl transition-all hover:bg-gray-50">
+           <button className="flex-1 sm:flex-none px-6 py-3.5 bg-white border border-gray-100 text-gray-900 font-black text-xs rounded-xl transition-all hover:bg-gray-50 text-center">
               Payment Methods
            </button>
         </div>
@@ -43,33 +43,33 @@ export default function PanelWallet() {
 
       <div className="grid lg:grid-cols-3 gap-8">
          {/* Balance Card */}
-         <div className="lg:col-span-2 p-10 rounded-[3rem] bg-gradient-to-br from-brand-primary to-violet-600 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
+          <div className="lg:col-span-2 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-brand-primary to-violet-600 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
+            <div className="absolute top-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-white/10 rounded-full blur-[60px] md:blur-[80px] -translate-y-1/2 translate-x-1/2" />
             
             <div className="relative z-10 flex flex-col h-full">
-               <div className="flex justify-between items-start mb-16">
-                  <div>
+               <div className="flex justify-between items-start mb-12 md:mb-16">
+                  <div className="min-w-0">
                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">Available Balance</p>
-                     <p className="text-6xl font-black">$124.50</p>
+                     <p className="text-4xl sm:text-5xl md:text-6xl font-black truncate leading-tight">$124.50</p>
                   </div>
-                  <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-xl flex items-center justify-center border border-white/20">
-                     <Wallet size={32} />
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white/20 backdrop-blur-xl flex items-center justify-center border border-white/20 shrink-0">
+                     <Wallet size={24} className="md:w-8 md:h-8" />
                   </div>
                </div>
                
-               <div className="mt-auto grid grid-cols-2 sm:grid-cols-4 gap-8">
-                  <div>
+               <div className="mt-auto grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                  <div className="min-w-0">
                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Lifetime</p>
-                     <p className="text-xl font-black">$1,420.00</p>
+                     <p className="text-lg md:text-xl font-black truncate">$1,420.00</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                      <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">This Month</p>
-                     <p className="text-xl font-black">$286.10</p>
+                     <p className="text-lg md:text-xl font-black truncate">$286.10</p>
                   </div>
-                  <div className="sm:col-span-2 flex justify-end items-end">
+                  <div className="hidden sm:flex col-span-2 justify-end items-end">
                      <div className="flex -space-x-3">
                         {[1,2,3].map(i => (
-                          <div key={i} className="w-10 h-10 rounded-full border-2 border-brand-primary bg-white/20 backdrop-blur-md flex items-center justify-center text-[10px] font-black">
+                          <div key={i} className="w-10 h-10 rounded-full border-2 border-brand-primary bg-white/20 backdrop-blur-md flex items-center justify-center text-[10px] font-black shrink-0">
                              {i === 3 ? "+12" : <Star size={14} fill="currentColor" />}
                           </div>
                         ))}
@@ -77,7 +77,7 @@ export default function PanelWallet() {
                   </div>
                </div>
             </div>
-         </div>
+          </div>
 
          {/* Tier/Status */}
          <div className="p-10 rounded-[3rem] bg-white border border-gray-100 flex flex-col justify-between group cursor-pointer hover:border-brand-primary/20 transition-all">
@@ -113,25 +113,25 @@ export default function PanelWallet() {
             </div>
 
             <div className="bg-white rounded-[2.5rem] border border-gray-100 divide-y divide-gray-50 overflow-hidden">
-               {transactions.map((tx) => (
-                 <div key={tx.id} className="p-6 flex items-center justify-between group hover:bg-gray-50/50 transition-colors">
-                    <div className="flex items-center gap-5">
-                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                          tx.amount.startsWith('+') ? "bg-emerald-50 text-emerald-500" : "bg-gray-100 text-gray-400"
-                       }`}>
-                          {tx.amount.startsWith('+') ? <ArrowUpRight size={20} /> : <CreditCard size={20} />}
-                       </div>
-                       <div>
-                          <p className="text-sm font-black text-gray-900">{tx.target}</p>
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{tx.type} • {tx.date}</p>
-                       </div>
-                    </div>
-                    <div className="text-right">
-                       <p className={`text-sm font-black ${tx.amount.startsWith('+') ? "text-emerald-500" : "text-gray-900"}`}>{tx.amount}</p>
-                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{tx.status}</p>
-                    </div>
-                 </div>
-               ))}
+                {transactions.map((tx) => (
+                  <div key={tx.id} className="p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group hover:bg-gray-50/50 transition-colors">
+                     <div className="flex items-center gap-4 md:gap-5 w-full sm:w-auto">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                           tx.amount.startsWith('+') ? "bg-emerald-50 text-emerald-500" : "bg-gray-100 text-gray-400"
+                        }`}>
+                           {tx.amount.startsWith('+') ? <ArrowUpRight size={18} className="md:w-5 md:h-5" /> : <CreditCard size={18} className="md:w-5 md:h-5" />}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                           <p className="text-sm font-black text-gray-900 truncate">{tx.target}</p>
+                           <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{tx.type} • {tx.date}</p>
+                        </div>
+                     </div>
+                     <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-50">
+                        <p className={`text-sm font-black ${tx.amount.startsWith('+') ? "text-emerald-500" : "text-gray-900"}`}>{tx.amount}</p>
+                        <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">{tx.status}</p>
+                     </div>
+                  </div>
+                ))}
                <button className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-brand-primary transition-colors">View All Transactions</button>
             </div>
          </div>

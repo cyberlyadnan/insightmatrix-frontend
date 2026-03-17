@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="h-screen bg-gray-50 flex overflow-hidden">
       {/* Desktop Sidebar */}
       <aside 
         className={`hidden lg:flex flex-col bg-gray-900 text-white transition-all duration-300 border-r border-white/5 ${
@@ -133,7 +133,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <header className="h-20 bg-white border-b border-gray-100 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4 lg:gap-8 flex-1">
              <button 

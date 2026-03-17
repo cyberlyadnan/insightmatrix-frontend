@@ -1,0 +1,175 @@
+"use client";
+
+import React from "react";
+import { 
+  Zap, 
+  Star, 
+  Clock, 
+  ArrowRight, 
+  TrendingUp, 
+  Gift,
+  ShieldCheck,
+  ChevronRight,
+  Target
+} from "lucide-react";
+import { motion } from "framer-motion";
+import Link from "next/link";
+
+const missions = [
+  { id: 1, title: "Coffee Consumption Habits", reward: "$4.50", time: "12m", category: "Lifestyle", color: "from-amber-400 to-orange-500" },
+  { id: 2, title: "Future of EV Mobility", reward: "$12.00", time: "25m", category: "Technology", color: "from-blue-400 to-indigo-600" },
+  { id: 3, title: "Workplace Wellness Audit", reward: "$3.20", time: "8m", category: "Corporate", color: "from-emerald-400 to-teal-600" },
+];
+
+export default function PanelHome() {
+  return (
+    <div className="space-y-10">
+      {/* Hero Mission */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative h-[350px] rounded-[3rem] overflow-hidden group cursor-pointer"
+      >
+        <img 
+          src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop" 
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          alt="Featured Mission"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        
+        <div className="absolute bottom-10 left-10 right-10">
+           <div className="flex flex-wrap items-center gap-4 mb-6">
+              <span className="px-4 py-1.5 rounded-full bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/40">Premium Mission</span>
+              <span className="flex items-center gap-2 text-white/80 text-xs font-bold backdrop-blur-md bg-white/10 px-4 py-1.5 rounded-full border border-white/10">
+                 <Clock size={14} className="text-brand-primary" /> 15 mins remaining
+              </span>
+           </div>
+           <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-6 max-w-2xl">
+              Global Tech Trends <br /> 
+              <span className="text-brand-light">2024 Audit.</span>
+           </h1>
+           <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                 <div>
+                    <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">Reward</p>
+                    <p className="text-2xl font-black text-white">$15.50</p>
+                 </div>
+                 <div className="w-px h-10 bg-white/20" />
+                 <div>
+                    <p className="text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">XP Points</p>
+                    <p className="text-2xl font-black text-white">+250</p>
+                 </div>
+              </div>
+              <button className="px-8 py-4 bg-white text-gray-900 font-black rounded-2xl flex items-center gap-3 hover:bg-brand-primary hover:text-white transition-all group/btn">
+                 Start Mission <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+              </button>
+           </div>
+        </div>
+      </motion.div>
+
+      <div className="grid lg:grid-cols-12 gap-10">
+        {/* Missions Feed */}
+        <div className="lg:col-span-8 space-y-8">
+           <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-black text-gray-900">Recommended for You</h2>
+              <Link href="/panel/surveys" className="text-sm font-black text-brand-primary hover:underline flex items-center gap-1">
+                 View All Surveys <ChevronRight size={16} />
+              </Link>
+           </div>
+
+           <div className="space-y-4">
+              {missions.map((mission, i) => (
+                <motion.div 
+                  key={mission.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex items-center gap-6 p-6 bg-white rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-brand-primary/5 hover:border-brand-primary/20 transition-all group cursor-pointer"
+                >
+                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${mission.color} flex items-center justify-center text-white shrink-0 shadow-lg`}>
+                      <Star size={24} fill="currentColor" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                         <span className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{mission.category}</span>
+                         <span className="w-1 h-1 bg-gray-200 rounded-full" />
+                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{mission.time}</span>
+                      </div>
+                      <h3 className="text-lg font-black text-gray-900 truncate group-hover:text-brand-primary transition-colors">{mission.title}</h3>
+                   </div>
+                   <div className="text-right">
+                      <p className="text-xl font-black text-gray-900">{mission.reward}</p>
+                      <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Guaranteed</p>
+                   </div>
+                   <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all">
+                      <ArrowRight size={18} />
+                   </div>
+                </motion.div>
+              ))}
+           </div>
+        </div>
+
+        {/* Sidebar Stats */}
+        <div className="lg:col-span-4 space-y-8">
+           <div className="p-8 rounded-[2.5rem] bg-gray-900 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/20 rounded-full blur-[60px]" />
+              <div className="relative z-10">
+                 <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-brand-light">
+                       <Target size={20} />
+                    </div>
+                    <h3 className="text-lg font-black tracking-tight">Weekly Goal</h3>
+                 </div>
+                 <div className="mb-8">
+                    <div className="flex justify-between items-end mb-4">
+                       <span className="text-3xl font-black">$42.50</span>
+                       <span className="text-sm font-bold text-gray-400">/ $100.00</span>
+                    </div>
+                    <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                       <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: "42.5%" }}
+                          className="h-full bg-gradient-to-r from-brand-primary to-violet-500 rounded-full" 
+                       />
+                    </div>
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-3xl bg-white/5 border border-white/5">
+                       <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Rank</p>
+                       <p className="text-sm font-black">Top 12%</p>
+                    </div>
+                    <div className="p-4 rounded-3xl bg-white/5 border border-white/5">
+                       <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Level</p>
+                       <p className="text-sm font-black">Elite</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           <div className="p-8 rounded-[2.5rem] bg-white border border-slate-200/60 shadow-sm relative group overflow-hidden">
+              <div className="flex items-center gap-4 mb-6">
+                 <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                    <Gift size={24} />
+                 </div>
+                 <div>
+                    <h4 className="font-black text-gray-900">Unlock Rewards</h4>
+                    <p className="text-xs font-medium text-gray-500">Complete 3 more missions.</p>
+                 </div>
+              </div>
+              <button className="w-full py-4 rounded-2xl bg-gray-50 text-gray-900 font-black text-sm hover:bg-gray-100 transition-colors">
+                 Redeem Store
+              </button>
+           </div>
+
+           <div className="p-8 rounded-[2.5rem] bg-brand-subtle/30 border border-brand-primary/5 flex flex-col items-center text-center">
+              <ShieldCheck className="text-brand-primary mb-4" size={32} />
+              <h4 className="font-black text-gray-900 mb-2">Verified Identity</h4>
+              <p className="text-xs font-medium text-gray-500 leading-relaxed">
+                 Your profile is verified. You have access to high-paying private audits.
+              </p>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -9,10 +9,11 @@ export default function Footer() {
   const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
   const isAuthPage = authRoutes.includes(pathname);
   const isAdminPage = pathname.startsWith("/admin");
+  const isPanelPage = pathname.startsWith("/panel");
   
   const currentYear = new Date().getFullYear();
 
-  if (isAuthPage || isAdminPage) return null;
+  if (isAuthPage || isAdminPage || isPanelPage) return null;
 
   return (
     <footer className="bg-gray-950 text-gray-400 border-t border-white/5 pt-20 pb-10">

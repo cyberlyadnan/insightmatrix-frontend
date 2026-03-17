@@ -15,6 +15,7 @@ export default function Navbar() {
   const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
   const isAuthPage = authRoutes.includes(pathname);
   const isAdminPage = pathname.startsWith("/admin");
+  const isPanelPage = pathname.startsWith("/panel");
 
   useEffect(() => {
     if (isAuthPage) return;
@@ -36,7 +37,7 @@ export default function Navbar() {
     { name: "Why InsightMatrix", href: "/about" },
   ];
 
-  if (isAuthPage || isAdminPage) return null;
+  if (isAuthPage || isAdminPage || isPanelPage) return null;
 
   return (
     <nav 

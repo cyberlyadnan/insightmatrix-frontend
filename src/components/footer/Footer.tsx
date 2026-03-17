@@ -1,8 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Instagram, ArrowRight, Globe, Mail } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+  const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
+  const isAuthPage = authRoutes.includes(pathname);
+  
   const currentYear = new Date().getFullYear();
+
+  if (isAuthPage) return null;
 
   return (
     <footer className="bg-gray-950 text-gray-400 border-t border-white/5 pt-20 pb-10">

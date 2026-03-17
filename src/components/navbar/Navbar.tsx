@@ -10,19 +10,24 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+  
+  // Define auth routes
+  const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
+  const isAuthPage = authRoutes.includes(pathname);
 
   useEffect(() => {
+    if (isAuthPage) return;
+    
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
+
+    // Initial check
+    handleScroll();
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isAuthPage, pathname]);
 
   const navLinks = [
     { name: "Data & research", href: "/research" },
@@ -30,14 +35,16 @@ export default function Navbar() {
     { name: "Why InsightMatrix", href: "/about" },
   ];
 
+  if (isAuthPage) return null;
+
   return (
     <nav 
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
         isScrolled 
-          ? "bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm py-2" 
+          ? "bg-white border-b border-gray-100 shadow-sm py-2" 
           : isHomePage 
             ? "bg-transparent py-4 border-b border-transparent"
-            : "bg-white/70 backdrop-blur-md py-3 border-b border-gray-100"
+            : "bg-white/80 backdrop-blur-md py-3 border-b border-gray-100 shadow-sm"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -12,6 +12,12 @@
   --color-brand-subtle: #fdf2f8;
   --color-brand-accent1: #e11d48;
   --color-brand-accent2: #c026d3;
+  
+  /* UI Colors */
+  --color-muted-foreground: #6b7280;
+  --color-input: #e5e7eb;
+  --color-ring: #db2777;
+  --color-border: #e5e7eb;
 }
 
 @media (prefers-color-scheme: dark) {

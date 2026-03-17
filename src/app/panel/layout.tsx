@@ -138,9 +138,9 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
                 <Bell size={20} />
                 <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-brand-primary rounded-full border-4 border-white" />
              </button>
-             <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-subtle to-white border border-brand-primary/10 flex items-center justify-center text-brand-primary overflow-hidden cursor-pointer hover:shadow-lg transition-all">
+             <Link href="/panel/settings" className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-subtle to-white border border-brand-primary/10 flex items-center justify-center text-brand-primary overflow-hidden cursor-pointer hover:shadow-lg transition-all active:scale-95">
                 <User size={24} />
-             </div>
+             </Link>
           </div>
         </header>
 

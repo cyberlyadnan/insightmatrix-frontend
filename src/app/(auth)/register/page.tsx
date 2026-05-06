@@ -7,6 +7,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,26 +21,35 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { getPostLoginDestination } from "@/lib/auth/redirect";
+import { parseApiError } from "@/services/api/errors";
+import { fetchProfileOptional, registerRequest } from "@/services/auth";
+import { queryKeys } from "@/services/queries";
+import { useAuthStore } from "@/store/authStore";
 
-const registerSchema = z.object({
-  fullName: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    fullName: z.string().min(2, {
+      message: "Name must be at least 2 characters.",
+    }),
+    email: z.string().email({
+      message: "Please enter a valid email address.",
+    }),
+    password: z.string().min(8, {
+      message: "Password must be at least 8 characters.",
+    }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const qc = useQueryClient();
+  const setUser = useAuthStore((s) => s.setUser);
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -49,12 +61,31 @@ export default function RegisterPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof registerSchema>) {
-    setLoading(true);
-    // Simulate API call
-    console.log(values);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLoading(false);
+  const registerMutation = useMutation({
+    mutationFn: registerRequest,
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
+      const hydrated = await fetchProfileOptional();
+      if (hydrated) {
+        setUser(hydrated);
+        toast.success("Account ready");
+        router.replace(getPostLoginDestination(hydrated, null));
+      } else {
+        toast.success("Check your email to verify your account, then sign in.");
+        router.replace("/login");
+      }
+    },
+    onError: (err) => {
+      toast.error(parseApiError(err, "Could not register"));
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof registerSchema>) {
+    registerMutation.mutate({
+      fullName: values.fullName,
+      email: values.email,
+      password: values.password,
+    });
   }
 
   return (
@@ -172,9 +203,9 @@ export default function RegisterPage() {
             <Button
               type="submit"
               className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
-              disabled={loading}
+              disabled={registerMutation.isPending}
             >
-              {loading ? (
+              {registerMutation.isPending ? (
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Creating Account...
@@ -202,7 +233,15 @@ export default function RegisterPage() {
       </div>
 
       <p className="mt-6 text-[11px] text-center text-gray-400 px-4">
-        By signing up, you agree to our <Link href="/terms" className="underline font-bold">Terms of Service</Link> and <Link href="/privacy" className="underline font-bold">Privacy Policy</Link>.
+        By signing up, you agree to our{" "}
+        <Link href="/terms" className="underline font-bold">
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline font-bold">
+          Privacy Policy
+        </Link>
+        .
       </p>
     </motion.div>
   );

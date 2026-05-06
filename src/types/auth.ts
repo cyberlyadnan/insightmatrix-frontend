@@ -1,7 +1,5 @@
-import type { User } from "./user";
+import type { AuthUser } from "./user";
 
 export interface AuthSession {
-  user: User;
-  accessToken: string;
-  refreshToken?: string;
+  user: AuthUser;
 }

@@ -1,30 +1,15 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { User } from "@/types";
+import type { AuthUser } from "@/types";
 
 interface AuthState {
-  user: User | null;
-  /** In-memory only until httpOnly cookies are wired server-side */
-  accessToken: string | null;
-  refreshToken: string | null;
-  setSession: (payload: Partial<Pick<AuthState, "user" | "accessToken" | "refreshToken">>) => void;
+  user: AuthUser | null;
+  setUser: (user: AuthUser | null) => void;
   clearSession: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-      setSession: (payload) => set((state) => ({ ...state, ...payload })),
-      clearSession: () => set({ user: null, accessToken: null, refreshToken: null }),
-    }),
-    {
-      name: "insightmatrix-auth",
-      partialize: (state) => ({
-        user: state.user,
-      }),
-    }
-  )
-);
+/** Session cookies are httpOnly; `user` is hydrated from `/users/profile` or login/register responses */
+export const useAuthStore = create<AuthState>()((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
+  clearSession: () => set({ user: null }),
+}));

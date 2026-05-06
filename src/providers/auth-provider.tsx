@@ -1,25 +1,30 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, type ReactNode } from "react";
-import { COOKIE_KEYS } from "@/constants";
+import { env } from "@/config";
+import { fetchProfileOptional } from "@/services/auth";
+import { queryKeys } from "@/services/queries";
 import { useAuthStore } from "@/store/authStore";
-import { getCookie } from "@/utils/cookies";
 
-/**
- * Hydrates client-side tokens into Zustand from readable cookies.
- * Swap for secure session hydration via `/api/auth/session` once SSR login flows ship.
- */
+/** Hydrates Zustand user from `/users/profile` using session cookies */
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const setUser = useAuthStore((s) => s.setUser);
+  const clearSession = useAuthStore((s) => s.clearSession);
+
+  const { data: profile, isFetched } = useQuery({
+    queryKey: queryKeys.auth.profile,
+    queryFn: fetchProfileOptional,
+    staleTime: 60_000,
+    retry: false,
+    refetchOnWindowFocus: env.isProd,
+  });
+
   useEffect(() => {
-    const access = getCookie(COOKIE_KEYS.accessToken);
-    const refresh = getCookie(COOKIE_KEYS.refreshToken);
-    const patch: Partial<{ accessToken: string; refreshToken: string }> = {};
-    if (access) patch.accessToken = access;
-    if (refresh) patch.refreshToken = refresh;
-    if (Object.keys(patch).length > 0) {
-      useAuthStore.getState().setSession(patch);
-    }
-  }, []);
+    if (!isFetched) return;
+    if (profile) setUser(profile);
+    else clearSession();
+  }, [profile, isFetched, setUser, clearSession]);
 
   return children;
 }

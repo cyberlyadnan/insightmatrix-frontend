@@ -1,9 +1,13 @@
-export type UserRole = "panelist" | "researcher" | "admin" | "super_admin";
+export type UserRole = "admin" | "user" | "survey_manager";
 
-export interface User {
+export interface AuthUser {
   id: string;
+  fullName: string;
   email: string;
-  name: string;
   role: UserRole;
-  avatarUrl?: string;
+  isVerified: boolean;
+  avatar: string | null;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

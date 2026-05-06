@@ -7,6 +7,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, ArrowRight, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +21,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { parseApiError } from "@/services/api/errors";
+import { forgotPasswordRequest } from "@/services/auth";
 
 const forgotSchema = z.object({
   email: z.string().email({
@@ -27,7 +31,6 @@ const forgotSchema = z.object({
 });
 
 export default function ForgotPasswordPage() {
-  const [loading, setLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<z.infer<typeof forgotSchema>>({
@@ -37,13 +40,18 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof forgotSchema>) {
-    setLoading(true);
-    // Simulate API call
-    console.log(values);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLoading(false);
-    setIsSubmitted(true);
+  const forgotMutation = useMutation({
+    mutationFn: forgotPasswordRequest,
+    onSuccess: () => {
+      setIsSubmitted(true);
+    },
+    onError: (err) => {
+      toast.error(parseApiError(err, "Could not send reset email"));
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof forgotSchema>) {
+    forgotMutation.mutate(values.email);
   }
 
   if (isSubmitted) {
@@ -58,7 +66,9 @@ export default function ForgotPasswordPage() {
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h1>
         <p className="text-gray-500 mb-8">
-          We&apos;ve sent a password reset link to <span className="font-bold text-gray-900">{form.getValues("email")}</span>
+          If an account exists for{" "}
+          <span className="font-bold text-gray-900">{form.getValues("email")}</span>, you will
+          receive reset instructions shortly.
         </p>
         <Link
           href="/login"
@@ -81,8 +91,8 @@ export default function ForgotPasswordPage() {
       className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100"
     >
       <div className="mb-8">
-        <Link 
-          href="/login" 
+        <Link
+          href="/login"
           className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-brand-primary transition-colors mb-4"
         >
           <ChevronLeft className="w-4 h-4 mr-1" /> Back to Login
@@ -117,9 +127,9 @@ export default function ForgotPasswordPage() {
           <Button
             type="submit"
             className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
-            disabled={loading}
+            disabled={forgotMutation.isPending}
           >
-            {loading ? (
+            {forgotMutation.isPending ? (
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Sending...

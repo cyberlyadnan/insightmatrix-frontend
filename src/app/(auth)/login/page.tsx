@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,6 +8,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +22,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { getPostLoginDestination } from "@/lib/auth/redirect";
+import { parseApiError } from "@/services/api/errors";
+import { loginRequest } from "@/services/auth";
+import { queryKeys } from "@/services/queries";
+import { useAuthStore } from "@/store/authStore";
 
 const loginSchema = z.object({
   email: z.string().email({
@@ -28,9 +37,21 @@ const loginSchema = z.object({
   }),
 });
 
-export default function LoginPage() {
+function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const qc = useQueryClient();
+  const setUser = useAuthStore((s) => s.setUser);
+
+  useEffect(() => {
+    if (searchParams.get("verified") === "1") {
+      toast.success("Email verified. You can sign in.");
+    }
+    if (searchParams.get("verifyError") === "1") {
+      toast.error("Verification link is invalid or expired.");
+    }
+  }, [searchParams]);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -40,12 +61,22 @@ export default function LoginPage() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setLoading(true);
-    // Simulate API call
-    console.log(values);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLoading(false);
+  const loginMutation = useMutation({
+    mutationFn: loginRequest,
+    onSuccess: async (user) => {
+      setUser(user);
+      await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
+      toast.success("Welcome back");
+      const redirect = searchParams.get("redirect");
+      router.replace(getPostLoginDestination(user, redirect));
+    },
+    onError: (err) => {
+      toast.error(parseApiError(err, "Could not sign in"));
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof loginSchema>) {
+    loginMutation.mutate(values);
   }
 
   return (
@@ -123,9 +154,9 @@ export default function LoginPage() {
           <Button
             type="submit"
             className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
-            disabled={loading}
+            disabled={loginMutation.isPending}
           >
-            {loading ? (
+            {loginMutation.isPending ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 Logging in...
@@ -151,5 +182,19 @@ export default function LoginPage() {
         </p>
       </div>
     </motion.div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex justify-center py-16">
+          <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

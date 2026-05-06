@@ -3,12 +3,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { RedirectIfAuthenticated } from "@/components/auth/redirect-if-authenticated";
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-white relative">
       {/* Back Button - Responsive Positioning */}
@@ -23,23 +20,23 @@ export default function AuthLayout({
       {/* Left Side - Visual/Branding */}
       <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-[#596cc6] via-[#d74c86] to-[#f67b5f] overflow-hidden">
         {/* Animated Shapes */}
-        <motion.div 
-          animate={{ 
+        <motion.div
+          animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 90, 0],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-white/10 blur-3xl mix-blend-overlay" 
+          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-white/10 blur-3xl mix-blend-overlay"
         />
-        <motion.div 
-          animate={{ 
+        <motion.div
+          animate={{
             scale: [1.2, 1, 1.2],
             rotate: [90, 0, 90],
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] rounded-full bg-brand-accent1/20 blur-3xl mix-blend-overlay" 
+          className="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] rounded-full bg-brand-accent1/20 blur-3xl mix-blend-overlay"
         />
-        
+
         <div className="relative z-10 px-12 text-center text-white">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -48,11 +45,11 @@ export default function AuthLayout({
           >
             <h2 className="text-4xl font-extrabold mb-6">Welcome to InsightMatrix</h2>
             <p className="text-xl text-white/90 max-w-md mx-auto leading-relaxed">
-              Join thousands of creators and brands and start collaborating today. 
-              Your perspective matters.
+              Join thousands of creators and brands and start collaborating today. Your perspective
+              matters.
             </p>
           </motion.div>
-          
+
           <div className="mt-12 grid grid-cols-2 gap-4">
             <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
               <h4 className="text-2xl font-bold mb-1">2M+</h4>
@@ -74,7 +71,7 @@ export default function AuthLayout({
               InsightMatrix
             </Link>
           </div>
-          {children}
+          <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
         </div>
       </div>
     </div>

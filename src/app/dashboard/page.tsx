@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/store/authStore";
 
 const missions = [
   {
@@ -42,9 +44,16 @@ const missions = [
   },
 ];
 
-export default function PanelHome() {
+export default function DashboardHome() {
+  const user = useAuthStore((s) => s.user);
+
   return (
     <div className="space-y-10">
+      <p className="text-sm text-gray-600">
+        Signed in as <span className="font-bold text-gray-900">{user?.fullName ?? "Member"}</span>
+        {user?.email ? <span className="text-gray-400 font-normal"> · {user.email}</span> : null}
+      </p>
+
       {/* Hero Mission */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -104,7 +113,7 @@ export default function PanelHome() {
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-black text-gray-900">Recommended for You</h2>
             <Link
-              href="/user/surveys"
+              href={ROUTES.dashboard.surveys}
               className="text-sm font-black text-brand-primary hover:underline flex items-center gap-1"
             >
               View All Surveys <ChevronRight size={16} />

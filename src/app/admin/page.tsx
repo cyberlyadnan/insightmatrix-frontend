@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useAuthStore } from "@/store/authStore";
 import {
   Users,
   FileText,
@@ -50,12 +51,14 @@ const stats = [
 ];
 
 export default function AdminOverview() {
+  const user = useAuthStore((s) => s.user);
+
   return (
     <div className="space-y-10">
       <div>
         <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-2">System Overview</h1>
         <p className="text-gray-500 font-medium">
-          Welcome back, Adnan. Here{"'"}s what{"'"}s happening today.
+          Welcome back, {user?.fullName ?? "Administrator"}. Here{"'"}s what{"'"}s happening today.
         </p>
       </div>
 

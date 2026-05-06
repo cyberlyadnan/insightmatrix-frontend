@@ -4,12 +4,13 @@ export const ROUTES = {
   register: "/register",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
-  panel: {
-    root: "/user",
-    surveys: "/user/surveys",
-    wallet: "/user/wallet",
-    settings: "/user/settings",
-    help: "/user/help",
+  verifyEmail: "/verify-email",
+  dashboard: {
+    root: "/dashboard",
+    surveys: "/dashboard/surveys",
+    wallet: "/dashboard/wallet",
+    settings: "/dashboard/settings",
+    help: "/dashboard/help",
   },
   admin: {
     root: "/admin",
@@ -22,6 +23,7 @@ export const AUTH_ROUTE_LIST = [
   ROUTES.register,
   ROUTES.forgotPassword,
   ROUTES.resetPassword,
+  ROUTES.verifyEmail,
 ] as const;
 
 export function isAuthRoute(pathname: string): boolean {

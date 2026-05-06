@@ -1,11 +1,12 @@
 import { Metadata } from "next";
 import { CheckCircle2, Target, Lightbulb, Users, Globe, ShieldCheck, Zap } from "lucide-react";
-import PageHeader from "@/components/common/PageHeader";
-import { FloatingTagsVisual } from "@/components/common/HeaderVisuals";
+import PageHeader from "@/components/shared/PageHeader";
+import { FloatingTagsVisual } from "@/components/shared/HeaderVisuals";
 
 export const metadata: Metadata = {
   title: "About Us | InsightMatrix",
-  description: "Learn more about InsightMatrix, our mission, vision, and how we are transforming the survey research industry.",
+  description:
+    "Learn more about InsightMatrix, our mission, vision, and how we are transforming the survey research industry.",
 };
 
 export default function AboutPage() {
@@ -20,17 +21,17 @@ export default function AboutPage() {
 
   return (
     <div className="bg-white">
-      <PageHeader 
+      <PageHeader
         badge="About Our Mission"
         title="Unmatched data accuracy"
         description="When data quality fails, everything built on it collapses - decisions, budgets, even reputations. That’s why InsightMatrix has spent decades engineering accuracy into every step of our process."
         buttonText="Talk to experts"
         buttonHref="/contact"
         visual={
-          <FloatingTagsVisual 
-            imageSrc="https://i.pravatar.cc/300?img=26" 
-            tags={visualTags} 
-            badgeText="Insight Reality" 
+          <FloatingTagsVisual
+            imageSrc="https://i.pravatar.cc/300?img=26"
+            tags={visualTags}
+            badgeText="Insight Reality"
           />
         }
       />
@@ -44,11 +45,15 @@ export default function AboutPage() {
                 <div className="w-16 h-16 rounded-2xl bg-brand-subtle flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all duration-300 shadow-sm">
                   <Target className="h-8 w-8" />
                 </div>
-                <h3 className="ml-5 text-3xl font-extrabold tracking-tight text-gray-900">Our Mission</h3>
+                <h3 className="ml-5 text-3xl font-extrabold tracking-tight text-gray-900">
+                  Our Mission
+                </h3>
               </div>
               <p className="text-xl text-gray-600 leading-relaxed p-10 bg-white border border-gray-100 rounded-3xl shadow-xl shadow-gray-200/40 relative">
-                <span className="absolute top-4 left-6 text-6xl font-serif text-brand-primary/10">"</span>
-                To democratize market research by providing a transparent, rewarding platform for participants while delivering unparalleled data accuracy and speed to researchers worldwide.
+                <span className="absolute top-4 left-6 text-6xl font-serif text-brand-primary/10">{`"`}</span>
+                To democratize market research by providing a transparent, rewarding platform for
+                participants while delivering unparalleled data accuracy and speed to researchers
+                worldwide.
               </p>
             </div>
             <div className="group">
@@ -56,11 +61,14 @@ export default function AboutPage() {
                 <div className="w-16 h-16 rounded-2xl bg-brand-subtle flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all duration-300 shadow-sm">
                   <Lightbulb className="h-8 w-8" />
                 </div>
-                <h3 className="ml-5 text-3xl font-extrabold tracking-tight text-gray-900">Our Vision</h3>
+                <h3 className="ml-5 text-3xl font-extrabold tracking-tight text-gray-900">
+                  Our Vision
+                </h3>
               </div>
               <p className="text-xl text-gray-600 leading-relaxed p-10 bg-white border border-gray-100 rounded-3xl shadow-xl shadow-gray-200/40 relative">
-                <span className="absolute top-4 left-6 text-6xl font-serif text-brand-primary/10">"</span>
-                To become the global standard for ethical data collection, where every opinion is valued, protected, and utilized to create better products and services for tomorrow.
+                <span className="absolute top-4 left-6 text-6xl font-serif text-brand-primary/10">{`"`}</span>
+                To become the global standard for ethical data collection, where every opinion is
+                valued, protected, and utilized to create better products and services for tomorrow.
               </p>
             </div>
           </div>
@@ -71,25 +79,105 @@ export default function AboutPage() {
       <div className="py-24 sm:py-32">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="max-w-2xl mx-auto lg:text-center mb-20">
-            <h2 className="text-base font-bold leading-7 text-brand-primary uppercase tracking-widest">Our Engineering</h2>
+            <h2 className="text-base font-bold leading-7 text-brand-primary uppercase tracking-widest">
+              Our Engineering
+            </h2>
             <p className="mt-4 text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
               Setting higher standards than the industry norm
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             {[
-               { title: "Community First", desc: "Fair member rewards and a global community across all demographics.", icon: Users },
-               { title: "Global Coverage", desc: "Proprietary panels in 120+ countries for truly representative research.", icon: Globe },
-               { title: "Privacy Verified", desc: "Data protection standards that go beyond GDPR and CCPA requirements.", icon: ShieldCheck },
-             ].map((feature, i) => (
-                <div key={i} className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all">
-                  <div className="bg-brand-subtle w-16 h-16 rounded-2xl flex items-center justify-center mb-8 text-brand-primary">
-                    <feature.icon className="w-8 h-8" />
-                  </div>
-                  <h4 className="text-2xl font-extrabold text-gray-900 mb-4">{feature.title}</h4>
-                  <p className="text-gray-500 text-lg leading-relaxed">{feature.desc}</p>
+            {[
+              {
+                title: "Community First",
+                desc: "Fair member rewards and a global community across all demographics.",
+                icon: Users,
+              },
+              {
+                title: "Global Coverage",
+                desc: "Proprietary panels in 120+ countries for truly representative research.",
+                icon: Globe,
+              },
+              {
+                title: "Privacy Verified",
+                desc: "Data protection standards that go beyond GDPR and CCPA requirements.",
+                icon: ShieldCheck,
+              },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all"
+              >
+                <div className="bg-brand-subtle w-16 h-16 rounded-2xl flex items-center justify-center mb-8 text-brand-primary">
+                  <feature.icon className="w-8 h-8" />
                 </div>
-             ))}
+                <h4 className="text-2xl font-extrabold text-gray-900 mb-4">{feature.title}</h4>
+                <p className="text-gray-500 text-lg leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Team Section */}
+      <div className="py-24 sm:py-32 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto lg:text-center mb-20">
+            <h2 className="text-base font-bold leading-7 text-brand-primary uppercase tracking-widest">
+              Our Leadership
+            </h2>
+            <p className="mt-4 text-4xl font-black tracking-tight text-gray-900 sm:text-5xl">
+              Meet the minds behind the matrix
+            </p>
+            <p className="mt-6 text-xl leading-relaxed text-gray-600">
+              Our team consists of industry veterans from data science, market research, and
+              software engineering.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                name: "Sarah Jenkins",
+                role: "Head of Research",
+                img: "https://i.pravatar.cc/300?img=47",
+                bio: "15+ years leading global consumer insights.",
+              },
+              {
+                name: "David Chen",
+                role: "Lead Data Scientist",
+                img: "https://i.pravatar.cc/300?img=11",
+                bio: "Pioneer in predictive behavioral modeling.",
+              },
+              {
+                name: "Elena Rodriguez",
+                role: "Panel Operations",
+                img: "https://i.pravatar.cc/300?img=5",
+                bio: "Expert in community building and reward systems.",
+              },
+              {
+                name: "Marcus Thorne",
+                role: "VP of Engineering",
+                img: "https://i.pravatar.cc/300?img=33",
+                bio: "Architected scalable systems for Fortune 500s.",
+              },
+            ].map((member, i) => (
+              <div key={i} className="group flex flex-col items-center text-center">
+                <div className="relative mb-6 overflow-hidden rounded-[2.5rem] w-full aspect-square">
+                  <div className="absolute inset-0 bg-brand-primary mix-blend-multiply opacity-0 group-hover:opacity-40 transition-opacity duration-300 z-10" />
+                  <img
+                    src={member.img}
+                    alt={member.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                  />
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 mb-1">{member.name}</h3>
+                <p className="text-sm font-bold text-brand-primary uppercase tracking-widest mb-4">
+                  {member.role}
+                </p>
+                <p className="text-gray-500 leading-relaxed font-medium">{member.bio}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -99,43 +187,49 @@ export default function AboutPage() {
         <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-primary/10 blur-[120px] rounded-full pointer-events-none" />
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-             <div>
-               <h2 className="text-4xl font-black text-white tracking-tight sm:text-5xl mb-8">
-                 Why industry leaders <span className="text-brand-primary">trust us</span>
-               </h2>
-               <div className="space-y-6">
-                 {[
-                   "ACE Methodology for higher data quality",
-                   "MRP Predictive Modelling for forecasting",
-                   "Automated bot checks with advanced AI",
-                   "High-frequency data collection for rapid insights",
-                   "Niche demographics & representative samples"
-                 ].map((item, i) => (
-                   <div key={i} className="flex items-center text-gray-300">
-                     <div className="w-6 h-6 rounded-full bg-brand-primary/20 flex items-center justify-center mr-4">
-                        <CheckCircle2 className="h-4 w-4 text-brand-primary" />
-                     </div>
-                     <span className="text-lg font-medium">{item}</span>
-                   </div>
-                 ))}
-               </div>
-             </div>
-             <div className="mt-16 lg:mt-0 relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary to-brand-accent1 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
-                <div className="relative bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-12 text-center">
-                   <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-primary/10 text-brand-primary mb-6">
-                      <Zap className="w-10 h-10" />
-                   </div>
-                   <p className="text-6xl font-black text-white mb-4">99.9%</p>
-                   <p className="text-2xl font-bold text-gray-200">Accuracy Standard</p>
-                   <div className="mt-8 flex justify-center gap-4">
-                      <div className="flex -space-x-2">
-                         {[1,2,3,4].map(i => <img key={i} src={`https://i.pravatar.cc/100?img=${i+40}`} className="w-8 h-8 rounded-full border-2 border-gray-900" />)}
-                      </div>
-                      <span className="text-gray-400 font-bold">Trusted by 2M+ experts</span>
-                   </div>
+            <div>
+              <h2 className="text-4xl font-black text-white tracking-tight sm:text-5xl mb-8">
+                Why industry leaders <span className="text-brand-primary">trust us</span>
+              </h2>
+              <div className="space-y-6">
+                {[
+                  "ACE Methodology for higher data quality",
+                  "MRP Predictive Modelling for forecasting",
+                  "Automated bot checks with advanced AI",
+                  "High-frequency data collection for rapid insights",
+                  "Niche demographics & representative samples",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center text-gray-300">
+                    <div className="w-6 h-6 rounded-full bg-brand-primary/20 flex items-center justify-center mr-4">
+                      <CheckCircle2 className="h-4 w-4 text-brand-primary" />
+                    </div>
+                    <span className="text-lg font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-16 lg:mt-0 relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary to-brand-accent1 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+              <div className="relative bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-12 text-center">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-primary/10 text-brand-primary mb-6">
+                  <Zap className="w-10 h-10" />
                 </div>
-             </div>
+                <p className="text-6xl font-black text-white mb-4">99.9%</p>
+                <p className="text-2xl font-bold text-gray-200">Accuracy Standard</p>
+                <div className="mt-8 flex justify-center gap-4">
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3, 4].map((i) => (
+                      <img
+                        key={i}
+                        src={`https://i.pravatar.cc/100?img=${i + 40}`}
+                        className="w-8 h-8 rounded-full border-2 border-gray-900"
+                      />
+                    ))}
+                  </div>
+                  <span className="text-gray-400 font-bold">Trusted by 2M+ experts</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

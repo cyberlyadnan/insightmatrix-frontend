@@ -2,16 +2,16 @@ import Link from "next/link";
 import { Star, Bell, ChevronRight, Users, TrendingUp, Shield } from "lucide-react";
 
 const floatingAvatars = [
-  { img: 11, label: "/spending habits",   pos: { top: "5%",  left: "2%" }  },
-  { img: 12, label: "/social behaviour",  pos: { top: "26%", left: "-1%" } },
-  { img: 13, label: "/brands loved",      pos: { top: "50%", left: "2%" }  },
-  { img: 14, label: "/stream gaming",     pos: { top: "72%", left: "-1%" } },
-  { img: 15, label: "/browsing history",  pos: { top: "90%", left: "3%" }  },
-  { img: 16, label: "/amazon shopping",   pos: { top: "5%",  right: "2%" } },
-  { img: 17, label: "/brand surveys",     pos: { top: "26%", right: "-1%"} },
-  { img: 18, label: "/netflix history",   pos: { top: "50%", right: "2%" } },
-  { img: 19, label: "/gaming history",    pos: { top: "72%", right: "-1%"} },
-  { img: 20, label: "/banking txns",      pos: { top: "90%", right: "3%" } },
+  { img: 11, label: "/spending habits", pos: { top: "5%", left: "2%" } },
+  { img: 12, label: "/social behaviour", pos: { top: "26%", left: "-1%" } },
+  { img: 13, label: "/brands loved", pos: { top: "50%", left: "2%" } },
+  { img: 14, label: "/stream gaming", pos: { top: "72%", left: "-1%" } },
+  { img: 15, label: "/browsing history", pos: { top: "90%", left: "3%" } },
+  { img: 16, label: "/amazon shopping", pos: { top: "5%", right: "2%" } },
+  { img: 17, label: "/brand surveys", pos: { top: "26%", right: "-1%" } },
+  { img: 18, label: "/netflix history", pos: { top: "50%", right: "2%" } },
+  { img: 19, label: "/gaming history", pos: { top: "72%", right: "-1%" } },
+  { img: 20, label: "/banking txns", pos: { top: "90%", right: "3%" } },
 ];
 
 export default function PanelCommunity() {
@@ -22,14 +22,14 @@ export default function PanelCommunity() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[600px] rounded-full bg-gradient-to-r from-pink-100/50 via-violet-100/50 to-sky-100/50 blur-3xl opacity-50 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
         {/* ── Section Header ── */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <span className="inline-block mb-4 px-4 py-1.5 rounded-full bg-brand-subtle border border-brand-light text-brand-primary text-sm font-bold tracking-wide uppercase">
             Our Community
           </span>
           <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent1">
-            Engaged panelists<br className="hidden sm:block" /> share their realities
+            Engaged panelists
+            <br className="hidden sm:block" /> share their realities
           </h2>
           <p className="text-gray-500 text-xl leading-relaxed">
             At the heart of InsightMatrix is a global online community of responsive panel members,
@@ -39,13 +39,16 @@ export default function PanelCommunity() {
 
         {/* ── Main Visual Area ── */}
         <div className="relative min-h-[680px] flex items-center justify-center">
-
           {/* Floating avatars — desktop only */}
           {floatingAvatars.map((av, i) => (
             <div
               key={i}
               className="absolute hidden xl:flex flex-col items-center gap-1.5 z-10"
-              style={{ top: av.pos.top, left: (av.pos as any).left, right: (av.pos as any).right }}
+              style={{
+                top: av.pos.top,
+                ...(av.pos.left != null ? { left: av.pos.left } : {}),
+                ...(av.pos.right != null ? { right: av.pos.right } : {}),
+              }}
             >
               <img
                 src={`https://i.pravatar.cc/100?img=${av.img}`}
@@ -60,7 +63,6 @@ export default function PanelCommunity() {
 
           {/* Central content */}
           <div className="flex flex-col lg:flex-row items-stretch gap-8 w-full xl:w-[72%] z-20">
-
             {/* Left dark card */}
             <div className="flex-1 rounded-3xl bg-gradient-to-br from-gray-900 via-[#1a1040] to-gray-900 p-10 flex flex-col justify-between gap-10 shadow-2xl shadow-gray-900/40 min-h-[480px]">
               {/* Top decorative glow */}
@@ -68,14 +70,16 @@ export default function PanelCommunity() {
 
               <div className="relative">
                 {/* Quote marks */}
-                <div className="text-6xl font-serif text-brand-primary/30 leading-none mb-2">"</div>
+                <div className="text-6xl font-serif text-brand-primary/30 leading-none mb-2">{`"`}</div>
                 <p className="text-3xl font-extrabold text-white leading-snug mb-5">
-                  The best survey<br />platform ever
+                  The best survey
+                  <br />
+                  platform ever
                 </p>
                 <p className="text-gray-400 text-base leading-relaxed">
-                  Our 2 million members say surveys are interesting, the platform is beautifully easy to use,
-                  they love the rewards &amp; genuinely enjoy seeing their opinions shape real products and
-                  decisions around the world.
+                  Our 2 million members say surveys are interesting, the platform is beautifully
+                  easy to use, they love the rewards &amp; genuinely enjoy seeing their opinions
+                  shape real products and decisions around the world.
                 </p>
               </div>
 
@@ -128,10 +132,11 @@ export default function PanelCommunity() {
 
                   {/* Screen */}
                   <div className="bg-[#f5f5f7] min-h-[500px] flex flex-col">
-
                     {/* App top bar */}
                     <div className="bg-white px-4 pt-10 pb-3 flex items-center justify-between shadow-sm">
-                      <span className="font-extrabold text-brand-primary text-[15px] tracking-tight">InsightMatrix</span>
+                      <span className="font-extrabold text-brand-primary text-[15px] tracking-tight">
+                        InsightMatrix
+                      </span>
                       <div className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
                         <Users className="w-2.5 h-2.5" /> 2,400 &rsaquo;
                       </div>
@@ -191,7 +196,6 @@ export default function PanelCommunity() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
 
@@ -209,7 +213,6 @@ export default function PanelCommunity() {
             2M+
           </div>
         </div>
-
       </div>
     </section>
   );

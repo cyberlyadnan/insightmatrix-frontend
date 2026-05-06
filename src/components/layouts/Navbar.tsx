@@ -5,27 +5,25 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { isAuthRoute } from "@/constants";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
-  
-  // Define auth routes
-  const authRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
-  const isAuthPage = authRoutes.includes(pathname);
+
+  const isAuthPage = isAuthRoute(pathname);
   const isAdminPage = pathname.startsWith("/admin");
   const isPanelPage = pathname.startsWith("/panel");
 
   useEffect(() => {
     if (isAuthPage) return;
-    
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    // Initial check
     handleScroll();
 
     window.addEventListener("scroll", handleScroll);
@@ -42,39 +40,39 @@ export default function Navbar() {
 
   return (
     <>
-      <nav 
+      <nav
         className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-          isScrolled 
-            ? "bg-white border-b border-gray-100 shadow-sm py-2" 
-            : isHomePage 
+          isScrolled
+            ? "bg-white border-b border-gray-100 shadow-sm py-2"
+            : isHomePage
               ? "bg-transparent py-4 border-b border-transparent"
               : "bg-white/80 backdrop-blur-md py-3 border-b border-gray-100 shadow-sm"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-12">
-            {/* Logo */}
             <div className="flex-shrink-0 flex items-center gap-4">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className={`text-2xl font-black tracking-tight transition-colors ${
                   isScrolled || !isHomePage ? "text-brand-primary" : "text-white"
                 }`}
               >
                 InsightMatrix<span className="text-xl align-top font-normal">&reg;</span>
               </Link>
-              
-              {/* Country Selector (mock) */}
-              <button className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors text-sm font-medium ${
-                isScrolled || !isHomePage
-                  ? "border-gray-200 text-gray-700 hover:bg-gray-50" 
-                  : "border-white/30 text-white hover:bg-white/10"
-              }`}>
+
+              <button
+                type="button"
+                className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors text-sm font-medium ${
+                  isScrolled || !isHomePage
+                    ? "border-gray-200 text-gray-700 hover:bg-gray-50"
+                    : "border-white/30 text-white hover:bg-white/10"
+                }`}
+              >
                 <span>🇬🇧</span> UK
               </button>
             </div>
 
-            {/* Desktop Menu */}
             <div className="hidden lg:flex space-x-6 items-center">
               {navLinks.map((link) => (
                 <Link
@@ -82,7 +80,7 @@ export default function Navbar() {
                   href={link.href}
                   className={`font-semibold transition-colors ${
                     isScrolled || !isHomePage
-                      ? "text-gray-700 hover:text-brand-primary" 
+                      ? "text-gray-700 hover:text-brand-primary"
                       : "text-white/90 hover:text-white"
                   }`}
                 >
@@ -91,7 +89,6 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Right Actions */}
             <div className="hidden md:flex items-center space-x-3">
               <Link
                 href="/contact"
@@ -114,6 +111,7 @@ export default function Navbar() {
                 Sign in
               </Link>
               <button
+                type="button"
                 className={`p-2.5 rounded-full border transition-all flex items-center justify-center ${
                   isScrolled || !isHomePage
                     ? "border-gray-200 text-gray-700 hover:bg-gray-50"
@@ -124,9 +122,9 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Mobile Menu Button */}
             <div className="lg:hidden flex items-center">
               <button
+                type="button"
                 onClick={() => setIsOpen(true)}
                 className={`focus:outline-none ${
                   isScrolled || !isHomePage ? "text-gray-900" : "text-white"
@@ -139,20 +137,17 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Sidebar */}
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] lg:hidden"
             />
-            {/* Sidebar Content */}
-            <motion.div 
+            <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -163,7 +158,8 @@ export default function Navbar() {
                 <span className="text-xl font-black text-brand-primary tracking-tight">
                   InsightMatrix<span className="text-lg align-top font-normal">&reg;</span>
                 </span>
-                <button 
+                <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
                   className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"
                 >
@@ -179,8 +175,8 @@ export default function Navbar() {
                       href={link.href}
                       onClick={() => setIsOpen(false)}
                       className={`block px-4 py-4 rounded-2xl text-lg font-bold transition-all ${
-                        pathname === link.href 
-                          ? "bg-brand-primary/10 text-brand-primary" 
+                        pathname === link.href
+                          ? "bg-brand-primary/10 text-brand-primary"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >

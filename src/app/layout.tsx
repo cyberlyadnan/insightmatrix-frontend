@@ -1,30 +1,34 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/navbar/Navbar";
-import Footer from "@/components/footer/Footer";
+import "@/styles/globals.css";
+import { Navbar, Footer } from "@/components/layouts";
+import { AppProviders } from "@/providers";
 
-const inter = Inter({ subsets: ["latin"], display: 'swap' });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "InsightMatrix | Professional Survey Platform",
-  description: "Join the premier platform for high-quality survey research and data collection. Earn rewards and shape the future.",
+  description:
+    "Join the premier platform for high-quality survey research and data collection. Earn rewards and shape the future.",
   keywords: ["surveys", "market research", "rewards", "panel management"],
 };
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: Readonly<{
+  children: ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} min-h-screen flex flex-col antialiased bg-gray-50 text-gray-900`}>
-        <Navbar />
-        <main className="flex-grow flex flex-col">
-          {children}
-        </main>
-        <Footer />
+      <body
+        className={`${inter.className} min-h-screen flex flex-col antialiased bg-gray-50 text-gray-900`}
+      >
+        <AppProviders>
+          <Navbar />
+          <main className="flex-grow flex flex-col">{children}</main>
+          <Footer />
+        </AppProviders>
       </body>
     </html>
   );

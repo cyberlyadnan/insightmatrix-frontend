@@ -3,17 +3,35 @@
 import { useParams, notFound } from "next/navigation";
 import { caseStudies } from "@/lib/data-research";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { ArrowLeft, Calendar, User, CheckCircle2, Quote, ArrowRight, Share2, Printer, TrendingUp, Target, Zap, PieChart, LineChart, BarChart3, ChevronRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import {
+  Building2,
+  BarChart3,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  LineChart,
+  PieChart,
+  Printer,
+  Quote,
+  ArrowRight,
+  Share2,
+  ShieldCheck,
+  Tag,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   TrendingUp,
   Target,
   Zap,
   PieChart,
   LineChart,
-  BarChart3
+  BarChart3,
 };
 
 export default function CaseStudyDetail() {
@@ -23,7 +41,7 @@ export default function CaseStudyDetail() {
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
   if (!study) {
@@ -42,9 +60,9 @@ export default function CaseStudyDetail() {
       <section className="relative min-h-[85vh] flex items-center pt-32 pb-20 overflow-hidden bg-gray-950 w-full">
         {/* Background Layer */}
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <img 
-            src={study.image} 
-            alt={study.title} 
+          <img
+            src={study.image}
+            alt={study.title}
             className="w-full h-full object-cover opacity-40 scale-105 blur-[2px]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/60 to-gray-950" />
@@ -66,11 +84,23 @@ export default function CaseStudyDetail() {
             >
               {/* Breadcrumbs */}
               <nav className="flex flex-wrap items-center gap-y-2 gap-x-3 mb-10">
-                <Link href="/" className="text-white/40 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Home</Link>
+                <Link
+                  href="/"
+                  className="text-white/40 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest whitespace-nowrap"
+                >
+                  Home
+                </Link>
                 <ChevronRight size={10} className="text-white/20" />
-                <Link href="/research" className="text-white/40 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest whitespace-nowrap">Research</Link>
+                <Link
+                  href="/research"
+                  className="text-white/40 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest whitespace-nowrap"
+                >
+                  Research
+                </Link>
                 <ChevronRight size={10} className="text-white/20" />
-                <span className="text-brand-primary text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{study.category}</span>
+                <span className="text-brand-primary text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
+                  {study.category}
+                </span>
               </nav>
 
               <motion.div
@@ -97,8 +127,12 @@ export default function CaseStudyDetail() {
                     <Building2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Client</div>
-                    <div className="text-sm font-bold text-white tracking-tight">{study.client}</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                      Client
+                    </div>
+                    <div className="text-sm font-bold text-white tracking-tight">
+                      {study.client}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -106,8 +140,12 @@ export default function CaseStudyDetail() {
                     <Clock className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Timeline</div>
-                    <div className="text-sm font-bold text-white tracking-tight">{study.duration}</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                      Timeline
+                    </div>
+                    <div className="text-sm font-bold text-white tracking-tight">
+                      {study.duration}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -124,15 +162,19 @@ export default function CaseStudyDetail() {
                 {study.results.map((result, i) => {
                   const Icon = iconMap[result.iconName] || Zap;
                   return (
-                    <div 
-                      key={i} 
-                      className={`p-8 rounded-[2.5rem] ${i === 2 ? 'col-span-2' : ''} bg-white/5 border border-white/10 backdrop-blur-2xl hover:bg-white/10 transition-colors group`}
+                    <div
+                      key={i}
+                      className={`p-8 rounded-[2.5rem] ${i === 2 ? "col-span-2" : ""} bg-white/5 border border-white/10 backdrop-blur-2xl hover:bg-white/10 transition-colors group`}
                     >
                       <div className="w-12 h-12 rounded-2xl bg-brand-primary/20 flex items-center justify-center text-brand-primary mb-6 group-hover:scale-110 transition-transform">
                         <Icon size={24} />
                       </div>
-                      <div className="text-4xl font-black text-white mb-2 tracking-tighter">{result.value}</div>
-                      <div className="text-[10px] font-black uppercase tracking-widest text-white/40">{result.label}</div>
+                      <div className="text-4xl font-black text-white mb-2 tracking-tighter">
+                        {result.value}
+                      </div>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                        {result.label}
+                      </div>
                     </div>
                   );
                 })}
@@ -144,7 +186,7 @@ export default function CaseStudyDetail() {
         </div>
 
         {/* Floating Scroll Indicator */}
-        <motion.div 
+        <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20"
@@ -157,19 +199,20 @@ export default function CaseStudyDetail() {
       {/* Content Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-32">
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-16">
-          
           {/* Main Story */}
           <div className="lg:col-span-8">
             <article className="prose prose-lg sm:prose-xl max-w-none">
               <section className="mb-24">
                 <div className="flex items-center gap-4 mb-8">
-                   <div className="w-12 h-px bg-brand-primary" />
-                   <h2 className="text-2xl font-black text-gray-900 uppercase tracking-widest">01. The Challenge</h2>
+                  <div className="w-12 h-px bg-brand-primary" />
+                  <h2 className="text-2xl font-black text-gray-900 uppercase tracking-widest">
+                    01. The Challenge
+                  </h2>
                 </div>
                 <p className="text-gray-600 text-xl font-medium leading-relaxed mb-12">
                   {study.challenge}
                 </p>
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -178,16 +221,20 @@ export default function CaseStudyDetail() {
                   <Quote className="absolute -top-6 -right-6 text-gray-200/50 w-32 h-32 lg:w-48 lg:h-48 -z-0" />
                   <div className="relative z-10">
                     <p className="text-gray-800 font-black text-2xl lg:text-3xl leading-tight mb-10 tracking-tight">
-                      "The level of granularity InsightMatrix provides is industry-shifting. We didn't just see the data; we saw the future of our market."
+                      {`"The level of granularity InsightMatrix provides is industry-shifting. We didn't just see the data; we saw the future of our market."`}
                     </p>
                     <div className="flex items-center gap-4">
-                       <div className="w-14 h-14 rounded-2xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
-                          <Building2 size={24} />
-                       </div>
-                       <div>
-                          <div className="text-sm font-black text-gray-900">VP of Strategic Operations</div>
-                          <div className="text-xs font-black text-gray-400 uppercase tracking-widest">{study.client}</div>
-                       </div>
+                      <div className="w-14 h-14 rounded-2xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                        <Building2 size={24} />
+                      </div>
+                      <div>
+                        <div className="text-sm font-black text-gray-900">
+                          VP of Strategic Operations
+                        </div>
+                        <div className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                          {study.client}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -195,45 +242,65 @@ export default function CaseStudyDetail() {
 
               <section className="mb-24">
                 <div className="flex items-center gap-4 mb-8">
-                   <div className="w-12 h-px bg-violet-500" />
-                   <h2 className="text-2xl font-black text-gray-900 uppercase tracking-widest">02. Our Strategy</h2>
+                  <div className="w-12 h-px bg-violet-500" />
+                  <h2 className="text-2xl font-black text-gray-900 uppercase tracking-widest">
+                    02. Our Strategy
+                  </h2>
                 </div>
                 <p className="text-gray-600 text-xl font-medium leading-relaxed mb-8">
                   {study.solution}
                 </p>
                 <div className="grid sm:grid-cols-2 gap-6 my-12">
-                   {[
-                     { title: "Rapid Deployment", desc: "Global data collection in under 48 hours." },
-                     { title: "Identity Verification", desc: "Proprietary AI filters for 100% real human input." }
-                   ].map((feature, i) => (
-                     <div key={i} className="p-6 sm:p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <CheckCircle2 className="text-brand-primary mb-4" />
-                        <h4 className="font-black text-gray-900 mb-2 break-words">{feature.title}</h4>
-                        <p className="text-sm text-gray-500 font-medium leading-relaxed">{feature.desc}</p>
-                     </div>
-                   ))}
+                  {[
+                    {
+                      title: "Rapid Deployment",
+                      desc: "Global data collection in under 48 hours.",
+                    },
+                    {
+                      title: "Identity Verification",
+                      desc: "Proprietary AI filters for 100% real human input.",
+                    },
+                  ].map((feature, i) => (
+                    <div
+                      key={i}
+                      className="p-6 sm:p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                    >
+                      <CheckCircle2 className="text-brand-primary mb-4" />
+                      <h4 className="font-black text-gray-900 mb-2 break-words">{feature.title}</h4>
+                      <p className="text-sm text-gray-500 font-medium leading-relaxed">
+                        {feature.desc}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  {study.fullStory}
-                </p>
+                <p className="text-gray-600 text-lg leading-relaxed">{study.fullStory}</p>
               </section>
             </article>
 
             {/* Content Footer */}
             <div className="pt-16 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-8">
-               <div className="flex items-center gap-3">
-                  <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Share Research</span>
-                  <div className="flex gap-2">
-                     {[Share2, Printer].map((Icon, i) => (
-                       <button key={i} className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors">
-                          <Icon size={16} />
-                       </button>
-                     ))}
-                  </div>
-               </div>
-               <Link href="/research" className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gray-900 text-white font-black text-sm hover:bg-black transition-all group">
-                  Discover more studies <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-               </Link>
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                  Share Research
+                </span>
+                <div className="flex gap-2">
+                  {[Share2, Printer].map((Icon, i) => (
+                    <button
+                      key={i}
+                      className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center hover:bg-gray-100 text-gray-600 transition-colors"
+                    >
+                      <Icon size={16} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Link
+                href="/research"
+                className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gray-900 text-white font-black text-sm hover:bg-black transition-all group"
+              >
+                Discover more studies{" "}
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
           </div>
 
@@ -243,24 +310,28 @@ export default function CaseStudyDetail() {
               {/* Impact Card */}
               <div className="p-6 sm:p-8 pb-10 rounded-[2.5rem] lg:rounded-[3rem] bg-gray-900 text-white shadow-2xl shadow-gray-200 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-primary/10 rounded-full blur-[60px]" />
-                <h3 className="text-xl font-black mb-8 border-b border-white/5 pb-6">Engagement Impact</h3>
+                <h3 className="text-xl font-black mb-8 border-b border-white/5 pb-6">
+                  Engagement Impact
+                </h3>
                 <div className="space-y-10">
-                   {study.results.map((res, i) => (
-                     <div key={i}>
-                        <div className="flex justify-between items-end mb-3">
-                           <span className="text-xs font-black uppercase tracking-widest text-gray-400">{res.label}</span>
-                           <span className="text-xl font-black">{res.value}</span>
-                        </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                           <motion.div 
-                             initial={{ width: 0 }}
-                             whileInView={{ width: '85%' }}
-                             viewport={{ once: true }}
-                             className="h-full bg-brand-primary" 
-                           />
-                        </div>
-                     </div>
-                   ))}
+                  {study.results.map((res, i) => (
+                    <div key={i}>
+                      <div className="flex justify-between items-end mb-3">
+                        <span className="text-xs font-black uppercase tracking-widest text-gray-400">
+                          {res.label}
+                        </span>
+                        <span className="text-xl font-black">{res.value}</span>
+                      </div>
+                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: "85%" }}
+                          viewport={{ once: true }}
+                          className="h-full bg-brand-primary"
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -268,59 +339,81 @@ export default function CaseStudyDetail() {
               <div className="p-6 sm:p-10 rounded-[2.5rem] lg:rounded-[3rem] bg-white border border-gray-100 shadow-xl shadow-gray-200/40">
                 <h3 className="text-xl font-black text-gray-900 mb-8">Metadata</h3>
                 <div className="space-y-6">
-                    {[
-                      { label: "Category", value: study.category, icon: Tag },
-                      { label: "Method", value: "Multi-Source Panel", icon: Users },
-                      { label: "Confidence", value: "99.2%", icon: ShieldCheck }
-                    ].map((item, i) => (
-                      <div key={i} className="flex flex-wrap items-center justify-between gap-4 group">
-                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-brand-primary transition-colors shrink-0">
-                               <item.icon size={16} />
-                            </div>
-                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{item.label}</span>
-                         </div>
-                         <span className="text-sm font-bold text-gray-800 break-words">{item.value}</span>
+                  {[
+                    { label: "Category", value: study.category, icon: Tag },
+                    { label: "Method", value: "Multi-Source Panel", icon: Users },
+                    { label: "Confidence", value: "99.2%", icon: ShieldCheck },
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-wrap items-center justify-between gap-4 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-brand-primary transition-colors shrink-0">
+                          <item.icon size={16} />
+                        </div>
+                        <span className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                          {item.label}
+                        </span>
                       </div>
-                    ))}
+                      <span className="text-sm font-bold text-gray-800 break-words">
+                        {item.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                
-                <Link 
+
+                <Link
                   href="/contact"
                   className="mt-12 w-full py-5 bg-brand-primary hover:bg-brand-hover text-white font-black rounded-2xl transition-all shadow-xl shadow-brand-primary/30 flex items-center justify-center gap-2"
                 >
-                   Partner on a Study
+                  Partner on a Study
                 </Link>
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* Recommended Section */}
       <section className="bg-gray-50 py-32 border-t border-gray-100">
-         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-16">
-               <h2 className="text-4xl font-black text-gray-900">Recommended for you</h2>
-               <Link href="/research" className="text-sm font-black text-brand-primary hover:underline uppercase tracking-widest">Library</Link>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-               {caseStudies.filter(s => s.slug !== slug).map((s, idx) => (
-                 <Link key={idx} href={`/research/${s.slug}`} className="group bg-white rounded-3xl p-6 border border-gray-100 hover:shadow-xl transition-all">
-                    <div className="aspect-video rounded-2xl overflow-hidden mb-6">
-                       <img src={s.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="" />
-                    </div>
-                    <div className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-3">{s.category}</div>
-                    <h4 className="text-lg font-black text-gray-900 leading-tight group-hover:text-brand-primary transition-colors">{s.title}</h4>
-                 </Link>
-               ))}
-            </div>
-         </div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-16">
+            <h2 className="text-4xl font-black text-gray-900">Recommended for you</h2>
+            <Link
+              href="/research"
+              className="text-sm font-black text-brand-primary hover:underline uppercase tracking-widest"
+            >
+              Library
+            </Link>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {caseStudies
+              .filter((s) => s.slug !== slug)
+              .map((s, idx) => (
+                <Link
+                  key={idx}
+                  href={`/research/${s.slug}`}
+                  className="group bg-white rounded-3xl p-6 border border-gray-100 hover:shadow-xl transition-all"
+                >
+                  <div className="aspect-video rounded-2xl overflow-hidden mb-6">
+                    <img
+                      src={s.image}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      alt=""
+                    />
+                  </div>
+                  <div className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-3">
+                    {s.category}
+                  </div>
+                  <h4 className="text-lg font-black text-gray-900 leading-tight group-hover:text-brand-primary transition-colors">
+                    {s.title}
+                  </h4>
+                </Link>
+              ))}
+          </div>
+        </div>
       </section>
     </div>
   );
 }
-
-// Add missing icon for the metadata section
-import { Building2, Clock, Tag, Users, ShieldCheck } from "lucide-react";

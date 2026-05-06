@@ -58,8 +58,8 @@ export function createQueryClient(): QueryClient {
       onError: (error, query) => logQueryError(query.queryKey, error),
     }),
     mutationCache: new MutationCache({
-      onError: (error, _vars, _ctx, mutation) =>
-        logMutationError(mutation.options.mutationKey, error),
+      onError: (error, _variables, _onMutateResult, mutation) =>
+        logMutationError(mutation.options.mutationKey ?? ["mutation"], error),
     }),
     defaultOptions,
   });

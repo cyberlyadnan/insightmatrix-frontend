@@ -11,7 +11,7 @@ export default function EditPrescreenPage() {
   const params = useParams<{ id: string }>();
   const id = String(params?.id || "");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.prescreens.detail(id),
     queryFn: () => getPrescreen(id),
     enabled: Boolean(id),
@@ -24,6 +24,14 @@ export default function EditPrescreenPage() {
           <div key={i} className="h-12 rounded-xl bg-gray-100 animate-pulse" />
         ))}
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-sm text-rose-600">
+        Could not load this prescreen. Please refresh and try again.
+      </p>
     );
   }
 

@@ -80,3 +80,8 @@ export async function listPrescreenCategories(): Promise<PrescreenCategory[]> {
   const { data } = await apiClient.get<ApiEnvelope<PrescreenCategory[]>>("/prescreens/categories");
   return data.data;
 }
+
+export async function seedDefaultPrescreens(): Promise<PrescreenForm[]> {
+  const { data } = await apiClient.post<ApiEnvelope<PrescreenForm[]>>("/prescreens/seed-defaults");
+  return data.data;
+}

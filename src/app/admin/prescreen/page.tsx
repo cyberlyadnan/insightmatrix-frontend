@@ -13,6 +13,7 @@ import {
   duplicatePrescreen,
   listPrescreens,
   publishPrescreen,
+  seedDefaultPrescreens,
   unpublishPrescreen,
 } from "@/services/prescreen";
 import { queryKeys } from "@/services/queries";
@@ -69,6 +70,15 @@ export default function AdminPrescreenListPage() {
     },
   });
 
+  const seedMutation = useMutation({
+    mutationFn: seedDefaultPrescreens,
+    onSuccess: async (forms) => {
+      toast.success(`${forms.length} demo prescreens ready`);
+      await refresh();
+    },
+    onError: (error) => toast.error(parseApiError(error, "Could not seed demo prescreens")),
+  });
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -78,13 +88,23 @@ export default function AdminPrescreenListPage() {
             Create and manage dynamic prescreen questionnaires.
           </p>
         </div>
-        <Link
-          href={ROUTES.admin.prescreenCreate}
-          className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center gap-2 font-bold"
-        >
-          <Plus className="w-4 h-4" />
-          Create Prescreen
-        </Link>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <button
+            type="button"
+            onClick={() => seedMutation.mutate()}
+            disabled={seedMutation.isPending}
+            className="h-11 px-5 rounded-xl border border-gray-300 bg-white text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-gray-50 disabled:opacity-60"
+          >
+            {seedMutation.isPending ? "Seeding..." : "Seed Demo Prescreens"}
+          </button>
+          <Link
+            href={ROUTES.admin.prescreenCreate}
+            className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black"
+          >
+            <Plus className="w-4 h-4" />
+            Create Prescreen
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white border border-gray-100 rounded-3xl p-5">
@@ -95,13 +115,13 @@ export default function AdminPrescreenListPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search prescreens..."
-              className="w-full h-10 pl-9 pr-3 rounded-xl border border-gray-200 text-sm"
+              className="w-full h-10 pl-9 pr-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400"
             />
           </div>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="h-10 rounded-xl border border-gray-200 px-3 text-sm"
+            className="h-10 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
           >
             <option value="">All status</option>
             <option value="draft">Draft</option>
@@ -151,13 +171,13 @@ export default function AdminPrescreenListPage() {
                       <div className="flex justify-end gap-2">
                         <Link
                           href={`/admin/prescreen/edit/${item.id}`}
-                          className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold inline-flex items-center gap-1"
+                          className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 inline-flex items-center gap-1 bg-white hover:bg-gray-50"
                         >
                           <Eye className="w-3 h-3" />
                           Edit
                         </Link>
                         <button
-                          className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold inline-flex items-center gap-1"
+                          className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 inline-flex items-center gap-1 bg-white hover:bg-gray-50"
                           onClick={() => duplicateMutation.mutate(item.id)}
                         >
                           <Copy className="w-3 h-3" />
@@ -165,14 +185,14 @@ export default function AdminPrescreenListPage() {
                         </button>
                         {item.status === "published" ? (
                           <button
-                            className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold"
+                            className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-white hover:bg-gray-50"
                             onClick={() => unpublishMutation.mutate(item.id)}
                           >
                             Unpublish
                           </button>
                         ) : (
                           <button
-                            className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold"
+                            className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-white hover:bg-gray-50"
                             onClick={() => publishMutation.mutate(item.id)}
                           >
                             Publish

@@ -10,6 +10,8 @@ export const ROUTES = {
     surveys: "/dashboard/surveys",
     wallet: "/dashboard/wallet",
     settings: "/dashboard/settings",
+    settingsAccount: "/dashboard/settings/account",
+    settingsSecurity: "/dashboard/settings/security",
     help: "/dashboard/help",
   },
   admin: {

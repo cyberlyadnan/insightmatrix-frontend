@@ -46,13 +46,28 @@ const missions = [
 
 export default function DashboardHome() {
   const user = useAuthStore((s) => s.user);
+  const avatarUrl = user?.avatar?.trim() || "";
 
   return (
     <div className="space-y-10">
-      <p className="text-sm text-gray-600">
-        Signed in as <span className="font-bold text-gray-900">{user?.fullName ?? "Member"}</span>
-        {user?.email ? <span className="text-gray-400 font-normal"> · {user.email}</span> : null}
-      </p>
+      <div className="flex items-center gap-3 text-sm text-gray-600">
+        {avatarUrl ? (
+          <div
+            className="w-10 h-10 rounded-xl bg-cover bg-center border border-gray-200"
+            style={{ backgroundImage: `url("${avatarUrl}")` }}
+            aria-label="User avatar"
+            role="img"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-xl bg-brand-subtle flex items-center justify-center text-brand-primary font-black">
+            {(user?.fullName?.trim()?.charAt(0) || "M").toUpperCase()}
+          </div>
+        )}
+        <p>
+          Signed in as <span className="font-bold text-gray-900">{user?.fullName ?? "Member"}</span>
+          {user?.email ? <span className="text-gray-400 font-normal"> · {user.email}</span> : null}
+        </p>
+      </div>
 
       {/* Hero Mission */}
       <motion.div

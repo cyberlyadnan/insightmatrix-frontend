@@ -10,7 +10,6 @@ import { useUIStore } from "@/store";
 import {
   Compass,
   ClipboardList,
-  UserCircle,
   HelpCircle,
   Wallet,
   Bell,
@@ -37,6 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const logout = useLogout();
 
   const displayName = user?.fullName?.trim() || "there";
+  const avatarUrl = user?.avatar?.trim() || "";
 
   return (
     <DashboardRoleGate>
@@ -186,7 +186,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 href={ROUTES.dashboard.settings}
                 className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-subtle to-white border border-brand-primary/10 flex items-center justify-center text-brand-primary overflow-hidden cursor-pointer hover:shadow-lg transition-all active:scale-95"
               >
-                <User size={24} />
+                {avatarUrl ? (
+                  <div
+                    className="w-full h-full bg-cover bg-center"
+                    style={{ backgroundImage: `url("${avatarUrl}")` }}
+                    aria-label="Profile avatar"
+                    role="img"
+                  />
+                ) : (
+                  <User size={24} />
+                )}
               </Link>
             </div>
           </header>
@@ -220,7 +229,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             href={ROUTES.dashboard.settings}
             className={`relative flex flex-col items-center gap-1 ${pathname === ROUTES.dashboard.settings ? "text-brand-primary" : "text-gray-400"}`}
           >
-            <UserCircle size={24} />
+            {avatarUrl ? (
+              <div
+                className="w-6 h-6 rounded-full bg-cover bg-center border border-gray-200"
+                style={{ backgroundImage: `url("${avatarUrl}")` }}
+                aria-label="Profile avatar"
+                role="img"
+              />
+            ) : (
+              <User size={24} />
+            )}
             {pathname === ROUTES.dashboard.settings && (
               <motion.div
                 layoutId="mobileActive"

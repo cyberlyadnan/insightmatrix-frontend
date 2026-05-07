@@ -49,3 +49,53 @@ export async function fetchProfileOptional(): Promise<AuthUser | null> {
     return null;
   }
 }
+
+export async function updateProfileRequest(payload: {
+  fullName?: string;
+  email?: string;
+  avatar?: string | null;
+}): Promise<AuthUser> {
+  const { data } = await apiClient.patch<ApiEnvelope<AuthUser>>("/users/profile", payload);
+  return data.data;
+}
+
+export async function uploadAvatarRequest(file: File): Promise<AuthUser> {
+  const formData = new FormData();
+  formData.append("avatar", file);
+  const { data } = await apiClient.post<ApiEnvelope<AuthUser>>("/users/profile/avatar", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data.data;
+}
+
+export async function changePasswordRequest(payload: {
+  currentPassword: string;
+  newPassword: string;
+}) {
+  await apiClient.post("/users/profile/change-password", payload);
+}
+
+export async function requestAccountDeletion(payload: { reason?: string }): Promise<AuthUser> {
+  const { data } = await apiClient.post<ApiEnvelope<AuthUser>>(
+    "/users/profile/deletion-request",
+    payload
+  );
+  return data.data;
+}
+
+export async function cancelAccountDeletionRequest(): Promise<AuthUser> {
+  const { data } = await apiClient.delete<ApiEnvelope<AuthUser>>("/users/profile/deletion-request");
+  return data.data;
+}
+
+export async function listDeletionRequests(): Promise<AuthUser[]> {
+  const { data } = await apiClient.get<ApiEnvelope<AuthUser[]>>("/users/deletion-requests");
+  return data.data;
+}
+
+export async function approveDeletionRequest(userId: string): Promise<AuthUser> {
+  const { data } = await apiClient.patch<ApiEnvelope<AuthUser>>(
+    `/users/${userId}/approve-deletion`
+  );
+  return data.data;
+}

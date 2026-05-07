@@ -8,6 +8,11 @@ export interface AuthUser {
   isVerified: boolean;
   avatar: string | null;
   status: string;
+  isActive?: boolean;
+  deletionRequested?: boolean;
+  deletionRequestedAt?: string | null;
+  deletionRequestReason?: string | null;
+  deactivatedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

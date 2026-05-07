@@ -1,17 +1,21 @@
 "use client";
 
 import React from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
+import { parseApiError } from "@/services/api/errors";
+import { approveDeletionRequest, listDeletionRequests } from "@/services/auth";
+import { queryKeys } from "@/services/queries";
+import { toast } from "sonner";
 import {
   Users,
   FileText,
   MessageCircle,
-  TrendingUp,
   ArrowUpRight,
   ArrowDownRight,
   Zap,
-  Clock,
   ExternalLink,
+  UserX,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -52,6 +56,20 @@ const stats = [
 
 export default function AdminOverview() {
   const user = useAuthStore((s) => s.user);
+  const queryClient = useQueryClient();
+  const { data: deletionRequests = [], isLoading: isDeletionLoading } = useQuery({
+    queryKey: queryKeys.admin.deletionRequests,
+    queryFn: listDeletionRequests,
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: approveDeletionRequest,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.admin.deletionRequests });
+      toast.success("Account marked inactive.");
+    },
+    onError: (error) => toast.error(parseApiError(error, "Could not approve deletion request.")),
+  });
 
   return (
     <div className="space-y-10">
@@ -93,6 +111,57 @@ export default function AdminOverview() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      <div className="p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <UserX size={22} />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-gray-900">Account Deletion Requests</h2>
+              <p className="text-xs text-gray-500 font-medium">
+                Approving marks account inactive (`isActive = false`) and does not hard delete user.
+              </p>
+            </div>
+          </div>
+          <span className="text-sm font-black text-rose-600">
+            {deletionRequests.length} pending
+          </span>
+        </div>
+        {isDeletionLoading ? (
+          <p className="text-sm text-gray-500">Loading requests...</p>
+        ) : deletionRequests.length === 0 ? (
+          <p className="text-sm text-gray-500">No pending account deletion requests.</p>
+        ) : (
+          <div className="space-y-3">
+            {deletionRequests.map((request) => (
+              <div
+                key={request.id}
+                className="p-4 rounded-2xl border border-gray-100 bg-gray-50/60 flex flex-col md:flex-row md:items-center justify-between gap-4"
+              >
+                <div>
+                  <p className="font-black text-gray-900">{request.fullName}</p>
+                  <p className="text-xs text-gray-500">{request.email}</p>
+                  {request.deletionRequestReason ? (
+                    <p className="text-xs text-gray-600 mt-2">
+                      Reason: {request.deletionRequestReason}
+                    </p>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  disabled={approveMutation.isPending}
+                  onClick={() => approveMutation.mutate(request.id)}
+                  className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-black hover:bg-rose-700 disabled:opacity-60"
+                >
+                  Approve Deactivation
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">

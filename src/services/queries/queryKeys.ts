@@ -29,4 +29,9 @@ export const queryKeys = {
     detail: (id: string) => ["prescreens", id] as const,
     categories: ["prescreens", "categories"] as const,
   },
+  contactQueries: {
+    all: ["contact-queries"] as const,
+    list: (filters: Record<string, unknown>) => ["contact-queries", "list", filters] as const,
+    subjects: ["contact-queries", "subjects"] as const,
+  },
 } as const;

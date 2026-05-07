@@ -3,15 +3,22 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { isAuthRoute } from "@/constants";
+import { ROUTES, isAuthRoute } from "@/constants";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const user = useAuthStore((s) => s.user);
   const isHomePage = pathname === "/";
+  const isSignedIn = Boolean(user);
+  const accountHref =
+    user?.role === "admin" || user?.role === "survey_manager"
+      ? ROUTES.admin.root
+      : ROUTES.dashboard.root;
 
   const isAuthPage = isAuthRoute(pathname);
   const isAdminPage = pathname.startsWith("/admin");
@@ -100,16 +107,30 @@ export default function Navbar() {
               >
                 Contact
               </Link>
-              <Link
-                href="/register"
-                className={`px-5 py-2 rounded-full font-bold border transition-all ${
-                  isScrolled || !isHomePage
-                    ? "border-gray-200 text-gray-700 hover:bg-gray-50"
-                    : "border-white/40 text-white hover:bg-white/10"
-                }`}
-              >
-                Sign in
-              </Link>
+              {isSignedIn ? (
+                <Link
+                  href={accountHref}
+                  title="Account"
+                  className={`p-2.5 rounded-full border transition-all flex items-center justify-center ${
+                    isScrolled || !isHomePage
+                      ? "border-gray-200 text-gray-700 hover:bg-gray-50"
+                      : "border-white/40 text-white hover:bg-white/10"
+                  }`}
+                >
+                  <User size={18} />
+                </Link>
+              ) : (
+                <Link
+                  href="/register"
+                  className={`px-5 py-2 rounded-full font-bold border transition-all ${
+                    isScrolled || !isHomePage
+                      ? "border-gray-200 text-gray-700 hover:bg-gray-50"
+                      : "border-white/40 text-white hover:bg-white/10"
+                  }`}
+                >
+                  Sign in
+                </Link>
+              )}
               <button
                 type="button"
                 className={`p-2.5 rounded-full border transition-all flex items-center justify-center ${
@@ -193,13 +214,23 @@ export default function Navbar() {
                   >
                     Contact Sales
                   </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center w-full py-4 rounded-2xl border-2 border-gray-100 text-gray-900 font-black text-lg hover:bg-gray-50"
-                  >
-                    Partner Login
-                  </Link>
+                  {isSignedIn ? (
+                    <Link
+                      href={accountHref}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center w-full py-4 rounded-2xl border-2 border-gray-100 text-gray-900 font-black text-lg hover:bg-gray-50"
+                    >
+                      My Account
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-center w-full py-4 rounded-2xl border-2 border-gray-100 text-gray-900 font-black text-lg hover:bg-gray-50"
+                    >
+                      Partner Login
+                    </Link>
+                  )}
                 </div>
               </div>
 

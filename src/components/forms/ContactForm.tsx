@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
@@ -16,6 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { parseApiError } from "@/services/api/errors";
+import { listContactSubjects, submitContactQuery } from "@/services/contact-query";
+import { queryKeys } from "@/services/queries";
 import { contactFormSchema, type ContactFormValues } from "@/validations";
 
 export default function ContactForm() {
@@ -26,20 +30,32 @@ export default function ContactForm() {
     defaultValues: {
       name: "",
       email: "",
+      subject: "",
       message: "",
     },
   });
 
-  function onSubmit(values: ContactFormValues) {
-    // Replace with mutation hook when `/contact` API exists
-    console.log(values);
-    setTimeout(() => {
+  const { data: subjects = [] } = useQuery({
+    queryKey: queryKeys.contactQueries.subjects,
+    queryFn: listContactSubjects,
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: submitContactQuery,
+    onSuccess: () => {
       toast.success("Message sent", {
         description: "Our team will respond within one business day.",
       });
       setIsSubmitSuccessful(true);
       form.reset();
-    }, 600);
+    },
+    onError: (error) => {
+      toast.error(parseApiError(error, "Could not send message"));
+    },
+  });
+
+  function onSubmit(values: ContactFormValues) {
+    submitMutation.mutate(values);
   }
 
   if (isSubmitSuccessful) {
@@ -100,6 +116,29 @@ export default function ContactForm() {
           />
           <FormField
             control={form.control}
+            name="subject"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-700">Subject</FormLabel>
+                <FormControl>
+                  <select
+                    {...field}
+                    className="w-full h-10 rounded-md border border-input bg-gray-50 px-3 text-sm text-gray-900 focus:bg-white transition-colors"
+                  >
+                    <option value="">Select a subject</option>
+                    {subjects.map((subject) => (
+                      <option key={subject} value={subject}>
+                        {subject}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="message"
             render={({ field }) => (
               <FormItem>
@@ -118,9 +157,9 @@ export default function ContactForm() {
           <Button
             type="submit"
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-lg py-6 transition-all"
-            disabled={form.formState.isSubmitting}
+            disabled={submitMutation.isPending}
           >
-            {form.formState.isSubmitting ? "Sending..." : "Send Message"}
+            {submitMutation.isPending ? "Sending..." : "Send Message"}
           </Button>
         </form>
       </Form>

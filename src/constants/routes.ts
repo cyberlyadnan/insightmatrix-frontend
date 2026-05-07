@@ -17,6 +17,8 @@ export const ROUTES = {
   admin: {
     root: "/admin",
     settings: "/admin/settings",
+    prescreen: "/admin/prescreen",
+    prescreenCreate: "/admin/prescreen/create",
   },
 } as const;
 

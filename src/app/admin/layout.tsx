@@ -20,6 +20,7 @@ import {
   X,
   User,
   Users,
+  ListChecks,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -30,6 +31,7 @@ const sidebarLinks = [
   { name: "Team", icon: Users, href: "/admin/team" },
   { name: "Testimonials", icon: MessageSquare, href: "/admin/testimonials" },
   { name: "Queries", icon: MessageSquare, href: "/admin/queries" },
+  { name: "Prescreening", icon: ListChecks, href: "/admin/prescreen" },
   { name: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 

@@ -23,4 +23,10 @@ export const queryKeys = {
     overview: ["admin", "overview"] as const,
     deletionRequests: ["admin", "deletion-requests"] as const,
   },
+  prescreens: {
+    all: ["prescreens"] as const,
+    list: (filters: Record<string, unknown>) => ["prescreens", "list", filters] as const,
+    detail: (id: string) => ["prescreens", id] as const,
+    categories: ["prescreens", "categories"] as const,
+  },
 } as const;

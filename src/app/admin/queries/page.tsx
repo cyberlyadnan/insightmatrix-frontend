@@ -5,7 +5,6 @@ import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import {
   MessageSquare,
   Search,
-  CheckCircle2,
   Clock,
   Trash2,
   Mail,
@@ -376,7 +375,7 @@ export default function AdminQueries() {
                           status: e.target.value as ContactQuery["status"],
                         })
                       }
-                      className="h-10 rounded-xl border border-gray-200 px-3 text-xs font-black uppercase tracking-widest text-gray-900 bg-white"
+                      className="h-10 min-w-[170px] rounded-xl border border-gray-200 px-3 text-xs font-black uppercase tracking-widest text-gray-900 bg-white shadow-sm"
                     >
                       <option value="pending">Pending</option>
                       <option value="in_progress">In Progress</option>
@@ -385,14 +384,6 @@ export default function AdminQueries() {
                       <option value="unread">Unread</option>
                       <option value="read">Read</option>
                     </select>
-                    <button
-                      onClick={() =>
-                        statusMutation.mutate({ id: selectedQuery.id, status: "resolved" })
-                      }
-                      className="flex-1 md:flex-none px-4 md:px-6 h-10 rounded-xl bg-emerald-500 text-white font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-600 transition-colors"
-                    >
-                      <CheckCircle2 size={16} className="hidden sm:block" /> Quick Resolve
-                    </button>
                   </div>
                 </div>
 

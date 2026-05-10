@@ -26,8 +26,8 @@ const schema = z.object({
   title: z.string().min(2, "Title is required"),
   slug: z.string().optional(),
   description: z.string().optional(),
-  status: z.enum(["draft", "published", "archived"]).default("draft"),
-  visibility: z.enum(["private", "internal", "public"]).default("internal"),
+  status: z.enum(["draft", "published", "archived"]),
+  visibility: z.enum(["private", "internal", "public"]),
   category: z.string().nullable().optional(),
   tagsText: z.string().optional(),
 });
@@ -119,13 +119,18 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
 
   const payload = useMemo(() => {
     const values = form.getValues();
+    const categoryId = values.category?.trim() || null;
+    const category =
+      categoryId != null && categoryId !== ""
+        ? (categories.find((c) => c.id === categoryId) ?? null)
+        : null;
     return {
       title: values.title.trim(),
       slug: values.slug?.trim() || undefined,
       description: values.description?.trim() || "",
       status: values.status,
       visibility: values.visibility,
-      category: values.category || null,
+      category,
       tags:
         values.tagsText
           ?.split(",")
@@ -133,7 +138,7 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
           .filter(Boolean) ?? [],
       questions,
     };
-  }, [form, questions]);
+  }, [categories, form, questions]);
 
   const onSave = form.handleSubmit(() => {
     if (mode === "create") createMutation.mutate(payload);

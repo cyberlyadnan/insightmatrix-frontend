@@ -141,8 +141,6 @@ export default function PanelSettings() {
                 </div>
               );
 
-              if (!item.href) return <div key={item.name}>{Row}</div>;
-
               return (
                 <Link key={item.name} href={item.href}>
                   {Row}

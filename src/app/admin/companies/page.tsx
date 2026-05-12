@@ -32,13 +32,7 @@ import {
 } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
 
-type SortField =
-  | "companyName"
-  | "companyCode"
-  | "createdAt"
-  | "providerType"
-  | "status"
-  | "contactPersonName";
+type SortField = "companyName" | "companyCode" | "createdAt" | "providerType" | "status";
 
 function SortButton({
   label,
@@ -190,7 +184,7 @@ export default function AdminSurveyCompaniesPage() {
             <input
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Search name, code, contact, or email…"
+              placeholder="Search name or code…"
               className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400"
               aria-label="Search companies"
             />
@@ -242,7 +236,7 @@ export default function AdminSurveyCompaniesPage() {
         ) : (
           <>
             <div className="hidden lg:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[960px] text-left">
+              <table className="w-full min-w-[720px] text-left">
                 <thead>
                   <tr className="border-b border-gray-100 text-[10px] text-gray-400">
                     <th className="pb-3 pl-2 pr-4">
@@ -263,16 +257,6 @@ export default function AdminSurveyCompaniesPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-4">
-                      <SortButton
-                        label="Contact"
-                        field="contactPersonName"
-                        sortBy={sortBy}
-                        sortOrder={sortOrder}
-                        onSort={toggleSort}
-                      />
-                    </th>
-                    <th className="pb-3 px-4">Email</th>
                     <th className="pb-3 px-4">
                       <SortButton
                         label="Type"
@@ -311,12 +295,6 @@ export default function AdminSurveyCompaniesPage() {
                       </td>
                       <td className="py-4 px-4 font-mono text-xs text-gray-700">
                         {row.companyCode}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-700">
-                        {row.contactPersonName || "—"}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-gray-600 max-w-[200px] truncate">
-                        {row.companyEmail || "—"}
                       </td>
                       <td className="py-4 px-4 text-xs font-medium text-gray-700">
                         {SURVEY_PROVIDER_LABELS[row.providerType]}
@@ -387,18 +365,6 @@ export default function AdminSurveyCompaniesPage() {
                     <StatusBadge status={row.status} />
                   </div>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <p>
-                      <span className="text-gray-400 font-bold text-[10px] uppercase mr-2">
-                        Contact
-                      </span>
-                      {row.contactPersonName || "—"}
-                    </p>
-                    <p className="truncate">
-                      <span className="text-gray-400 font-bold text-[10px] uppercase mr-2">
-                        Email
-                      </span>
-                      {row.companyEmail || "—"}
-                    </p>
                     <p>
                       <span className="text-gray-400 font-bold text-[10px] uppercase mr-2">
                         Type

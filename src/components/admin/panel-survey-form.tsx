@@ -1,0 +1,867 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFieldArray, useForm, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2, Plus, Trash2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormField,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  PANEL_QUOTA_GROUP_STATUSES,
+  PANEL_SURVEY_DEVICE_TYPES,
+  PANEL_SURVEY_STATUSES,
+  PANEL_GENDER_LABELS,
+  PANEL_QUOTA_GROUP_STATUS_LABELS,
+  PANEL_SURVEY_STATUS_LABELS,
+} from "@/constants/panel-survey";
+import { cn } from "@/lib/utils";
+import type { SurveyCompany } from "@/services/survey-company";
+import {
+  panelSurveyFormSchema,
+  type PanelSurveyFormValues,
+} from "@/validations/panel-survey.schema";
+
+function ProviderSearchSelect({
+  value,
+  onChange,
+  onBlur,
+  providers,
+  disabled,
+}: {
+  value: string;
+  onChange: (id: string) => void;
+  onBlur: () => void;
+  providers: Pick<SurveyCompany, "id" | "companyName" | "companyCode">[];
+  disabled?: boolean;
+}) {
+  const { formItemId, formMessageId, error } = useFormField();
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selected = providers.find((p) => p.id === value);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return providers;
+    return providers.filter(
+      (p) => p.companyName.toLowerCase().includes(q) || p.companyCode.toLowerCase().includes(q)
+    );
+  }, [providers, query]);
+
+  useEffect(() => {
+    function handlePointerDown(e: MouseEvent) {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => document.removeEventListener("mousedown", handlePointerDown);
+  }, []);
+
+  return (
+    <div ref={containerRef} className="max-w-xl space-y-2">
+      {selected ? (
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <span className="text-gray-600">Selected:</span>
+          <span className="font-semibold text-gray-900">
+            {selected.companyName}{" "}
+            <span className="font-mono font-normal text-gray-500">({selected.companyCode})</span>
+          </span>
+          <button
+            type="button"
+            disabled={disabled}
+            className="text-xs font-bold text-brand-primary hover:text-brand-hover disabled:opacity-50"
+            onClick={() => onChange("")}
+          >
+            Clear
+          </button>
+        </div>
+      ) : null}
+
+      <div className="relative">
+        <Input
+          id={formItemId}
+          placeholder="Search providers by name or code…"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => {
+            onBlur();
+          }}
+          disabled={disabled}
+          className="h-11 rounded-xl border-gray-200 text-sm text-gray-900 placeholder:text-gray-400"
+          autoComplete="off"
+          aria-autocomplete="list"
+          aria-expanded={open}
+          aria-invalid={!!error}
+          aria-describedby={error ? formMessageId : undefined}
+        />
+
+        {open ? (
+          <ul
+            className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
+            role="listbox"
+          >
+            {providers.length === 0 ? (
+              <li className="px-3 py-2.5 text-sm text-gray-500">No survey providers available.</li>
+            ) : filtered.length === 0 ? (
+              <li className="px-3 py-2.5 text-sm text-gray-500">No providers match your search.</li>
+            ) : (
+              filtered.map((p) => (
+                <li key={p.id}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={p.id === value}
+                    className={cn(
+                      "w-full px-3 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-50",
+                      p.id === value && "bg-brand-subtle"
+                    )}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      onChange(p.id);
+                      setQuery("");
+                      setOpen(false);
+                    }}
+                  >
+                    {p.companyName}{" "}
+                    <span className="font-mono text-gray-500">({p.companyCode})</span>
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+const defaultQuotaRow = (): PanelSurveyFormValues["quotaGroups"][number] => ({
+  groupName: "",
+  groupDescription: "",
+  totalQuota: 0,
+  remainingQuota: 0,
+  status: "active",
+});
+
+type PanelSurveyFormProps = {
+  mode: "create" | "edit";
+  defaultValues: PanelSurveyFormValues;
+  providers: Pick<SurveyCompany, "id" | "companyName" | "companyCode">[];
+  onSubmit: (values: PanelSurveyFormValues) => void | Promise<void>;
+  isSubmitting: boolean;
+};
+
+function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
+      <h2 className="text-lg font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">
+        {title}
+      </h2>
+      {children}
+    </div>
+  );
+}
+
+export function PanelSurveyForm({
+  mode,
+  defaultValues,
+  providers,
+  onSubmit,
+  isSubmitting,
+}: PanelSurveyFormProps) {
+  const form = useForm<PanelSurveyFormValues>({
+    resolver: zodResolver(panelSurveyFormSchema) as Resolver<PanelSurveyFormValues>,
+    defaultValues,
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "quotaGroups",
+  });
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues, form]);
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <SectionCard title="Basic survey information">
+          <div className="grid gap-6 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="surveyName"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Survey name</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="Study title"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="surveyCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Survey code</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 uppercase font-mono text-sm"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                      disabled={mode === "edit"}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Unique identifier — immutable after creation.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="externalSurveyId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">External survey ID</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 font-mono text-sm"
+                      placeholder="From supplier portal"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="surveyStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Status</FormLabel>
+                  <FormControl>
+                    <select
+                      className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
+                      {...field}
+                    >
+                      {PANEL_SURVEY_STATUSES.map((s) => (
+                        <option key={s} value={s}>
+                          {PANEL_SURVEY_STATUS_LABELS[s]}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Provider selection">
+          <FormField
+            control={form.control}
+            name="providerId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-gray-700">Survey provider</FormLabel>
+                <ProviderSearchSelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  providers={providers}
+                  disabled={isSubmitting}
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </SectionCard>
+
+        <SectionCard title="External survey URL configuration">
+          <div className="grid gap-6 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="externalSurveyUrl"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Provider survey URL</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 font-mono text-xs"
+                      placeholder="https://..."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="trackingParameterName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Tracking parameter name</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 font-mono text-sm"
+                      placeholder="toid, uid, subid…"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Query key for transaction ID injection (placeholder phase — redirect only).
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Targeting configuration">
+          <div className="grid gap-6 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="countriesLine"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">
+                    Target countries (ISO codes)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="MX, US, CA"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">Comma-separated ISO 3166-1 alpha-2 codes.</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="targetGender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Gender targeting</FormLabel>
+                  <FormControl>
+                    <select
+                      className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
+                      {...field}
+                    >
+                      {Object.entries(PANEL_GENDER_LABELS).map(([v, label]) => (
+                        <option key={v} value={v}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="targetAgeMin"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-bold text-gray-700">Age min</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="rounded-xl h-11 border-gray-200"
+                        placeholder="Optional"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="targetAgeMax"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-bold text-gray-700">Age max</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="rounded-xl h-11 border-gray-200"
+                        placeholder="Optional"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="professionsLine"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Professions / segments</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="rounded-xl border-gray-200 min-h-[72px]"
+                      placeholder="Comma-separated"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="industriesLine"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Industries</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="rounded-xl border-gray-200 min-h-[72px]"
+                      placeholder="Comma-separated"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="companySizesLine"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Company sizes</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="Comma-separated"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="languagesLine"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Languages</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="en, es…"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="devices"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">Devices</FormLabel>
+                  <div className="flex flex-wrap gap-4">
+                    {PANEL_SURVEY_DEVICE_TYPES.map((d) => (
+                      <label
+                        key={d}
+                        className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          className="rounded border-gray-300"
+                          checked={field.value?.includes(d)}
+                          onChange={(e) => {
+                            const next = new Set(field.value ?? []);
+                            if (e.target.checked) next.add(d);
+                            else next.delete(d);
+                            field.onChange([...next]);
+                          }}
+                        />
+                        <span className="capitalize">{d}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Survey metrics">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <FormField
+              control={form.control}
+              name="incidenceRate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Incidence rate (%)</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="0–100"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="estimatedLOI"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Est. LOI (minutes)</FormLabel>
+                  <FormControl>
+                    <Input className="rounded-xl h-11 border-gray-200" type="text" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="payoutToUser"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Payout to user</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="0.00"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="revenuePerComplete"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Revenue / complete</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      placeholder="0.00"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Quota configuration">
+          <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <FormField
+              control={form.control}
+              name="totalQuota"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Total quota</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      type="number"
+                      min={0}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="remainingQuota"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Remaining quota</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      type="number"
+                      min={0}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-black uppercase tracking-widest text-gray-400">
+              Dynamic quota groups
+            </h3>
+            <button
+              type="button"
+              onClick={() => append(defaultQuotaRow())}
+              className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-gray-900 text-white text-xs font-black uppercase tracking-widest hover:bg-black"
+            >
+              <Plus className="w-4 h-4" />
+              Add group
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {fields.length === 0 ? (
+              <p className="text-sm text-gray-500 py-4 border border-dashed border-gray-200 rounded-2xl text-center">
+                No quota groups yet. Add segments such as “Parent of Kid 4–5” or “Gift givers”.
+              </p>
+            ) : (
+              fields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="rounded-2xl border border-gray-100 bg-gray-50/80 p-4 md:p-6 space-y-4"
+                >
+                  <div className="flex justify-between items-start gap-2">
+                    <span className="text-xs font-black uppercase tracking-widest text-gray-400">
+                      Group {index + 1}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="text-rose-600 hover:bg-rose-50 p-2 rounded-lg"
+                      aria-label="Remove group"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name={`quotaGroups.${index}.groupName`}
+                      render={({ field: f }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-gray-700 font-bold">Group name</FormLabel>
+                          <FormControl>
+                            <Input className="rounded-xl border-gray-200" {...f} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`quotaGroups.${index}.groupDescription`}
+                      render={({ field: f }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-gray-700 font-bold">Description</FormLabel>
+                          <FormControl>
+                            <Textarea className="rounded-xl border-gray-200 min-h-[60px]" {...f} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`quotaGroups.${index}.totalQuota`}
+                      render={({ field: f }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-bold">Total quota</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="rounded-xl border-gray-200"
+                              type="number"
+                              min={0}
+                              {...f}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`quotaGroups.${index}.remainingQuota`}
+                      render={({ field: f }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-bold">Remaining</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="rounded-xl border-gray-200"
+                              type="number"
+                              min={0}
+                              {...f}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`quotaGroups.${index}.status`}
+                      render={({ field: f }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-gray-700 font-bold">Status</FormLabel>
+                          <FormControl>
+                            <select
+                              className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
+                              {...f}
+                            >
+                              {PANEL_QUOTA_GROUP_STATUSES.map((s) => (
+                                <option key={s} value={s}>
+                                  {PANEL_QUOTA_GROUP_STATUS_LABELS[s]}
+                                </option>
+                              ))}
+                            </select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Survey settings">
+          <div className="grid gap-6 md:grid-cols-2">
+            <FormField
+              control={form.control}
+              name="surveyPriority"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Priority</FormLabel>
+                  <FormControl>
+                    <Input className="rounded-xl h-11 border-gray-200" type="number" {...field} />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Higher numbers surface first in routing UIs.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Start date</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      type="datetime-local"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="endDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">End date</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      type="datetime-local"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Notes">
+          <FormField
+            control={form.control}
+            name="notes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-gray-700">Internal notes</FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="rounded-xl border-gray-200 min-h-[120px]"
+                    placeholder="Integration notes, buyer contacts, CPI caps…"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </SectionCard>
+
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded-xl bg-gray-900 text-white hover:bg-black h-11 px-10 font-bold"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin mr-2 h-4 w-4 inline" />
+                Saving…
+              </>
+            ) : mode === "create" ? (
+              "Create survey"
+            ) : (
+              "Save changes"
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+}

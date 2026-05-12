@@ -39,4 +39,10 @@ export const queryKeys = {
     list: (filters: Record<string, unknown>) => ["survey-companies", "list", filters] as const,
     detail: (id: string) => ["survey-companies", id] as const,
   },
+  panelSurveys: {
+    all: ["panel-surveys"] as const,
+    list: (filters: Record<string, unknown>) => ["panel-surveys", "list", filters] as const,
+    detail: (id: string) => ["panel-surveys", id] as const,
+    public: (id: string) => ["panel-surveys", "public", id] as const,
+  },
 } as const;

@@ -23,7 +23,12 @@ export const ROUTES = {
     companiesCreate: "/admin/companies/create",
     company: (id: string) => `/admin/companies/${id}`,
     companyEdit: (id: string) => `/admin/companies/${id}/edit`,
+    surveys: "/admin/surveys",
+    surveysCreate: "/admin/surveys/create",
+    survey: (id: string) => `/admin/surveys/${id}`,
+    surveyEdit: (id: string) => `/admin/surveys/${id}/edit`,
   },
+  surveyStart: (id: string) => `/survey/start/${id}`,
 } as const;
 
 export const AUTH_ROUTE_LIST = [

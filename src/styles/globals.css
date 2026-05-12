@@ -42,6 +42,14 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.2rem;
+  /* Body uses light foreground when prefers-color-scheme: dark; native selects must not inherit it on white backgrounds */
+  color: #111827;
+  color-scheme: light;
+}
+
+option {
+  color: #111827;
+  background-color: #ffffff;
 }
 
 @keyframes float {

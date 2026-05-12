@@ -23,6 +23,7 @@ export default function Navbar() {
   const isAuthPage = isAuthRoute(pathname);
   const isAdminPage = pathname.startsWith("/admin");
   const isDashboardPage = pathname.startsWith("/dashboard");
+  const isSurveyStartPage = pathname.startsWith("/survey/start");
 
   useEffect(() => {
     if (isAuthPage) return;
@@ -36,6 +37,8 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isAuthPage, pathname]);
+
+  if (isSurveyStartPage) return null;
 
   const navLinks = [
     { name: "Data & research", href: "/research" },

@@ -21,11 +21,18 @@ import {
   User,
   Users,
   ListChecks,
+  Building2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+function isSidebarActive(pathname: string, href: string) {
+  if (href === "/admin") return pathname === "/admin";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 const sidebarLinks = [
   { name: "Overview", icon: LayoutDashboard, href: "/admin" },
+  { name: "Survey providers", icon: Building2, href: "/admin/companies" },
   { name: "Case Studies", icon: FileText, href: "/admin/case-studies" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
   { name: "Team", icon: Users, href: "/admin/team" },
@@ -65,7 +72,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <nav className="flex-1 px-4 py-6 space-y-2">
             {sidebarLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = isSidebarActive(pathname, link.href);
               const Icon = link.icon;
 
               return (
@@ -134,7 +141,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
                 <nav className="flex-1 space-y-4">
                   {sidebarLinks.map((link) => {
-                    const isActive = pathname === link.href;
+                    const isActive = isSidebarActive(pathname, link.href);
                     const Icon = link.icon;
                     return (
                       <Link

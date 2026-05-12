@@ -19,6 +19,10 @@ export const ROUTES = {
     settings: "/admin/settings",
     prescreen: "/admin/prescreen",
     prescreenCreate: "/admin/prescreen/create",
+    companies: "/admin/companies",
+    companiesCreate: "/admin/companies/create",
+    company: (id: string) => `/admin/companies/${id}`,
+    companyEdit: (id: string) => `/admin/companies/${id}/edit`,
   },
 } as const;
 

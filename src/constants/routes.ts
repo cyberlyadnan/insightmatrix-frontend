@@ -30,6 +30,9 @@ export const ROUTES = {
     surveyAnalytics: (id: string) => `/admin/surveys/${id}/analytics`,
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
+  /** Partner redirect targets — each records a different outcome via POST to the API */
+  surveyCallback: (outcome: "complete" | "quota-full" | "terminate" | "quality") =>
+    `/survey/callback/${outcome}`,
 } as const;
 
 export const AUTH_ROUTE_LIST = [

@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Shield } from "lucide-react";
+import { SurveyRoutingCallbacksSection } from "@/components/admin/SurveyRoutingCallbacksSection";
 import { DashboardSection } from "@/components/dashboard/DashboardSection";
 import { Button } from "@/components/ui/button";
 
@@ -10,16 +11,23 @@ export default function AdminSettingsPage() {
       <div>
         <h1 className="text-3xl font-black text-gray-900">Workspace Settings</h1>
         <p className="mt-2 text-gray-600">
-          Configure CMS preferences and notifications. Auth-protected controls arrive with backend
-          integration.
+          Configure CMS preferences, routing URLs, and notifications. Further controls connect as the
+          API layer grows.
         </p>
       </div>
+
+      <SurveyRoutingCallbacksSection />
 
       <DashboardSection
         title="Notifications"
         description="Email alerts for queries, testimonials, and publishing workflows."
         actions={
-          <Button type="button" variant="outline" size="sm">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="border-gray-200 bg-white text-gray-900 hover:bg-gray-50 hover:text-gray-900"
+          >
             Save changes
           </Button>
         }
@@ -41,7 +49,11 @@ export default function AdminSettingsPage() {
         title="Security"
         description="Session management and admin roles will connect to your API layer."
         actions={
-          <Button type="button" size="sm">
+          <Button
+            type="button"
+            size="sm"
+            className="bg-gray-900 text-white hover:bg-black hover:text-white"
+          >
             Review policies
           </Button>
         }

@@ -11,10 +11,19 @@ export default function Footer() {
   const isAdminPage = pathname.startsWith("/admin");
   const isDashboardPage = pathname.startsWith("/dashboard");
   const isSurveyStartPage = pathname.startsWith("/survey/start");
+  const isSurveyCallbackPage = pathname.startsWith("/survey/callback");
 
   const currentYear = new Date().getFullYear();
 
-  if (isAuthPage || isAdminPage || isDashboardPage || isSurveyStartPage) return null;
+  if (
+    isAuthPage ||
+    isAdminPage ||
+    isDashboardPage ||
+    isSurveyStartPage ||
+    isSurveyCallbackPage
+  ) {
+    return null;
+  }
 
   return (
     <footer className="bg-gray-950 text-gray-400 border-t border-white/5 pt-20 pb-10">

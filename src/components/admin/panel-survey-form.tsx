@@ -26,6 +26,7 @@ import {
   PANEL_SURVEY_STATUS_LABELS,
 } from "@/constants/panel-survey";
 import { cn } from "@/lib/utils";
+import { extractSupplierProjectPidFromUrl } from "@/lib/supplier-survey-url";
 import type { SurveyCompany } from "@/services/survey-company";
 import {
   panelSurveyFormSchema,
@@ -315,11 +316,46 @@ export function PanelSurveyForm({
                   <FormLabel className="font-bold text-gray-700">Provider survey URL</FormLabel>
                   <FormControl>
                     <Input
-                      className="rounded-xl h-11 border-gray-200 font-mono text-xs"
-                      placeholder="https://..."
+                      className="rounded-xl h-11 border-gray-200 font-mono text-xs text-gray-900 placeholder:text-gray-400"
+                      placeholder="https://survey.partner.com/…?pid=…"
+                      {...field}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        const extracted = extractSupplierProjectPidFromUrl(e.target.value);
+                        form.setValue("supplierProjectPid", extracted ?? "");
+                      }}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Paste the full entry URL from the supplier. We read{" "}
+                    <span className="font-mono">pid</span> from the query string as the partner
+                    project id for callback matching.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="supplierProjectPid"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel className="font-bold text-gray-700">
+                    Partner project ID (<span className="font-mono">pid</span>)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 font-mono text-sm text-gray-900 placeholder:text-gray-400"
+                      placeholder="Filled from supplier URL or enter manually"
                       {...field}
                     />
                   </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Company-assigned project id (same value they echo on your callback URL).
+                    Identifies <strong>which survey</strong>. Respondent completes are tracked
+                    separately via <span className="font-mono">toid</span> /{" "}
+                    <span className="font-mono">uid</span> keys above.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -338,7 +374,34 @@ export function PanelSurveyForm({
                     />
                   </FormControl>
                   <p className="text-xs text-gray-500">
-                    Query key for transaction ID injection (placeholder phase — redirect only).
+                    Query key appended on the supplier URL with the participant id (for completes /
+                    callbacks).
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="participantQueryParam"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">
+                    Landing URL participant key
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 font-mono text-sm"
+                      placeholder="pid"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Query key on <span className="font-mono">/survey/start/…</span> for the{" "}
+                    <strong>respondent / session</strong> id (often{" "}
+                    <span className="font-mono">pid</span> or <span className="font-mono">uid</span>{" "}
+                    from your router). This is not the supplier’s project{" "}
+                    <span className="font-mono">pid</span> in the field above.
                   </p>
                   <FormMessage />
                 </FormItem>
@@ -529,7 +592,10 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Survey metrics">
+        <SectionCard title="Survey metrics (points)">
+          <p className="text-xs text-gray-500 mb-4 -mt-2">
+            Panel rewards use <strong>points</strong> only. Leave blank if not applicable.
+          </p>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <FormField
               control={form.control}
@@ -566,14 +632,17 @@ export function PanelSurveyForm({
               name="payoutToUser"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-gray-700">Payout to user</FormLabel>
+                  <FormLabel className="font-bold text-gray-700">
+                    Participant points / complete
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      className="rounded-xl h-11 border-gray-200"
-                      placeholder="0.00"
+                      className="rounded-xl h-11 border-gray-200 text-gray-900"
+                      placeholder="e.g. 150"
                       {...field}
                     />
                   </FormControl>
+                  <p className="text-xs text-gray-500">Points credited to the member’s wallet.</p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -583,14 +652,19 @@ export function PanelSurveyForm({
               name="revenuePerComplete"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold text-gray-700">Revenue / complete</FormLabel>
+                  <FormLabel className="font-bold text-gray-700">
+                    Internal reference pts / complete
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      className="rounded-xl h-11 border-gray-200"
-                      placeholder="0.00"
+                      className="rounded-xl h-11 border-gray-200 text-gray-900"
+                      placeholder="e.g. 200"
                       {...field}
                     />
                   </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Ops / budgeting reference only — not cash.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -833,7 +907,7 @@ export function PanelSurveyForm({
                 <FormControl>
                   <Textarea
                     className="rounded-xl border-gray-200 min-h-[120px]"
-                    placeholder="Integration notes, buyer contacts, CPI caps…"
+                    placeholder="Integration notes, buyer contacts, point caps…"
                     {...field}
                   />
                 </FormControl>

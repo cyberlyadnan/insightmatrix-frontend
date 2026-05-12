@@ -26,7 +26,18 @@ export const panelSurveyFormSchema = z.object({
   providerId: z.string().min(1, "Select a provider"),
   surveyStatus: z.enum(PANEL_SURVEY_STATUSES),
   externalSurveyUrl: z.string().trim().min(1, "URL required").max(4000),
+  supplierProjectPid: z.string().max(200),
   trackingParameterName: z.string().max(80),
+  participantQueryParam: z
+    .string()
+    .max(80)
+    .refine(
+      (s) => {
+        const t = s.trim();
+        return !t || /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(t);
+      },
+      { message: "Use a letter first; then letters, numbers, hyphen, or underscore" }
+    ),
   countriesLine: z.string(),
   targetGender: z.enum(PANEL_SURVEY_GENDER_TARGETS),
   targetAgeMin: z.string(),
@@ -65,7 +76,9 @@ export const emptyPanelSurveyFormValues: PanelSurveyFormValues = {
   providerId: "",
   surveyStatus: "draft",
   externalSurveyUrl: "",
+  supplierProjectPid: "",
   trackingParameterName: "toid",
+  participantQueryParam: "pid",
   countriesLine: "",
   targetGender: "all",
   targetAgeMin: "",
@@ -96,7 +109,9 @@ export function panelSurveyToFormValues(s: PanelSurvey): PanelSurveyFormValues {
     providerId: s.providerId,
     surveyStatus: s.surveyStatus,
     externalSurveyUrl: s.externalSurveyUrl,
+    supplierProjectPid: s.supplierProjectPid?.trim() ?? "",
     trackingParameterName: s.trackingParameterName || "toid",
+    participantQueryParam: s.participantQueryParam?.trim() || "pid",
     countriesLine: (s.targetCountries ?? []).join(", "),
     targetGender: s.targetGender,
     targetAgeMin: s.targetAgeMin != null ? String(s.targetAgeMin) : "",
@@ -162,7 +177,9 @@ export function panelSurveyFormToPayload(values: PanelSurveyFormValues) {
     providerId: values.providerId,
     surveyStatus: values.surveyStatus,
     externalSurveyUrl: values.externalSurveyUrl.trim(),
+    supplierProjectPid: values.supplierProjectPid.trim(),
     trackingParameterName: values.trackingParameterName.trim() || "toid",
+    participantQueryParam: values.participantQueryParam.trim() || "pid",
     targetCountries: splitLines(values.countriesLine).map((c) => c.toUpperCase()),
     targetGender: values.targetGender,
     targetAgeMin: parseOptInt(values.targetAgeMin),

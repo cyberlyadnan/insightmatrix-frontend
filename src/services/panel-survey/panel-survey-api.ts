@@ -5,6 +5,7 @@ import type {
   PanelSurveyGenderTarget,
   PanelSurveyStatus,
 } from "@/constants/panel-survey";
+import type { PanelRoutingEventType } from "@/constants/panel-survey-routing";
 
 export type PanelSurveyProviderSummary = {
   id: string;
@@ -30,7 +31,9 @@ export type PanelSurvey = {
   provider: PanelSurveyProviderSummary | null;
   surveyStatus: PanelSurveyStatus;
   externalSurveyUrl: string;
+  supplierProjectPid: string;
   trackingParameterName: string;
+  participantQueryParam: string;
   targetCountries: string[];
   targetGender: PanelSurveyGenderTarget;
   targetAgeMin: number | null;
@@ -63,8 +66,46 @@ export type PanelSurveyPublic = {
   targetCountries: string[];
   surveyStatus: PanelSurveyStatus;
   externalSurveyUrl: string;
+  trackingParameterName: string;
+  participantQueryParam: string;
   providerName: string | null;
   providerCode: string | null;
+};
+
+export type PanelSurveyAnalyticsQuotaRow = {
+  groupId: string;
+  groupName: string;
+  totalQuota: number;
+  remainingQuota: number;
+  filledSlots: number;
+  completes: number;
+  terminates: number;
+  screenouts: number;
+  otherRoutingEvents: number;
+};
+
+export type PanelSurveyAnalytics = {
+  surveyId: string;
+  surveyCode: string;
+  surveyName: string;
+  summary: {
+    completes: number;
+    terminates: number;
+    screenouts: number;
+    quotaFull: number;
+    qualityReject: number;
+    duplicate: number;
+    surveyLevelOther: number;
+    totalEvents: number;
+    lastEventAt: string | null;
+  };
+  quotaGroups: PanelSurveyAnalyticsQuotaRow[];
+  recentEvents: Array<{
+    eventType: PanelRoutingEventType;
+    quotaGroupName: string;
+    supplierParticipantRef: string;
+    createdAt: string | null;
+  }>;
 };
 
 export type PanelSurveyPayload = {
@@ -74,7 +115,9 @@ export type PanelSurveyPayload = {
   providerId: string;
   surveyStatus?: PanelSurveyStatus;
   externalSurveyUrl: string;
+  supplierProjectPid?: string;
   trackingParameterName?: string;
+  participantQueryParam?: string;
   targetCountries?: string[];
   targetGender?: PanelSurveyGenderTarget;
   targetAgeMin?: number | null;
@@ -136,6 +179,13 @@ export async function listPanelSurveys(params?: {
       totalPages: 1,
     },
   };
+}
+
+export async function getPanelSurveyAnalytics(id: string): Promise<PanelSurveyAnalytics> {
+  const { data } = await apiClient.get<ApiEnvelope<PanelSurveyAnalytics>>(
+    `/panel-surveys/${id}/analytics`
+  );
+  return data.data;
 }
 
 export async function getPanelSurvey(id: string): Promise<PanelSurvey> {

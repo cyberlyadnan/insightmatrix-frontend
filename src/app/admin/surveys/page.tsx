@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDown,
   ArrowUp,
+  BarChart3,
   ClipboardList,
   Eye,
   MoreHorizontal,
@@ -381,23 +382,30 @@ export default function AdminPanelSurveysPage() {
                         <div className="inline-flex flex-wrap justify-end gap-1">
                           <Link
                             href={ROUTES.admin.survey(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
                             title="View"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-4 h-4" aria-hidden />
+                          </Link>
+                          <Link
+                            href={ROUTES.admin.surveyAnalytics(row.id)}
+                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
+                            title="Analytics"
+                          >
+                            <BarChart3 className="w-4 h-4" aria-hidden />
                           </Link>
                           <Link
                             href={ROUTES.admin.surveyEdit(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
                             title="Edit"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-4 h-4" aria-hidden />
                           </Link>
                           {row.surveyStatus === "active" ? (
                             <button
                               type="button"
                               title="Pause"
-                              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-amber-200 text-amber-700 hover:bg-amber-50"
+                              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-amber-200 bg-white text-amber-700 hover:bg-amber-50"
                               onClick={() =>
                                 pauseResumeMutation.mutate({ id: row.id, next: "paused" })
                               }
@@ -409,7 +417,7 @@ export default function AdminPanelSurveysPage() {
                             <button
                               type="button"
                               title="Resume"
-                              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50"
                               onClick={() =>
                                 pauseResumeMutation.mutate({ id: row.id, next: "active" })
                               }
@@ -421,10 +429,10 @@ export default function AdminPanelSurveysPage() {
                           <button
                             type="button"
                             title="Delete"
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50"
+                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
                             onClick={() => setDeleteTarget(row)}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" aria-hidden />
                           </button>
                         </div>
                       </td>
@@ -458,13 +466,19 @@ export default function AdminPanelSurveysPage() {
                   <div className="flex flex-wrap gap-2 pt-1">
                     <Link
                       href={ROUTES.admin.survey(row.id)}
-                      className="flex-1 min-w-[90px] h-10 rounded-xl border border-gray-200 bg-white text-center text-xs font-black uppercase tracking-widest leading-10"
+                      className="flex-1 min-w-[90px] h-10 rounded-xl border border-gray-200 bg-white text-gray-900 text-center text-xs font-black uppercase tracking-widest leading-10"
                     >
                       View
                     </Link>
                     <Link
+                      href={ROUTES.admin.surveyAnalytics(row.id)}
+                      className="flex-1 min-w-[90px] h-10 rounded-xl border border-gray-200 bg-white text-gray-900 text-center text-xs font-black uppercase tracking-widest leading-10"
+                    >
+                      Analytics
+                    </Link>
+                    <Link
                       href={ROUTES.admin.surveyEdit(row.id)}
-                      className="flex-1 min-w-[90px] h-10 rounded-xl border border-gray-200 bg-white text-center text-xs font-black uppercase tracking-widest leading-10"
+                      className="flex-1 min-w-[90px] h-10 rounded-xl border border-gray-200 bg-white text-gray-900 text-center text-xs font-black uppercase tracking-widest leading-10"
                     >
                       Edit
                     </Link>
@@ -516,7 +530,7 @@ export default function AdminPanelSurveysPage() {
                     type="button"
                     disabled={page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-bold disabled:opacity-40"
+                    className="h-10 px-4 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-900 disabled:opacity-40"
                   >
                     Previous
                   </button>
@@ -524,7 +538,7 @@ export default function AdminPanelSurveysPage() {
                     type="button"
                     disabled={page >= totalPages}
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-bold disabled:opacity-40"
+                    className="h-10 px-4 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-900 disabled:opacity-40"
                   >
                     Next
                   </button>

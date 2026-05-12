@@ -27,6 +27,7 @@ export const ROUTES = {
     surveysCreate: "/admin/surveys/create",
     survey: (id: string) => `/admin/surveys/${id}`,
     surveyEdit: (id: string) => `/admin/surveys/${id}/edit`,
+    surveyAnalytics: (id: string) => `/admin/surveys/${id}/analytics`,
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
 } as const;

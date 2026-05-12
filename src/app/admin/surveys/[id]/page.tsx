@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  BarChart3,
   Calendar,
   ClipboardList,
   ExternalLink,
@@ -178,6 +179,13 @@ export default function PanelSurveyDetailPage() {
               Resume
             </button>
           ) : null}
+          <Link
+            href={ROUTES.admin.surveyAnalytics(id)}
+            className="h-11 px-4 rounded-xl border border-gray-200 bg-white text-gray-900 font-bold text-sm hover:bg-gray-50 inline-flex items-center gap-2"
+          >
+            <BarChart3 className="w-4 h-4" />
+            Analytics
+          </Link>
           <Link
             href={ROUTES.admin.surveyEdit(id)}
             className="h-11 px-4 rounded-xl bg-gray-900 text-white font-bold text-sm hover:bg-black inline-flex items-center gap-2"
@@ -429,8 +437,12 @@ export default function PanelSurveyDetailPage() {
         <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
           <h2 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-6 flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
-            Economics & feasibility
+            Points & feasibility
           </h2>
+          <p className="text-xs text-gray-500 mb-6">
+            Rewards use panel <strong>points</strong> only (no cash). Values below configure study
+            economics for routing.
+          </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
             <div>
               <p className="text-gray-400 text-[10px] font-black uppercase mb-1">Incidence rate</p>
@@ -445,17 +457,19 @@ export default function PanelSurveyDetailPage() {
               </p>
             </div>
             <div>
-              <p className="text-gray-400 text-[10px] font-black uppercase mb-1">Payout to user</p>
+              <p className="text-gray-400 text-[10px] font-black uppercase mb-1">
+                Participant points / complete
+              </p>
               <p className="text-xl font-black text-gray-900">
-                {survey.payoutToUser != null ? survey.payoutToUser.toFixed(2) : "—"}
+                {survey.payoutToUser != null ? `${survey.payoutToUser} pts` : "—"}
               </p>
             </div>
             <div>
               <p className="text-gray-400 text-[10px] font-black uppercase mb-1">
-                Revenue / complete
+                Internal reference pts / complete
               </p>
               <p className="text-xl font-black text-gray-900">
-                {survey.revenuePerComplete != null ? survey.revenuePerComplete.toFixed(2) : "—"}
+                {survey.revenuePerComplete != null ? `${survey.revenuePerComplete} pts` : "—"}
               </p>
             </div>
           </div>
@@ -481,6 +495,20 @@ export default function PanelSurveyDetailPage() {
               {survey.externalSurveyUrl}
               <ExternalLink className="w-4 h-4 shrink-0 mt-0.5" />
             </a>
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
+              Partner project ID (<span className="font-mono normal-case">pid</span>)
+            </p>
+            <code className="px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 font-mono text-sm text-gray-900">
+              {survey.supplierProjectPid?.trim() ? survey.supplierProjectPid : "—"}
+            </code>
+            <p className="text-xs text-gray-500 mt-2">
+              Parsed from <span className="font-mono">pid=</span> on the supplier URL (or set
+              manually). Match supplier callbacks on this value to identify{" "}
+              <strong>which survey</strong>; respondent completes use{" "}
+              <span className="font-mono">toid</span> / <span className="font-mono">uid</span>.
+            </p>
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">

@@ -50,4 +50,8 @@ export const queryKeys = {
     analytics: (id: string) => ["panel-surveys", id, "analytics"] as const,
     public: (id: string) => ["panel-surveys", "public", id] as const,
   },
+  memberPanel: {
+    available: ["member-panel", "available"] as const,
+    wallet: ["member-panel", "wallet"] as const,
+  },
 } as const;

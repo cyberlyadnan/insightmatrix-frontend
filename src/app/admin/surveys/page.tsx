@@ -36,7 +36,6 @@ import { queryKeys } from "@/services/queries";
 
 type SortField =
   | "surveyName"
-  | "surveyCode"
   | "createdAt"
   | "surveyStatus"
   | "incidenceRate"
@@ -279,7 +278,7 @@ export default function AdminPanelSurveysPage() {
         ) : (
           <>
             <div className="hidden xl:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[1100px] text-left text-sm">
+              <table className="w-full min-w-[900px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 text-[10px] text-gray-400">
                     <th className="pb-3 pl-2 pr-2">
@@ -291,16 +290,6 @@ export default function AdminPanelSurveysPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-2">
-                      <SortButton
-                        label="Code"
-                        field="surveyCode"
-                        sortBy={sortBy}
-                        sortOrder={sortOrder}
-                        onSort={toggleSort}
-                      />
-                    </th>
-                    <th className="pb-3 px-2">Provider</th>
                     <th className="pb-3 px-2">Countries</th>
                     <th className="pb-3 px-2">
                       <SortButton
@@ -355,12 +344,6 @@ export default function AdminPanelSurveysPage() {
                     <tr key={row.id} className="hover:bg-gray-50/80">
                       <td className="py-3 pl-2 pr-2 max-w-[220px]">
                         <p className="font-bold text-gray-900 truncate">{row.surveyName}</p>
-                      </td>
-                      <td className="py-3 px-2 font-mono text-xs text-gray-700">
-                        {row.surveyCode}
-                      </td>
-                      <td className="py-3 px-2 text-gray-700">
-                        {row.provider?.companyName ?? "—"}
                       </td>
                       <td className="py-3 px-2 text-xs text-gray-600 max-w-[140px] truncate">
                         {(row.targetCountries ?? []).join(", ") || "—"}
@@ -451,14 +434,9 @@ export default function AdminPanelSurveysPage() {
                   <div className="flex justify-between gap-2">
                     <div className="min-w-0">
                       <p className="font-black text-gray-900 truncate">{row.surveyName}</p>
-                      <p className="text-xs font-mono text-gray-500">{row.surveyCode}</p>
                     </div>
                     <StatusBadge status={row.surveyStatus} />
                   </div>
-                  <p className="text-xs text-gray-600">
-                    <span className="font-black text-gray-400 uppercase mr-2">Provider</span>
-                    {row.provider?.companyName ?? "—"}
-                  </p>
                   <p className="text-xs text-gray-600 truncate">
                     <span className="font-black text-gray-400 uppercase mr-2">Countries</span>
                     {(row.targetCountries ?? []).join(", ") || "—"}

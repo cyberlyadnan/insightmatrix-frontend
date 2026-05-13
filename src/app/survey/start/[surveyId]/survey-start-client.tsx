@@ -16,6 +16,7 @@ import {
   extractParticipantIdFromSearchParams,
   persistParticipantContext,
 } from "@/lib/survey-participant";
+import { panelPointsFromPayout } from "@/lib/panel-points";
 import { getPublicPanelSurvey } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
 
@@ -145,7 +146,9 @@ export function SurveyStartClient() {
               <span className="font-black text-white block text-xs uppercase tracking-widest mb-0.5">
                 Points
               </span>
-              {data.payoutToUser != null ? `${data.payoutToUser} pts` : "See panel wallet"}
+              {data.payoutToUser != null
+                ? `${panelPointsFromPayout(data.payoutToUser).toLocaleString()} pts`
+                : `${panelPointsFromPayout(null).toLocaleString()} pts`}
             </span>
           </li>
           <li className="flex items-start gap-3">

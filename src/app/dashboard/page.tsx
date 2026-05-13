@@ -21,7 +21,7 @@ const missions = [
   {
     id: 1,
     title: "Coffee Consumption Habits",
-    reward: "$4.50",
+    rewardPts: 450,
     time: "12m",
     category: "Lifestyle",
     color: "from-amber-400 to-orange-500",
@@ -29,7 +29,7 @@ const missions = [
   {
     id: 2,
     title: "Future of EV Mobility",
-    reward: "$12.00",
+    rewardPts: 1200,
     time: "25m",
     category: "Technology",
     color: "from-blue-400 to-indigo-600",
@@ -37,7 +37,7 @@ const missions = [
   {
     id: 3,
     title: "Workplace Wellness Audit",
-    reward: "$3.20",
+    rewardPts: 320,
     time: "8m",
     category: "Corporate",
     color: "from-emerald-400 to-teal-600",
@@ -99,9 +99,9 @@ export default function DashboardHome() {
             <div className="flex items-center gap-6">
               <div>
                 <p className="text-[9px] md:text-[10px] font-black text-white/50 uppercase tracking-widest mb-1">
-                  Reward
+                  Points
                 </p>
-                <p className="text-xl md:text-2xl font-black text-white">$15.50</p>
+                <p className="text-xl md:text-2xl font-black text-white tabular-nums">1,550 pts</p>
               </div>
               <div className="w-px h-8 md:h-10 bg-white/20" />
               <div>
@@ -165,9 +165,11 @@ export default function DashboardHome() {
                   <div className="mt-2 sm:hidden flex justify-between items-end">
                     <div>
                       <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
-                        Reward
+                        Points
                       </p>
-                      <p className="text-lg font-black text-gray-900">{mission.reward}</p>
+                      <p className="text-lg font-black text-gray-900 tabular-nums">
+                        {mission.rewardPts.toLocaleString()} pts
+                      </p>
                     </div>
                     <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary">
                       <ArrowRight size={16} />
@@ -175,9 +177,11 @@ export default function DashboardHome() {
                   </div>
                 </div>
                 <div className="hidden sm:block text-right">
-                  <p className="text-xl font-black text-gray-900">{mission.reward}</p>
+                  <p className="text-xl font-black text-gray-900 tabular-nums">
+                    {mission.rewardPts.toLocaleString()} pts
+                  </p>
                   <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-                    Guaranteed
+                    On completion
                   </p>
                 </div>
                 <div className="hidden sm:flex w-10 h-10 rounded-full bg-gray-50 items-center justify-center text-gray-300 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all">
@@ -201,8 +205,8 @@ export default function DashboardHome() {
               </div>
               <div className="mb-8">
                 <div className="flex justify-between items-end mb-4">
-                  <span className="text-3xl font-black">$42.50</span>
-                  <span className="text-sm font-bold text-gray-400">/ $100.00</span>
+                  <span className="text-3xl font-black tabular-nums">4,250 pts</span>
+                  <span className="text-sm font-bold text-gray-400 tabular-nums">/ 10,000 pts</span>
                 </div>
                 <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
                   <motion.div
@@ -235,20 +239,25 @@ export default function DashboardHome() {
                 <Gift size={24} />
               </div>
               <div>
-                <h4 className="font-black text-gray-900">Unlock Rewards</h4>
-                <p className="text-xs font-medium text-gray-500">Complete 3 more missions.</p>
+                <h4 className="font-black text-gray-900">Unlock more points</h4>
+                <p className="text-xs font-medium text-gray-500">
+                  Complete more surveys to grow your balance.
+                </p>
               </div>
             </div>
-            <button className="w-full py-4 rounded-2xl bg-gray-50 text-gray-900 font-black text-sm hover:bg-gray-100 transition-colors">
-              Redeem Store
-            </button>
+            <Link
+              href={ROUTES.dashboard.wallet}
+              className="block w-full py-4 rounded-2xl bg-gray-50 text-gray-900 font-black text-sm hover:bg-gray-100 transition-colors text-center"
+            >
+              View points wallet
+            </Link>
           </div>
 
           <div className="p-8 rounded-[2.5rem] bg-brand-subtle/30 border border-brand-primary/5 flex flex-col items-center text-center">
             <ShieldCheck className="text-brand-primary mb-4" size={32} />
             <h4 className="font-black text-gray-900 mb-2">Verified Identity</h4>
             <p className="text-xs font-medium text-gray-500 leading-relaxed">
-              Your profile is verified. You have access to high-paying private audits.
+              Your profile is verified. You can access matched panel surveys and earn points.
             </p>
           </div>
         </div>

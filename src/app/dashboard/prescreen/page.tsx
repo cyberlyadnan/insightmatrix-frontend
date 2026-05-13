@@ -52,6 +52,8 @@ export default function DashboardPrescreenPage() {
       setUser(user);
       await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
       await qc.invalidateQueries({ queryKey: queryKeys.panelPrescreen.bundle });
+      await qc.invalidateQueries({ queryKey: queryKeys.memberPanel.available });
+      await qc.invalidateQueries({ queryKey: queryKeys.memberPanel.wallet });
       toast.success("Profile saved — you can explore surveys now.");
       router.replace(ROUTES.dashboard.surveys);
     },

@@ -52,7 +52,7 @@ export function extractParticipantIdFromSearchParams(
   participantQueryParam: string
 ): string | null {
   const primary = (participantQueryParam || "pid").trim() || "pid";
-  const keys = [primary, "pid", "participant_id", "uid", "txn_id", "rid"];
+  const keys = ["im_attempt", primary, "pid", "participant_id", "uid", "txn_id", "rid"];
   const seen = new Set<string>();
   for (const k of keys) {
     if (seen.has(k)) continue;

@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 
 const categories = [
   { name: "Getting Started", icon: Zap, count: 12, color: "text-brand-primary" },
-  { name: "Payment & Rewards", icon: LifeBuoy, count: 8, color: "text-emerald-500" },
+  { name: "Points & Rewards", icon: LifeBuoy, count: 8, color: "text-emerald-500" },
   { name: "Account Safety", icon: FileText, count: 5, color: "text-blue-500" },
 ];
 
@@ -74,7 +74,7 @@ export default function PanelHelp() {
             </h2>
             <div className="space-y-3 md:space-y-4">
               {[
-                "How do I withdraw my earnings?",
+                "How do I redeem my points?",
                 "What is the Platinum Tier?",
                 "Why was my mission rejected?",
                 "Can I use multiple devices?",

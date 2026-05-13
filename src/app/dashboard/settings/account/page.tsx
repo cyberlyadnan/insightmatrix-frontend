@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
+import { optimizeAvatarImage } from "@/lib/optimize-avatar-image";
 import { parseApiError } from "@/services/api/errors";
 import { updateProfileRequest, uploadAvatarRequest } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
@@ -48,30 +49,6 @@ const accountSchema = z.object({
 });
 
 type AccountFormValues = z.infer<typeof accountSchema>;
-
-async function optimizeAvatarImage(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file);
-  const maxSide = 512;
-  const scale = Math.min(maxSide / bitmap.width, maxSide / bitmap.height, 1);
-  const targetWidth = Math.max(1, Math.round(bitmap.width * scale));
-  const targetHeight = Math.max(1, Math.round(bitmap.height * scale));
-
-  const canvas = document.createElement("canvas");
-  canvas.width = targetWidth;
-  canvas.height = targetHeight;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Could not optimize image");
-
-  ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
-  const blob = await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob(resolve, "image/webp", 0.82);
-  });
-  bitmap.close();
-
-  if (!blob) throw new Error("Could not process image");
-  const name = file.name.replace(/\.[^.]+$/, "") || "avatar";
-  return new File([blob], `${name}.webp`, { type: "image/webp" });
-}
 
 export default function EditAccountInfoPage() {
   const user = useAuthStore((s) => s.user);

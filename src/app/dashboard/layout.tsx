@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { DashboardRoleGate } from "@/components/auth/dashboard-role-gate";
 import { PanelPrescreenGate } from "@/components/auth/panel-prescreen-gate";
 import { ROUTES } from "@/constants/routes";
 import { useLogout } from "@/hooks/use-logout";
+import { getPanelWallet } from "@/services/member-panel";
+import { queryKeys } from "@/services/queries";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store";
 import {
@@ -26,7 +29,7 @@ import { motion } from "framer-motion";
 const navLinks = [
   { name: "Explore", icon: Compass, href: ROUTES.dashboard.root },
   { name: "Surveys", icon: ClipboardList, href: ROUTES.dashboard.surveys },
-  { name: "Wallet", icon: Wallet, href: ROUTES.dashboard.wallet },
+  { name: "Points", icon: Wallet, href: ROUTES.dashboard.wallet },
   { name: "Help Center", icon: HelpCircle, href: ROUTES.dashboard.help },
 ];
 
@@ -35,6 +38,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
   const logout = useLogout();
+
+  const { data: walletData } = useQuery({
+    queryKey: queryKeys.memberPanel.wallet,
+    queryFn: getPanelWallet,
+    staleTime: 60_000,
+    refetchOnWindowFocus: true,
+  });
+
+  const pointsBalance = walletData?.balance ?? user?.panelPoints ?? 0;
 
   const displayName = user?.fullName?.trim() || "there";
   const avatarUrl = user?.avatar?.trim() || "";
@@ -113,17 +125,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </nav>
 
             <div className="p-6 mt-auto space-y-1">
-              <div
-                className={`mb-6 p-4 rounded-3xl bg-brand-primary text-white relative overflow-hidden group cursor-pointer ${isSidebarOpen ? "block" : "hidden"}`}
+              <Link
+                href={ROUTES.dashboard.wallet}
+                className={`mb-6 p-4 rounded-3xl bg-brand-primary text-white relative overflow-hidden group block ${isSidebarOpen ? "block" : "hidden"}`}
               >
                 <div className="relative z-10">
                   <p className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">
-                    Balance
+                    Points balance
                   </p>
-                  <h4 className="text-2xl font-black">$124.50</h4>
+                  <h4 className="text-2xl font-black tabular-nums">
+                    {pointsBalance.toLocaleString()}{" "}
+                    <span className="text-base font-black opacity-90">pts</span>
+                  </h4>
                 </div>
                 <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform" />
-              </div>
+              </Link>
 
               <Link
                 href={ROUTES.dashboard.settings}

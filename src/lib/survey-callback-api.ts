@@ -46,9 +46,7 @@ export async function postPublicRoutingCallback(
   }
 
   if (!res.ok) {
-    throw new Error(
-      data.message || (text ? text.slice(0, 200) : `Request failed (${res.status})`)
-    );
+    throw new Error(data.message || (text ? text.slice(0, 200) : `Request failed (${res.status})`));
   }
 
   return { id: data.data?.id ?? "" };
@@ -65,6 +63,7 @@ export function searchParamsToObject(params: URLSearchParams): Record<string, st
 /** Match supplier query keys for respondent / transaction id (toid, uid, etc.) */
 export function pickSupplierParticipantRef(params: URLSearchParams): string {
   const keys = [
+    "im_attempt",
     "toid",
     "uid",
     "RID",

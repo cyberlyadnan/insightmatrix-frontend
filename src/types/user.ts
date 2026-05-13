@@ -17,6 +17,12 @@ export interface AuthUser {
   needsPanelPrescreen?: boolean;
   /** True when no required panel prescreen is configured (admins should seed/publish one) */
   panelPrescreenNotConfigured?: boolean;
+  /** Points balance for panel rewards */
+  panelPoints?: number;
+  /** Lifetime points earned (monotonic) */
+  panelLifetimePoints?: number;
+  /** Panel surveys completed (rewarded attempts) */
+  panelCompletedSurveys?: number;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -1,13 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import Link from "next/link";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, Shield, ChevronRight, Camera } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { User, Shield, ChevronRight, Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ROUTES } from "@/constants/routes";
+import { optimizeAvatarImage } from "@/lib/optimize-avatar-image";
 import { parseApiError } from "@/services/api/errors";
-import { cancelAccountDeletionRequest, requestAccountDeletion } from "@/services/auth";
+import {
+  cancelAccountDeletionRequest,
+  fetchProfileOptional,
+  requestAccountDeletion,
+  uploadAvatarRequest,
+} from "@/services/auth";
 import { queryKeys } from "@/services/queries";
 import { useAuthStore } from "@/store/authStore";
 
@@ -15,7 +22,17 @@ export default function PanelSettings() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const queryClient = useQueryClient();
+
+  const { data: profileUser } = useQuery({
+    queryKey: queryKeys.auth.profile,
+    queryFn: fetchProfileOptional,
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+  });
+
+  const displayUser = profileUser ?? user;
   const [deleteReason, setDeleteReason] = useState("");
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const accountItems = [
     {
       name: "Account Information",
@@ -63,7 +80,44 @@ export default function PanelSettings() {
     onError: (error) => toast.error(parseApiError(error, "Could not cancel request.")),
   });
 
-  const avatarUrl = user?.avatar?.trim() || "";
+  const avatarUploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const optimized = await optimizeAvatarImage(file);
+      return uploadAvatarRequest(optimized);
+    },
+    onSuccess: async (updated) => {
+      setUser(updated);
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile });
+      toast.success("Profile photo updated.");
+    },
+    onError: (error) => toast.error(parseApiError(error, "Could not upload photo.")),
+  });
+
+  async function onAvatarFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file.");
+      return;
+    }
+    avatarUploadMutation.mutate(file);
+  }
+
+  const avatarUrl = displayUser?.avatar?.trim() || "";
+
+  const memberSinceLabel =
+    displayUser?.createdAt != null && displayUser.createdAt !== ""
+      ? (() => {
+          try {
+            return format(new Date(displayUser.createdAt), "MMM yyyy");
+          } catch {
+            return "—";
+          }
+        })()
+      : "—";
+
+  const totalMissions = displayUser?.panelCompletedSurveys ?? 0;
 
   return (
     <div className="space-y-10">
@@ -79,6 +133,15 @@ export default function PanelSettings() {
         <div className="lg:col-span-4">
           <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-gray-100 flex flex-col items-center text-center shadow-sm">
             <div className="relative mb-6">
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                aria-hidden
+                tabIndex={-1}
+                onChange={onAvatarFileChange}
+              />
               {avatarUrl ? (
                 <div
                   className="w-28 h-28 md:w-32 md:h-32 rounded-[2.2rem] md:rounded-[2.5rem] bg-cover bg-center border-4 border-white shadow-xl"
@@ -91,12 +154,23 @@ export default function PanelSettings() {
                   <User size={48} className="md:w-16 md:h-16" />
                 </div>
               )}
-              <button className="absolute bottom-1 right-1 w-9 h-9 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-gray-900 text-white flex items-center justify-center shadow-lg border-2 border-white hover:bg-brand-primary transition-colors active:scale-95">
-                <Camera size={18} />
+              <button
+                type="button"
+                title="Change profile photo"
+                aria-label="Upload profile photo"
+                disabled={avatarUploadMutation.isPending}
+                onClick={() => avatarInputRef.current?.click()}
+                className="absolute bottom-1 right-1 w-9 h-9 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-gray-900 text-white flex items-center justify-center shadow-lg border-2 border-white hover:bg-brand-primary transition-colors active:scale-95 disabled:opacity-60 disabled:pointer-events-none"
+              >
+                {avatarUploadMutation.isPending ? (
+                  <Loader2 size={18} className="animate-spin" aria-hidden />
+                ) : (
+                  <Camera size={18} aria-hidden />
+                )}
               </button>
             </div>
             <h3 className="text-xl md:text-2xl font-black text-gray-900">
-              {user?.fullName ?? "Dashboard Member"}
+              {displayUser?.fullName ?? "Dashboard Member"}
             </h3>
             <p className="text-[10px] md:text-xs font-black text-brand-primary uppercase tracking-widest mt-1">
               Platinum Member
@@ -105,11 +179,11 @@ export default function PanelSettings() {
             <div className="w-full mt-8 md:mt-10 pt-8 md:pt-10 border-t border-gray-50 space-y-4">
               <div className="flex justify-between items-center text-xs md:text-sm">
                 <span className="font-bold text-gray-400">Total Missions</span>
-                <span className="font-black text-gray-900">142</span>
+                <span className="font-black text-gray-900 tabular-nums">{totalMissions}</span>
               </div>
               <div className="flex justify-between items-center text-xs md:text-sm">
                 <span className="font-bold text-gray-400">Member Since</span>
-                <span className="font-black text-gray-900">Oct 2023</span>
+                <span className="font-black text-gray-900">{memberSinceLabel}</span>
               </div>
             </div>
           </div>
@@ -158,7 +232,7 @@ export default function PanelSettings() {
                 Request deactivation. Admin must approve. Account is marked inactive, not deleted.
               </p>
             </div>
-            {user?.deletionRequested ? (
+            {displayUser?.deletionRequested ? (
               <div className="rounded-xl bg-white p-4 border border-rose-100">
                 <p className="text-xs font-bold text-rose-600 mb-1">Request submitted</p>
                 <p className="text-xs text-gray-500 mb-3">

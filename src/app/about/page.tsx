@@ -1,7 +1,18 @@
 import { Metadata } from "next";
-import { CheckCircle2, Target, Lightbulb, Users, Globe, ShieldCheck, Zap } from "lucide-react";
+import Link from "next/link";
+import {
+  CheckCircle2,
+  Target,
+  Lightbulb,
+  Users,
+  Globe,
+  ShieldCheck,
+  Zap,
+  BookOpen,
+} from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import { FloatingTagsVisual } from "@/components/shared/HeaderVisuals";
+import { ROUTES } from "@/constants/routes";
 
 export const metadata: Metadata = {
   title: "About Us | InsightMatrix",
@@ -115,6 +126,61 @@ export default function AboutPage() {
                 <p className="text-gray-500 text-lg leading-relaxed">{feature.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Panel Book — B2B resource */}
+      <div className="border-y border-gray-100 bg-white py-24 sm:py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2 lg:gap-20">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-gray-600">
+                <BookOpen className="h-3.5 w-3.5 text-brand-primary" aria-hidden />
+                Why InsightMatrix
+              </div>
+              <h2 className="mt-6 text-3xl font-black tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+                Panel Book — global reach, verified people
+              </h2>
+              <p className="mt-6 text-lg font-medium leading-relaxed text-gray-600 sm:text-xl">
+                InsightMatrix is built for teams who need confident decisions at scale: high-quality
+                data from real, verified participants, with a multi-layered approach to
+                quality—panel design, expert oversight, and modern fraud detection—so your research
+                stays accurate, reliable, and trusted.
+              </p>
+              <p className="mt-4 text-base leading-relaxed text-gray-600">
+                Request the InsightMatrix Panel Book to learn more about our methodology, geographic
+                footprint, respondent profiling, and how we support brands, agencies, and
+                publishers.
+              </p>
+              <Link
+                href={ROUTES.panelBook}
+                className="mt-10 inline-flex h-12 items-center justify-center rounded-xl bg-gray-900 px-8 text-sm font-black uppercase tracking-widest text-white transition-colors hover:bg-black"
+              >
+                Get the Panel Book
+              </Link>
+            </div>
+            <div className="relative rounded-[2rem] border border-gray-100 bg-gray-50/80 p-10 shadow-inner sm:p-12">
+              <div
+                className="absolute -right-6 -top-6 hidden h-24 w-24 rounded-3xl bg-brand-primary/15 blur-2xl lg:block"
+                aria-hidden
+              />
+              <ul className="relative space-y-5 text-gray-700">
+                {[
+                  "Overview of our panel philosophy and coverage",
+                  "Profiling dimensions and sample design considerations",
+                  "Quality, compliance, and how we protect participants",
+                ].map((item) => (
+                  <li key={item} className="flex gap-3 text-base font-semibold leading-snug">
+                    <CheckCircle2
+                      className="mt-0.5 h-5 w-5 shrink-0 text-brand-primary"
+                      aria-hidden
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>

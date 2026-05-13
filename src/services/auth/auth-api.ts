@@ -62,9 +62,7 @@ export async function updateProfileRequest(payload: {
 export async function uploadAvatarRequest(file: File): Promise<AuthUser> {
   const formData = new FormData();
   formData.append("avatar", file);
-  const { data } = await apiClient.post<ApiEnvelope<AuthUser>>("/users/profile/avatar", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const { data } = await apiClient.post<ApiEnvelope<AuthUser>>("/users/profile/avatar", formData);
   return data.data;
 }
 

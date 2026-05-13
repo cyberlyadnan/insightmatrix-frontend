@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Instagram, ArrowRight, Globe, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { isAuthRoute } from "@/constants";
+import { isAuthRoute, ROUTES } from "@/constants";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -158,6 +158,14 @@ export default function Footer() {
               <li>
                 <Link href="/about" className="hover:text-brand-primary transition-colors">
                   About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={ROUTES.panelBook}
+                  className="hover:text-brand-primary transition-colors"
+                >
+                  Panel Book
                 </Link>
               </li>
               <li>

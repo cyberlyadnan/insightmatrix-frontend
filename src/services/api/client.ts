@@ -5,7 +5,8 @@ import { attachInterceptors } from "./interceptors";
 export const apiClient = axios.create({
   baseURL: env.apiUrl || undefined,
   timeout: 30_000,
-  headers: { "Content-Type": "application/json", Accept: "application/json" },
+  /** Content-Type is set per-request in interceptors (JSON vs FormData). */
+  headers: { Accept: "application/json" },
   withCredentials: true,
 });
 

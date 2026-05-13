@@ -24,6 +24,29 @@ function shouldSkipRefresh(config?: InternalAxiosRequestConfig) {
 }
 
 export function attachInterceptors(instance: AxiosInstance) {
+  instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const { data, method } = config;
+    const m = (method || "get").toLowerCase();
+
+    if (typeof FormData !== "undefined" && data instanceof FormData) {
+      config.headers.delete("Content-Type");
+      return config;
+    }
+
+    if (
+      data != null &&
+      m !== "get" &&
+      m !== "head" &&
+      typeof data === "object" &&
+      !(typeof URLSearchParams !== "undefined" && data instanceof URLSearchParams) &&
+      !(typeof Blob !== "undefined" && data instanceof Blob)
+    ) {
+      config.headers.set("Content-Type", "application/json");
+    }
+
+    return config;
+  });
+
   instance.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {

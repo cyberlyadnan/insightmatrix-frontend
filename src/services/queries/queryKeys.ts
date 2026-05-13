@@ -58,4 +58,9 @@ export const queryKeys = {
     all: ["company-payments"] as const,
     list: (filters: Record<string, unknown>) => ["company-payments", "list", filters] as const,
   },
+  panelBook: {
+    all: ["panel-book"] as const,
+    leads: (filters: Record<string, unknown>) => ["panel-book", "leads", filters] as const,
+    asset: ["panel-book", "asset"] as const,
+  },
 } as const;

@@ -31,14 +31,16 @@ export const ROUTES = {
     surveyEdit: (id: string) => `/admin/surveys/${id}/edit`,
     surveyAnalytics: (id: string) => `/admin/surveys/${id}/analytics`,
     companyPayments: "/admin/company-payments",
+    panelBook: "/admin/panel-book",
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
   /** Partner redirect targets — each records a different outcome via POST to the API */
   surveyCallback: (outcome: "complete" | "quota-full" | "terminate" | "quality") =>
     `/survey/callback/${outcome}`,
-  /** Public legal */
+  /** Public legal & resources */
   terms: "/terms",
   privacy: "/privacy",
+  panelBook: "/panel-book",
 } as const;
 
 export const AUTH_ROUTE_LIST = [

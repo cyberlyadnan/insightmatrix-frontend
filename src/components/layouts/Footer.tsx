@@ -15,13 +15,7 @@ export default function Footer() {
 
   const currentYear = new Date().getFullYear();
 
-  if (
-    isAuthPage ||
-    isAdminPage ||
-    isDashboardPage ||
-    isSurveyStartPage ||
-    isSurveyCallbackPage
-  ) {
+  if (isAuthPage || isAdminPage || isDashboardPage || isSurveyStartPage || isSurveyCallbackPage) {
     return null;
   }
 
@@ -187,23 +181,29 @@ export default function Footer() {
             <h4 className="text-white font-black text-sm mb-8">Legal</h4>
             <ul className="space-y-4 text-sm">
               <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Privacy centre
+                <Link href="/privacy" className="hover:text-brand-primary transition-colors">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
+                <Link href="/terms" className="hover:text-brand-primary transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/privacy#cookies"
+                  className="hover:text-brand-primary transition-colors"
+                >
                   Cookie policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Terms of use
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Accessibility
+                <Link
+                  href="/privacy#your-rights"
+                  className="hover:text-brand-primary transition-colors"
+                >
+                  Your privacy choices
                 </Link>
               </li>
             </ul>

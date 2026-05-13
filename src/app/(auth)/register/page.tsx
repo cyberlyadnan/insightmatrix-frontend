@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants";
 import {
   Form,
   FormControl,
@@ -234,11 +235,11 @@ export default function RegisterPage() {
 
       <p className="mt-6 text-[11px] text-center text-gray-400 px-4">
         By signing up, you agree to our{" "}
-        <Link href="/terms" className="underline font-bold">
+        <Link href={ROUTES.terms} className="underline font-bold">
           Terms of Service
         </Link>{" "}
         and{" "}
-        <Link href="/privacy" className="underline font-bold">
+        <Link href={ROUTES.privacy} className="underline font-bold">
           Privacy Policy
         </Link>
         .

@@ -36,6 +36,9 @@ export const ROUTES = {
   /** Partner redirect targets — each records a different outcome via POST to the API */
   surveyCallback: (outcome: "complete" | "quota-full" | "terminate" | "quality") =>
     `/survey/callback/${outcome}`,
+  /** Public legal */
+  terms: "/terms",
+  privacy: "/privacy",
 } as const;
 
 export const AUTH_ROUTE_LIST = [

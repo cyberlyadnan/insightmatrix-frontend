@@ -8,6 +8,7 @@ import {
   ArrowUp,
   BarChart3,
   ClipboardList,
+  Database,
   Eye,
   MoreHorizontal,
   Pencil,
@@ -29,6 +30,7 @@ import {
   deletePanelSurvey,
   listPanelSurveys,
   patchPanelSurveyStatus,
+  seedDemoPanelSurveys,
   type PanelSurvey,
 } from "@/services/panel-survey";
 import { listSurveyCompanies } from "@/services/survey-company";
@@ -169,10 +171,29 @@ export default function AdminPanelSurveysPage() {
     onError: (e) => toast.error(parseApiError(e, "Could not delete survey")),
   });
 
+  const seedMutation = useMutation({
+    mutationFn: seedDemoPanelSurveys,
+    onSuccess: async (r) => {
+      toast.success(
+        `Demo surveys seeded: ${r.inserted} inserted, ${r.updated} updated${
+          r.skipped > 0 ? `, ${r.skipped} skipped (missing providers)` : ""
+        }.`
+      );
+      for (const w of r.warnings.slice(0, 5)) {
+        toast.warning(w);
+      }
+      if (r.warnings.length > 5) {
+        toast.warning(`…and ${r.warnings.length - 5} more warnings.`);
+      }
+      await refresh();
+    },
+    onError: (e) => toast.error(parseApiError(e, "Could not seed surveys.")),
+  });
+
   const totalPages = meta?.totalPages ?? 1;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-gray-900">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">Surveys</h1>
@@ -180,16 +201,27 @@ export default function AdminPanelSurveysPage() {
             Configure external routing surveys, quotas, and targeting for your panel.
           </p>
         </div>
-        <Link
-          href={ROUTES.admin.surveysCreate}
-          className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Create survey
-        </Link>
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => seedMutation.mutate()}
+            disabled={seedMutation.isPending}
+            className="h-11 px-5 rounded-xl border border-gray-300 bg-white text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-gray-50 disabled:opacity-60"
+          >
+            <Database className="w-4 h-4 shrink-0" />
+            {seedMutation.isPending ? "Seeding…" : "Seed demo surveys"}
+          </button>
+          <Link
+            href={ROUTES.admin.surveysCreate}
+            className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Create survey
+          </Link>
+        </div>
       </div>
 
-      <div className="rounded-[2rem] border border-gray-100 bg-white p-5 md:p-6 shadow-sm">
+      <div className="rounded-[2rem] border border-gray-200 bg-white p-5 md:p-6 shadow-sm text-gray-900">
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-6 mb-6">
           <div className="relative xl:col-span-2">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -278,9 +310,9 @@ export default function AdminPanelSurveysPage() {
         ) : (
           <>
             <div className="hidden xl:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[900px] text-left text-sm">
+              <table className="w-full min-w-[900px] text-left text-sm text-gray-900">
                 <thead>
-                  <tr className="border-b border-gray-100 text-[10px] text-gray-400">
+                  <tr className="border-b border-gray-200 text-[10px] text-gray-600">
                     <th className="pb-3 pl-2 pr-2">
                       <SortButton
                         label="Survey"
@@ -290,7 +322,9 @@ export default function AdminPanelSurveysPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-2">Countries</th>
+                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
+                      Countries
+                    </th>
                     <th className="pb-3 px-2">
                       <SortButton
                         label="IR %"
@@ -336,7 +370,9 @@ export default function AdminPanelSurveysPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 pr-2 pl-2 text-right">Actions</th>
+                    <th className="pb-3 pr-2 pl-2 text-right font-black uppercase tracking-wider text-gray-600">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -354,7 +390,9 @@ export default function AdminPanelSurveysPage() {
                       <td className="py-3 px-2 text-gray-700">
                         {row.estimatedLOI != null ? `${row.estimatedLOI}m` : "—"}
                       </td>
-                      <td className="py-3 px-2 font-mono text-xs">{row.remainingQuota ?? 0}</td>
+                      <td className="py-3 px-2 font-mono text-xs text-gray-900 tabular-nums">
+                        {row.remainingQuota ?? 0}
+                      </td>
                       <td className="py-3 px-2">
                         <StatusBadge status={row.surveyStatus} />
                       </td>
@@ -429,7 +467,7 @@ export default function AdminPanelSurveysPage() {
               {items.map((row) => (
                 <div
                   key={row.id}
-                  className="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 space-y-3"
+                  className="rounded-2xl border border-gray-200 bg-gray-50/80 p-4 space-y-3 text-gray-900"
                 >
                   <div className="flex justify-between gap-2">
                     <div className="min-w-0">

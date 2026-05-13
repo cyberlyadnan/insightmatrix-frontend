@@ -153,6 +153,19 @@ type ApiEnvelope<T> = {
   meta?: { page: number; pageSize: number; total: number; totalPages: number };
 };
 
+export type PanelSurveySeedResult = {
+  inserted: number;
+  updated: number;
+  skipped: number;
+  definitions: number;
+  warnings: string[];
+};
+
+export async function seedDemoPanelSurveys(): Promise<PanelSurveySeedResult> {
+  const { data } = await apiClient.post<ApiEnvelope<PanelSurveySeedResult>>("/panel-surveys/seed");
+  return data.data;
+}
+
 export async function listPanelSurveys(params?: {
   page?: number;
   pageSize?: number;

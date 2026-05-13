@@ -223,7 +223,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </header>
 
-          <div className="p-6 lg:p-10 flex-1 overflow-y-auto">{children}</div>
+          <div className="p-6 lg:p-10 flex-1 overflow-y-auto text-gray-900 [color-scheme:light]">
+            {children}
+          </div>
         </main>
       </div>
     </AdminRoleGate>

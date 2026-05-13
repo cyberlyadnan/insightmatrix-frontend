@@ -11,6 +11,8 @@ import {
   Gift,
   Building2,
   AlertCircle,
+  CheckCircle2,
+  Ban,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -106,76 +108,107 @@ export default function PanelSurveys() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {surveys.map((survey, i) => (
-            <motion.div
-              key={survey.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: Math.min(i * 0.04, 0.4) }}
-              className="group bg-white rounded-[2.5rem] border border-gray-100 p-8 hover:shadow-2xl hover:shadow-brand-primary/5 hover:border-brand-primary/20 transition-all relative overflow-hidden flex flex-col"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full">
-                  <Gift size={12} className="text-emerald-600" />
-                  <span className="text-[10px] font-black text-emerald-700 uppercase tracking-wider">
-                    Eligible
+          {surveys.map((survey, i) => {
+            const part = survey.memberParticipation;
+            const canStart = part.status === "available";
+            return (
+              <motion.div
+                key={survey.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: Math.min(i * 0.04, 0.4) }}
+                className="group bg-white rounded-[2.5rem] border border-gray-100 p-8 hover:shadow-2xl hover:shadow-brand-primary/5 hover:border-brand-primary/20 transition-all relative overflow-hidden flex flex-col"
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex flex-col gap-2">
+                    {part.status === "completed" ? (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full w-fit">
+                        <CheckCircle2 size={12} className="text-slate-600" />
+                        <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider">
+                          Completed
+                        </span>
+                      </div>
+                    ) : part.status === "no_attempts_left" ? (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full w-fit">
+                        <Ban size={12} className="text-amber-700" />
+                        <span className="text-[10px] font-black text-amber-800 uppercase tracking-wider">
+                          No attempts left
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 rounded-full w-fit">
+                        <Gift size={12} className="text-emerald-600" />
+                        <span className="text-[10px] font-black text-emerald-700 uppercase tracking-wider">
+                          Eligible
+                        </span>
+                      </div>
+                    )}
+                    <p className="text-[10px] font-bold text-gray-500">
+                      Attempts used: {part.attemptsUsed} / {part.maxAttempts}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                      Points
+                    </p>
+                    <p className="text-xl font-black text-brand-primary">
+                      +{survey.pointsReward.toLocaleString()} pts
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-6 flex-1 min-h-0">
+                  <h3 className="text-lg font-black text-gray-900 leading-tight group-hover:text-brand-primary transition-colors line-clamp-2">
+                    {survey.surveyName}
+                  </h3>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    {survey.surveyCode}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4 text-gray-500">
+                    <div className="flex items-center gap-1.5">
+                      <Clock size={14} />
+                      <span className="text-xs font-bold">
+                        {survey.estimatedLOI != null
+                          ? `~${survey.estimatedLOI} min`
+                          : "Time varies"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Building2 size={14} className="shrink-0" />
+                      <span className="text-xs font-bold truncate">
+                        {survey.provider?.companyName ?? "Partner"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-gray-50 flex items-center justify-between gap-3 mt-auto">
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">
+                    {survey.targetCountries?.length ? survey.targetCountries.join(", ") : "Open"}
                   </span>
+                  <button
+                    type="button"
+                    disabled={!canStart || startMutation.isPending}
+                    onClick={() => startMutation.mutate(survey.id)}
+                    className="h-11 px-4 rounded-2xl bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 shadow-lg shadow-brand-primary/20 hover:opacity-95 disabled:opacity-50 shrink-0 disabled:cursor-not-allowed"
+                  >
+                    {startMutation.isPending && startMutation.variables === survey.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : canStart ? (
+                      <ArrowRight size={18} />
+                    ) : part.status === "completed" ? (
+                      <CheckCircle2 size={18} />
+                    ) : (
+                      <Ban size={18} />
+                    )}
+                    {canStart ? "Start" : part.status === "completed" ? "Completed" : "No attempts"}
+                  </button>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
-                    Points
-                  </p>
-                  <p className="text-xl font-black text-brand-primary">
-                    +{survey.pointsReward.toLocaleString()} pts
-                  </p>
-                </div>
-              </div>
 
-              <div className="space-y-3 mb-6 flex-1 min-h-0">
-                <h3 className="text-lg font-black text-gray-900 leading-tight group-hover:text-brand-primary transition-colors line-clamp-2">
-                  {survey.surveyName}
-                </h3>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                  {survey.surveyCode}
-                </p>
-                <div className="flex flex-wrap items-center gap-4 text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <Clock size={14} />
-                    <span className="text-xs font-bold">
-                      {survey.estimatedLOI != null ? `~${survey.estimatedLOI} min` : "Time varies"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <Building2 size={14} className="shrink-0" />
-                    <span className="text-xs font-bold truncate">
-                      {survey.provider?.companyName ?? "Partner"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-gray-50 flex items-center justify-between gap-3 mt-auto">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">
-                  {survey.targetCountries?.length ? survey.targetCountries.join(", ") : "Open"}
-                </span>
-                <button
-                  type="button"
-                  disabled={startMutation.isPending}
-                  onClick={() => startMutation.mutate(survey.id)}
-                  className="h-11 px-4 rounded-2xl bg-brand-primary text-white text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 shadow-lg shadow-brand-primary/20 hover:opacity-95 disabled:opacity-50 shrink-0"
-                >
-                  {startMutation.isPending && startMutation.variables === survey.id ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <ArrowRight size={18} />
-                  )}
-                  Start
-                </button>
-              </div>
-
-              <div className="absolute -right-8 -top-8 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-            </motion.div>
-          ))}
+                <div className="absolute -right-8 -top-8 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>

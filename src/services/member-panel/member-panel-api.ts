@@ -7,9 +7,16 @@ type ApiEnvelope<T> = {
   data: T;
 };
 
+export type MemberSurveyParticipation = {
+  status: "available" | "completed" | "no_attempts_left";
+  attemptsUsed: number;
+  maxAttempts: number;
+};
+
 export type MatchedPanelSurvey = PanelSurvey & {
   pointsReward: number;
   matchReason: string;
+  memberParticipation: MemberSurveyParticipation;
 };
 
 export type AvailablePanelSurveysResponse = {

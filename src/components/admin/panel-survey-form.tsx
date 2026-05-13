@@ -862,6 +862,37 @@ export function PanelSurveyForm({
             />
             <FormField
               control={form.control}
+              name="maxMemberAttempts"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Max member attempts</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={field.value}
+                      onChange={(e) => {
+                        const n = Number.parseInt(e.target.value, 10);
+                        field.onChange(Number.isFinite(n) ? Math.min(10, Math.max(1, n)) : 2);
+                      }}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    How many times a member may start this study (e.g. after a terminate). Range
+                    1–10. Default 2. After a successful complete (points awarded), they cannot start
+                    again.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="startDate"
               render={({ field }) => (
                 <FormItem>

@@ -51,6 +51,7 @@ export type PanelSurvey = {
   remainingQuota: number;
   dynamicQuotaGroups: PanelSurveyQuotaGroup[];
   surveyPriority: number;
+  maxMemberAttempts: number;
   startDate: string | null;
   endDate: string | null;
   notes: string;
@@ -141,6 +142,7 @@ export type PanelSurveyPayload = {
     status?: PanelQuotaGroupStatus;
   }>;
   surveyPriority?: number;
+  maxMemberAttempts?: number;
   startDate?: string | null;
   endDate?: string | null;
   notes?: string;

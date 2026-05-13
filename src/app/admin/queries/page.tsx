@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { Modal } from "@/components/shared/Modal";
+import { Button } from "@/components/ui/button";
 import { parseApiError } from "@/services/api/errors";
 import {
   deleteContactQuery,
@@ -48,6 +50,7 @@ export default function AdminQueries() {
     "" | "pending" | "in_progress" | "resolved" | "completed" | "unread" | "read"
   >("");
   const [labelFilter, setLabelFilter] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<ContactQuery | null>(null);
 
   const filters = useMemo(
     () => ({
@@ -122,6 +125,7 @@ export default function AdminQueries() {
     mutationFn: (id: string) => deleteContactQuery(id),
     onSuccess: async () => {
       toast.success("Query deleted");
+      setDeleteTarget(null);
       setSelectedId(null);
       await refresh();
     },
@@ -362,7 +366,9 @@ export default function AdminQueries() {
                       <Archive size={20} />
                     </button>
                     <button
-                      onClick={() => deleteMutation.mutate(selectedQuery.id)}
+                      type="button"
+                      title="Delete query"
+                      onClick={() => setDeleteTarget(selectedQuery)}
                       className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-rose-500 transition-colors"
                     >
                       <Trash2 size={20} />
@@ -450,6 +456,34 @@ export default function AdminQueries() {
           </AnimatePresence>
         </div>
       </div>
+
+      <Modal
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete this query?"
+        description={
+          deleteTarget
+            ? `Permanently remove the message from ${deleteTarget.email} (${deleteTarget.subject}).`
+            : undefined
+        }
+        footer={
+          <div className="flex justify-end gap-2 w-full">
+            <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleteMutation.isPending || !deleteTarget}
+              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+            >
+              {deleteMutation.isPending ? "Deleting…" : "Delete"}
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-gray-600">This action cannot be undone.</p>
+      </Modal>
     </div>
   );
 }

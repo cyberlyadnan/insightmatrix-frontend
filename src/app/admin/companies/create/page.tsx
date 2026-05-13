@@ -36,10 +36,10 @@ export default function CreateSurveyCompanyPage() {
 
   const mutation = useMutation({
     mutationFn: (payload: SurveyCompanyPayload) => createSurveyCompany(payload),
-    onSuccess: async (company) => {
+    onSuccess: async () => {
       toast.success("Company created");
       await qc.invalidateQueries({ queryKey: queryKeys.surveyCompanies.all });
-      router.push(ROUTES.admin.company(company.id));
+      router.push(ROUTES.admin.companies);
     },
     onError: (error) => toast.error(parseApiError(error, "Could not create company")),
   });

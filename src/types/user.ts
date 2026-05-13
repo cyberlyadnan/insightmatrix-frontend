@@ -13,6 +13,10 @@ export interface AuthUser {
   deletionRequestedAt?: string | null;
   deletionRequestReason?: string | null;
   deactivatedAt?: string | null;
+  /** True when a published “required for panel” prescreen exists and this member has not completed it */
+  needsPanelPrescreen?: boolean;
+  /** True when no required panel prescreen is configured (admins should seed/publish one) */
+  panelPrescreenNotConfigured?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

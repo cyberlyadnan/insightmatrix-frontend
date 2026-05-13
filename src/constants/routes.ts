@@ -8,6 +8,8 @@ export const ROUTES = {
   dashboard: {
     root: "/dashboard",
     surveys: "/dashboard/surveys",
+    /** Required member profile questionnaire before surveys (when configured in admin) */
+    prescreen: "/dashboard/prescreen",
     wallet: "/dashboard/wallet",
     settings: "/dashboard/settings",
     settingsAccount: "/dashboard/settings/account",

@@ -54,7 +54,7 @@ export default function EditSurveyCompanyPage() {
     onSuccess: async () => {
       toast.success("Company updated");
       await qc.invalidateQueries({ queryKey: queryKeys.surveyCompanies.all });
-      router.push(ROUTES.admin.company(id));
+      router.push(ROUTES.admin.companies);
     },
     onError: (error) => toast.error(parseApiError(error, "Could not update company")),
   });

@@ -6,6 +6,9 @@ export const queryKeys = {
     session: ["auth", "session"] as const,
     profile: ["auth", "profile"] as const,
   },
+  panelPrescreen: {
+    bundle: ["panel-prescreen", "bundle"] as const,
+  },
   users: {
     all: ["users"] as const,
     detail: (id: string) => ["users", id] as const,
@@ -27,6 +30,7 @@ export const queryKeys = {
     all: ["prescreens"] as const,
     list: (filters: Record<string, unknown>) => ["prescreens", "list", filters] as const,
     detail: (id: string) => ["prescreens", id] as const,
+    submissionStats: (id: string) => ["prescreens", id, "submission-stats"] as const,
     categories: ["prescreens", "categories"] as const,
   },
   contactQueries: {

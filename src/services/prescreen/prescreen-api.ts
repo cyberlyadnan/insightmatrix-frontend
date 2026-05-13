@@ -1,5 +1,10 @@
 import { apiClient } from "@/services/api";
-import type { PrescreenCategory, PrescreenForm, PrescreenQuestion } from "@/types/prescreen";
+import type {
+  PrescreenCategory,
+  PrescreenForm,
+  PrescreenQuestion,
+  PrescreenSubmissionStats,
+} from "@/types/prescreen";
 
 type ApiEnvelope<T> = {
   success: boolean;
@@ -30,6 +35,13 @@ export async function listPrescreens(query: PrescreenListQuery = {}) {
 
 export async function getPrescreen(id: string): Promise<PrescreenForm> {
   const { data } = await apiClient.get<ApiEnvelope<PrescreenForm>>(`/prescreens/${id}`);
+  return data.data;
+}
+
+export async function getPrescreenSubmissionStats(id: string): Promise<PrescreenSubmissionStats> {
+  const { data } = await apiClient.get<ApiEnvelope<PrescreenSubmissionStats>>(
+    `/prescreens/${id}/submission-stats`
+  );
   return data.data;
 }
 
@@ -83,5 +95,13 @@ export async function listPrescreenCategories(): Promise<PrescreenCategory[]> {
 
 export async function seedDefaultPrescreens(): Promise<PrescreenForm[]> {
   const { data } = await apiClient.post<ApiEnvelope<PrescreenForm[]>>("/prescreens/seed-defaults");
+  return data.data;
+}
+
+/** Seeds & publishes the canonical required member profile prescreen (slug `panel-member-profile`). */
+export async function seedPanelMemberPrescreen(): Promise<PrescreenForm> {
+  const { data } = await apiClient.post<ApiEnvelope<PrescreenForm>>(
+    "/prescreens/seed-panel-member"
+  );
   return data.data;
 }

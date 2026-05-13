@@ -47,12 +47,27 @@ export interface PrescreenCategory {
   description: string;
 }
 
+/** Admin analytics for prescreen submissions / completions */
+export interface PrescreenSubmissionStats {
+  totalSubmissions: number;
+  uniqueSubmitters: number;
+  submissionsWithDuration: number;
+  averageDurationMs: number | null;
+  averageDurationFormatted: string | null;
+  firstSubmittedAt?: string | null;
+  lastSubmittedAt?: string | null;
+}
+
 export interface PrescreenForm {
   id: string;
   title: string;
   slug: string;
   description: string;
   status: PrescreenStatus;
+  /** When true and published, members must complete before surveys (exclusive across forms) */
+  isRequiredForPanel?: boolean;
+  /** Total recorded submissions (includes repeat submits); set on list API */
+  submissionCount?: number;
   category: PrescreenCategory | null;
   tags: string[];
   targetAudience: {

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Eye, GripVertical, Trash2 } from "lucide-react";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
 import {
   createPrescreen,
@@ -30,6 +31,7 @@ const schema = z.object({
   visibility: z.enum(["private", "internal", "public"]),
   category: z.string().nullable().optional(),
   tagsText: z.string().optional(),
+  isRequiredForPanel: z.boolean().optional(),
 });
 
 const QUESTION_TYPE_OPTIONS: { label: string; value: PrescreenQuestionType }[] = [
@@ -74,6 +76,7 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
       visibility: initialData?.visibility ?? "internal",
       category: initialData?.category?.id ?? null,
       tagsText: initialData?.tags?.join(", ") ?? "",
+      isRequiredForPanel: initialData?.isRequiredForPanel ?? false,
     },
   });
 
@@ -82,16 +85,22 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
     queryFn: listPrescreenCategories,
   });
 
+  const isRequiredForPanel = useWatch({
+    control: form.control,
+    name: "isRequiredForPanel",
+    defaultValue: false,
+  });
+
   useEffect(() => {
     setQuestions(initialData?.questions ?? []);
   }, [initialData?.id, setQuestions, initialData?.questions]);
 
   const createMutation = useMutation({
     mutationFn: createPrescreen,
-    onSuccess: async (created) => {
+    onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: queryKeys.prescreens.all });
       toast.success("Prescreen created");
-      router.push(`/admin/prescreen/edit/${created.id}`);
+      router.push(ROUTES.admin.prescreen);
     },
     onError: (error) => toast.error(parseApiError(error, "Could not create prescreen")),
   });
@@ -101,9 +110,12 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
       updatePrescreen(String(prescreenId), payload),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: queryKeys.prescreens.all });
-      if (prescreenId)
+      if (prescreenId) {
         await qc.invalidateQueries({ queryKey: queryKeys.prescreens.detail(prescreenId) });
+        await qc.invalidateQueries({ queryKey: queryKeys.prescreens.submissionStats(prescreenId) });
+      }
       toast.success("Prescreen saved");
+      router.push(ROUTES.admin.prescreen);
     },
     onError: (error) => toast.error(parseApiError(error, "Could not save prescreen")),
   });
@@ -131,6 +143,7 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
       status: values.status,
       visibility: values.visibility,
       category,
+      isRequiredForPanel: Boolean(values.isRequiredForPanel),
       tags:
         values.tagsText
           ?.split(",")
@@ -241,6 +254,25 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                 placeholder="general, usa, students"
                 className="text-gray-900 placeholder:text-gray-400"
               />
+            </div>
+            <div className="md:col-span-2 rounded-2xl border border-brand-primary/20 bg-brand-primary/5 p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-1 rounded border-gray-300 text-brand-primary"
+                  checked={Boolean(isRequiredForPanel)}
+                  onChange={(e) => form.setValue("isRequiredForPanel", e.target.checked)}
+                />
+                <span>
+                  <span className="text-sm font-black text-gray-900">
+                    Required for member panel
+                  </span>
+                  <span className="block text-xs text-gray-600 mt-1 leading-relaxed">
+                    When published, members must complete this prescreen before accessing surveys.
+                    Only one published prescreen can hold this flag at a time.
+                  </span>
+                </span>
+              </label>
             </div>
           </div>
 

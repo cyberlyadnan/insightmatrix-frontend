@@ -35,10 +35,10 @@ export default function CreatePanelSurveyPage() {
 
   const mutation = useMutation({
     mutationFn: createPanelSurvey,
-    onSuccess: async (survey) => {
+    onSuccess: async () => {
       toast.success("Survey created");
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
-      router.push(ROUTES.admin.survey(survey.id));
+      router.push(ROUTES.admin.surveys);
     },
     onError: (e) => toast.error(parseApiError(e, "Could not create survey")),
   });

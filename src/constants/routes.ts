@@ -30,6 +30,7 @@ export const ROUTES = {
     survey: (id: string) => `/admin/surveys/${id}`,
     surveyEdit: (id: string) => `/admin/surveys/${id}/edit`,
     surveyAnalytics: (id: string) => `/admin/surveys/${id}/analytics`,
+    companyPayments: "/admin/company-payments",
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
   /** Partner redirect targets — each records a different outcome via POST to the API */

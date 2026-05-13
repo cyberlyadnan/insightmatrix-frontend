@@ -672,6 +672,60 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
+        <SectionCard title="Company billing (money)">
+          <p className="text-xs text-gray-500 mb-4 -mt-2">
+            What the <strong>survey provider</strong> pays InsightMatrix in currency (e.g. USD).
+            This feeds the <strong>Company payments</strong> module and PDF invoices. Member rewards
+            above stay in <strong>points</strong> only.
+          </p>
+          <div className="grid gap-6 md:grid-cols-2 max-w-2xl">
+            <FormField
+              control={form.control}
+              name="companyBillingAmount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">
+                    Contract / project fee (USD)
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 text-gray-900"
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0.00"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">
+                    Subtotal before tax on the supplier invoice.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="companyBillingTaxPercent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-bold text-gray-700">Tax % (if applicable)</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="rounded-xl h-11 border-gray-200 text-gray-900"
+                      type="text"
+                      inputMode="decimal"
+                      placeholder="0"
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500">Use 0 when no sales/VAT applies.</p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </SectionCard>
+
         <SectionCard title="Quota configuration">
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             <FormField

@@ -23,6 +23,7 @@ import {
   ListChecks,
   Building2,
   ClipboardList,
+  Receipt,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -35,6 +36,7 @@ const sidebarLinks = [
   { name: "Overview", icon: LayoutDashboard, href: "/admin" },
   { name: "Survey providers", icon: Building2, href: "/admin/companies" },
   { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },
+  { name: "Company payments", icon: Receipt, href: "/admin/company-payments" },
   { name: "Case Studies", icon: FileText, href: "/admin/case-studies" },
   { name: "Services", icon: Briefcase, href: "/admin/services" },
   { name: "Team", icon: Users, href: "/admin/team" },

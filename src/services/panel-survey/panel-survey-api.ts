@@ -47,6 +47,9 @@ export type PanelSurvey = {
   estimatedLOI: number | null;
   payoutToUser: number | null;
   revenuePerComplete: number | null;
+  /** Supplier fee (money) for B2B invoicing — not member points. */
+  companyBillingAmount: number;
+  companyBillingTaxPercent: number;
   totalQuota: number;
   remainingQuota: number;
   dynamicQuotaGroups: PanelSurveyQuotaGroup[];
@@ -132,6 +135,8 @@ export type PanelSurveyPayload = {
   estimatedLOI?: number | null;
   payoutToUser?: number | null;
   revenuePerComplete?: number | null;
+  companyBillingAmount?: number;
+  companyBillingTaxPercent?: number;
   totalQuota?: number;
   remainingQuota?: number;
   dynamicQuotaGroups?: Array<{

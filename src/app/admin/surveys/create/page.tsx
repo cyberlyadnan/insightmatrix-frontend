@@ -38,6 +38,7 @@ export default function CreatePanelSurveyPage() {
     onSuccess: async () => {
       toast.success("Survey created");
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
+      await qc.invalidateQueries({ queryKey: queryKeys.companyPayments.all });
       router.push(ROUTES.admin.surveys);
     },
     onError: (e) => toast.error(parseApiError(e, "Could not create survey")),

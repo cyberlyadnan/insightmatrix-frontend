@@ -54,4 +54,8 @@ export const queryKeys = {
     available: ["member-panel", "available"] as const,
     wallet: ["member-panel", "wallet"] as const,
   },
+  companyPayments: {
+    all: ["company-payments"] as const,
+    list: (filters: Record<string, unknown>) => ["company-payments", "list", filters] as const,
+  },
 } as const;

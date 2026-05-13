@@ -15,7 +15,7 @@ const quotaRowSchema = z.object({
   status: z.enum(PANEL_QUOTA_GROUP_STATUSES),
 });
 
-export const panelSurveyFormSchema = z.object({
+const panelSurveyFormSchemaBase = z.object({
   surveyName: z.string().min(2).max(300),
   surveyCode: z
     .string()
@@ -59,9 +59,33 @@ export const panelSurveyFormSchema = z.object({
   startDate: z.string(),
   endDate: z.string(),
   notes: z.string().max(16000),
+  /** Supplier fee in money (USD) — drives B2B invoice line; separate from member points. */
+  companyBillingAmount: z.string(),
+  companyBillingTaxPercent: z.string(),
 });
 
-export type PanelSurveyFormValues = z.infer<typeof panelSurveyFormSchema>;
+export const panelSurveyFormSchema = panelSurveyFormSchemaBase.superRefine((data, ctx) => {
+  const taxRaw = data.companyBillingTaxPercent.trim();
+  const tax = taxRaw === "" ? 0 : Number.parseFloat(taxRaw);
+  if (!Number.isFinite(tax) || tax < 0 || tax > 100) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Tax % must be between 0 and 100.",
+      path: ["companyBillingTaxPercent"],
+    });
+  }
+  const amtRaw = data.companyBillingAmount.trim();
+  const amt = amtRaw === "" ? 0 : Number.parseFloat(amtRaw);
+  if (!Number.isFinite(amt) || amt < 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Amount must be zero or greater.",
+      path: ["companyBillingAmount"],
+    });
+  }
+});
+
+export type PanelSurveyFormValues = z.infer<typeof panelSurveyFormSchemaBase>;
 
 function isoToDatetimeLocal(iso: string): string {
   const d = new Date(iso);
@@ -101,6 +125,8 @@ export const emptyPanelSurveyFormValues: PanelSurveyFormValues = {
   startDate: "",
   endDate: "",
   notes: "",
+  companyBillingAmount: "0",
+  companyBillingTaxPercent: "0",
 };
 
 export function panelSurveyToFormValues(s: PanelSurvey): PanelSurveyFormValues {
@@ -148,6 +174,14 @@ export function panelSurveyToFormValues(s: PanelSurvey): PanelSurveyFormValues {
     startDate: s.startDate ? isoToDatetimeLocal(s.startDate) : "",
     endDate: s.endDate ? isoToDatetimeLocal(s.endDate) : "",
     notes: s.notes ?? "",
+    companyBillingAmount:
+      s.companyBillingAmount != null && !Number.isNaN(s.companyBillingAmount)
+        ? String(s.companyBillingAmount)
+        : "0",
+    companyBillingTaxPercent:
+      s.companyBillingTaxPercent != null && !Number.isNaN(s.companyBillingTaxPercent)
+        ? String(s.companyBillingTaxPercent)
+        : "0",
   };
 }
 
@@ -210,5 +244,13 @@ export function panelSurveyFormToPayload(values: PanelSurveyFormValues) {
     startDate: values.startDate.trim() ? new Date(values.startDate).toISOString() : null,
     endDate: values.endDate.trim() ? new Date(values.endDate).toISOString() : null,
     notes: values.notes.trim(),
+    companyBillingAmount:
+      values.companyBillingAmount.trim() === ""
+        ? 0
+        : Math.round(Math.max(0, Number.parseFloat(values.companyBillingAmount)) * 100) / 100,
+    companyBillingTaxPercent:
+      values.companyBillingTaxPercent.trim() === ""
+        ? 0
+        : Math.min(100, Math.max(0, Number.parseFloat(values.companyBillingTaxPercent))),
   };
 }

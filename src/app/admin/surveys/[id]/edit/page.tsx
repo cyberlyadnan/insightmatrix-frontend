@@ -51,6 +51,7 @@ export default function EditPanelSurveyPage() {
     onSuccess: async () => {
       toast.success("Survey updated");
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
+      await qc.invalidateQueries({ queryKey: queryKeys.companyPayments.all });
       router.push(ROUTES.admin.surveys);
     },
     onError: (e) => toast.error(parseApiError(e, "Could not update survey")),

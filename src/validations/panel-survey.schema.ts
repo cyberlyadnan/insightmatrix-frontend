@@ -7,11 +7,30 @@ import {
 } from "@/constants/panel-survey";
 import type { PanelSurvey } from "@/services/panel-survey";
 
+/** Non-negative integers from `<input type="number">` (RHF often stores strings until submit). */
+const zCoercedNonNegInt = z.coerce
+  .number()
+  .refine((n) => Number.isFinite(n) && !Number.isNaN(n), { message: "Enter a valid whole number" })
+  .transform((n) => Math.trunc(n))
+  .refine((n) => n >= 0, { message: "Must be 0 or greater" });
+
+/** Any finite integer (e.g. survey priority). */
+const zCoercedInt = z.coerce
+  .number()
+  .refine((n) => Number.isFinite(n) && !Number.isNaN(n), { message: "Enter a valid whole number" })
+  .transform((n) => Math.trunc(n));
+
+const zCoercedMaxAttempts = z.coerce
+  .number()
+  .refine((n) => Number.isFinite(n) && !Number.isNaN(n), { message: "Enter a number from 1 to 10" })
+  .transform((n) => Math.trunc(n))
+  .refine((n) => n >= 1 && n <= 10, { message: "Must be between 1 and 10" });
+
 const quotaRowSchema = z.object({
   groupName: z.string().min(1, "Group name required").max(200),
   groupDescription: z.string().max(2000),
-  totalQuota: z.number().int().min(0),
-  remainingQuota: z.number().int().min(0),
+  totalQuota: zCoercedNonNegInt,
+  remainingQuota: zCoercedNonNegInt,
   status: z.enum(PANEL_QUOTA_GROUP_STATUSES),
 });
 
@@ -51,11 +70,11 @@ const panelSurveyFormSchemaBase = z.object({
   estimatedLOI: z.string(),
   payoutToUser: z.string(),
   revenuePerComplete: z.string(),
-  totalQuota: z.number().int().min(0),
-  remainingQuota: z.number().int().min(0),
+  totalQuota: zCoercedNonNegInt,
+  remainingQuota: zCoercedNonNegInt,
   quotaGroups: z.array(quotaRowSchema),
-  surveyPriority: z.number().int(),
-  maxMemberAttempts: z.number().int().min(1).max(10),
+  surveyPriority: zCoercedInt,
+  maxMemberAttempts: zCoercedMaxAttempts,
   startDate: z.string(),
   endDate: z.string(),
   notes: z.string().max(16000),
@@ -192,6 +211,15 @@ export function splitLines(input: string): string[] {
     .filter(Boolean);
 }
 
+function asFiniteInt(value: unknown, fallback: number): number {
+  if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
+  if (typeof value === "string" && value.trim() !== "") {
+    const n = Number.parseInt(value.trim(), 10);
+    if (Number.isFinite(n)) return n;
+  }
+  return fallback;
+}
+
 /** Maps validated form values to API payload */
 export function panelSurveyFormToPayload(values: PanelSurveyFormValues) {
   const parseOptInt = (s: string) => {
@@ -230,17 +258,17 @@ export function panelSurveyFormToPayload(values: PanelSurveyFormValues) {
     estimatedLOI: parseOptFloat(values.estimatedLOI),
     payoutToUser: parseOptFloat(values.payoutToUser),
     revenuePerComplete: parseOptFloat(values.revenuePerComplete),
-    totalQuota: values.totalQuota,
-    remainingQuota: values.remainingQuota,
+    totalQuota: asFiniteInt(values.totalQuota, 0),
+    remainingQuota: asFiniteInt(values.remainingQuota, 0),
     dynamicQuotaGroups: values.quotaGroups.map((g) => ({
       groupName: g.groupName.trim(),
       groupDescription: g.groupDescription.trim(),
-      totalQuota: g.totalQuota,
-      remainingQuota: g.remainingQuota,
+      totalQuota: asFiniteInt(g.totalQuota, 0),
+      remainingQuota: asFiniteInt(g.remainingQuota, 0),
       status: g.status,
     })),
-    surveyPriority: values.surveyPriority,
-    maxMemberAttempts: values.maxMemberAttempts,
+    surveyPriority: asFiniteInt(values.surveyPriority, 0),
+    maxMemberAttempts: Math.min(10, Math.max(1, asFiniteInt(values.maxMemberAttempts, 2))),
     startDate: values.startDate.trim() ? new Date(values.startDate).toISOString() : null,
     endDate: values.endDate.trim() ? new Date(values.endDate).toISOString() : null,
     notes: values.notes.trim(),

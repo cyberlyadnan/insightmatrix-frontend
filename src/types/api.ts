@@ -3,6 +3,8 @@ export interface ApiErrorBody {
   message?: string;
   code?: string;
   errors?: Record<string, string[]>;
+  /** Backend may attach Joi details, nested messages, etc. */
+  details?: unknown;
 }
 
 export interface PaginatedResponse<T> {

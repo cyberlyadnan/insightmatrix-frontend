@@ -1,5 +1,5 @@
-import { env } from "@/config";
 import type { PanelRoutingEventType } from "@/constants/panel-survey-routing";
+import { buildPublicApiUrl } from "@/lib/site-url";
 
 export type PublicRoutingCallbackPayload = {
   supplierProjectPid: string;
@@ -11,14 +11,7 @@ export type PublicRoutingCallbackPayload = {
 };
 
 function publicCallbackRequestUrl(): string {
-  const path = "/public/panel-routing-callback";
-  if (env.apiUrl.startsWith("http")) {
-    return `${env.apiUrl.replace(/\/$/, "")}${path}`;
-  }
-  if (typeof window !== "undefined") {
-    return `${window.location.origin}${env.apiUrl.replace(/\/$/, "")}${path}`;
-  }
-  return `${env.apiUrl.replace(/\/$/, "")}${path}`;
+  return buildPublicApiUrl("/public/panel-routing-callback");
 }
 
 /**

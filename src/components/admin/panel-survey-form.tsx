@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useFieldArray, useForm, type Resolver } from "react-hook-form";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import {
+  useFieldArray,
+  useForm,
+  type ControllerRenderProps,
+  type FieldErrors,
+  type Path,
+  type Resolver,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +33,12 @@ import {
   PANEL_QUOTA_GROUP_STATUS_LABELS,
   PANEL_SURVEY_STATUS_LABELS,
 } from "@/constants/panel-survey";
+import {
+  flattenPanelSurveyFieldErrors,
+  humanizePanelSurveyFieldPath,
+  PANEL_SURVEY_SECTION_IDS,
+  panelSurveyFieldPathToSectionId,
+} from "@/lib/panel-survey-form-errors";
 import { cn } from "@/lib/utils";
 import { extractSupplierProjectPidFromUrl } from "@/lib/supplier-survey-url";
 import type { SurveyCompany } from "@/services/survey-company";
@@ -32,6 +46,31 @@ import {
   panelSurveyFormSchema,
   type PanelSurveyFormValues,
 } from "@/validations/panel-survey.schema";
+
+/** Binds `<input type="number">` so RHF stores integers, not strings (matches Zod + API). */
+function intInputBind(
+  field: Pick<
+    ControllerRenderProps<PanelSurveyFormValues, Path<PanelSurveyFormValues>>,
+    "name" | "ref" | "onBlur" | "value" | "onChange"
+  >,
+  emptyAs: number
+) {
+  return {
+    name: field.name,
+    ref: field.ref,
+    onBlur: field.onBlur,
+    value: typeof field.value === "number" && Number.isFinite(field.value) ? field.value : "",
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      if (raw === "") {
+        field.onChange(emptyAs);
+        return;
+      }
+      const n = Number.parseInt(raw, 10);
+      field.onChange(Number.isFinite(n) ? n : emptyAs);
+    },
+  };
+}
 
 function ProviderSearchSelect({
   value,
@@ -94,6 +133,7 @@ function ProviderSearchSelect({
       <div className="relative">
         <Input
           id={formItemId}
+          data-panel-survey-anchor="providerId"
           placeholder="Search providers by name or code…"
           value={query}
           onChange={(e) => {
@@ -169,9 +209,20 @@ type PanelSurveyFormProps = {
   isSubmitting: boolean;
 };
 
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionCard({
+  title,
+  id,
+  children,
+}: {
+  title: string;
+  id?: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
+    <div
+      id={id}
+      className="scroll-mt-28 rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm"
+    >
       <h2 className="text-lg font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">
         {title}
       </h2>
@@ -201,10 +252,35 @@ export function PanelSurveyForm({
     form.reset(defaultValues);
   }, [defaultValues, form]);
 
+  const handleInvalid = (errors: FieldErrors<PanelSurveyFormValues>) => {
+    const flat = flattenPanelSurveyFieldErrors(errors);
+    if (flat.length === 0) {
+      toast.error("Could not submit — check highlighted fields.");
+      return;
+    }
+    const lines = flat
+      .slice(0, 6)
+      .map((e) => `${humanizePanelSurveyFieldPath(e.path)}: ${e.message}`);
+    const extra = flat.length > 6 ? `\n…plus ${flat.length - 6} more.` : "";
+    toast.error("Fix these before saving", {
+      description: `${lines.join("\n")}${extra}`,
+    });
+    const firstPath = flat[0].path;
+    const sectionId = panelSurveyFieldPathToSectionId(firstPath);
+    requestAnimationFrame(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (firstPath === "providerId" || firstPath.startsWith("providerId.")) {
+        document.querySelector<HTMLElement>('[data-panel-survey-anchor="providerId"]')?.focus();
+        return;
+      }
+      void form.setFocus(firstPath as Path<PanelSurveyFormValues>);
+    });
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <SectionCard title="Basic survey information">
+      <form onSubmit={form.handleSubmit(onSubmit, handleInvalid)} className="space-y-8">
+        <SectionCard title="Basic survey information" id={PANEL_SURVEY_SECTION_IDS.basic}>
           <div className="grid gap-6 md:grid-cols-2">
             <FormField
               control={form.control}
@@ -286,7 +362,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Provider selection">
+        <SectionCard title="Provider selection" id={PANEL_SURVEY_SECTION_IDS.provider}>
           <FormField
             control={form.control}
             name="providerId"
@@ -306,7 +382,7 @@ export function PanelSurveyForm({
           />
         </SectionCard>
 
-        <SectionCard title="External survey URL configuration">
+        <SectionCard title="External survey URL configuration" id={PANEL_SURVEY_SECTION_IDS.url}>
           <div className="grid gap-6 md:grid-cols-2">
             <FormField
               control={form.control}
@@ -410,7 +486,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Targeting configuration">
+        <SectionCard title="Targeting configuration" id={PANEL_SURVEY_SECTION_IDS.targeting}>
           <div className="grid gap-6 md:grid-cols-2">
             <FormField
               control={form.control}
@@ -592,7 +668,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Survey metrics (points)">
+        <SectionCard title="Survey metrics (points)" id={PANEL_SURVEY_SECTION_IDS.metrics}>
           <p className="text-xs text-gray-500 mb-4 -mt-2">
             Panel rewards use <strong>points</strong> only. Leave blank if not applicable.
           </p>
@@ -672,7 +748,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Company billing (money)">
+        <SectionCard title="Company billing (money)" id={PANEL_SURVEY_SECTION_IDS.billing}>
           <p className="text-xs text-gray-500 mb-4 -mt-2">
             What the <strong>survey provider</strong> pays InsightMatrix in currency (e.g. USD).
             This feeds the <strong>Company payments</strong> module and PDF invoices. Member rewards
@@ -726,7 +802,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Quota configuration">
+        <SectionCard title="Quota configuration" id={PANEL_SURVEY_SECTION_IDS.quotas}>
           <div className="grid gap-6 md:grid-cols-2 mb-8">
             <FormField
               control={form.control}
@@ -738,8 +814,11 @@ export function PanelSurveyForm({
                     <Input
                       className="rounded-xl h-11 border-gray-200"
                       type="number"
+                      inputMode="numeric"
                       min={0}
-                      {...field}
+                      step={1}
+                      placeholder="0"
+                      {...intInputBind(field, 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -756,8 +835,11 @@ export function PanelSurveyForm({
                     <Input
                       className="rounded-xl h-11 border-gray-200"
                       type="number"
+                      inputMode="numeric"
                       min={0}
-                      {...field}
+                      step={1}
+                      placeholder="0"
+                      {...intInputBind(field, 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -841,8 +923,11 @@ export function PanelSurveyForm({
                             <Input
                               className="rounded-xl border-gray-200"
                               type="number"
+                              inputMode="numeric"
                               min={0}
-                              {...f}
+                              step={1}
+                              placeholder="0"
+                              {...intInputBind(f, 0)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -859,8 +944,11 @@ export function PanelSurveyForm({
                             <Input
                               className="rounded-xl border-gray-200"
                               type="number"
+                              inputMode="numeric"
                               min={0}
-                              {...f}
+                              step={1}
+                              placeholder="0"
+                              {...intInputBind(f, 0)}
                             />
                           </FormControl>
                           <FormMessage />
@@ -896,7 +984,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Survey settings">
+        <SectionCard title="Survey settings" id={PANEL_SURVEY_SECTION_IDS.settings}>
           <div className="grid gap-6 md:grid-cols-2">
             <FormField
               control={form.control}
@@ -905,7 +993,14 @@ export function PanelSurveyForm({
                 <FormItem>
                   <FormLabel className="font-bold text-gray-700">Priority</FormLabel>
                   <FormControl>
-                    <Input className="rounded-xl h-11 border-gray-200" type="number" {...field} />
+                    <Input
+                      className="rounded-xl h-11 border-gray-200"
+                      type="number"
+                      inputMode="numeric"
+                      step={1}
+                      placeholder="0"
+                      {...intInputBind(field, 0)}
+                    />
                   </FormControl>
                   <p className="text-xs text-gray-500">
                     Higher numbers surface first in routing UIs.
@@ -924,16 +1019,12 @@ export function PanelSurveyForm({
                     <Input
                       className="rounded-xl h-11 border-gray-200"
                       type="number"
+                      inputMode="numeric"
                       min={1}
                       max={10}
-                      value={field.value}
-                      onChange={(e) => {
-                        const n = Number.parseInt(e.target.value, 10);
-                        field.onChange(Number.isFinite(n) ? Math.min(10, Math.max(1, n)) : 2);
-                      }}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
+                      step={1}
+                      placeholder="2"
+                      {...intInputBind(field, 2)}
                     />
                   </FormControl>
                   <p className="text-xs text-gray-500">
@@ -982,7 +1073,7 @@ export function PanelSurveyForm({
           </div>
         </SectionCard>
 
-        <SectionCard title="Notes">
+        <SectionCard title="Notes" id={PANEL_SURVEY_SECTION_IDS.notes}>
           <FormField
             control={form.control}
             name="notes"

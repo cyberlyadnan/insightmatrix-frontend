@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { Check, Copy, Link2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -8,21 +8,11 @@ import { DashboardSection } from "@/components/dashboard/DashboardSection";
 import { Button } from "@/components/ui/button";
 import { env } from "@/config";
 import { SURVEY_CALLBACK_CONFIG } from "@/constants/survey-callback";
-import { ROUTES } from "@/constants/routes";
-
-function useClientOrigin(): string {
-  return useSyncExternalStore(
-    () => () => {},
-    () => window.location.origin,
-    () => ""
-  );
-}
-
-function usePublicSiteBase(): string {
-  const fromEnv = env.publicSiteUrl;
-  const clientOrigin = useClientOrigin();
-  return fromEnv || clientOrigin;
-}
+import {
+  buildPublicApiUrl,
+  buildSurveyCallbackUrl,
+  shouldWarnMissingPublicSiteUrl,
+} from "@/lib/site-url";
 
 function CopyUrlButton({ fullUrl }: { fullUrl: string }) {
   const [done, setDone] = useState(false);
@@ -48,13 +38,18 @@ function CopyUrlButton({ fullUrl }: { fullUrl: string }) {
       title="Copy URL"
       aria-label="Copy URL"
     >
-      {done ? <Check className="w-4 h-4 text-emerald-600" aria-hidden /> : <Copy className="w-4 h-4" aria-hidden />}
+      {done ? (
+        <Check className="w-4 h-4 text-emerald-600" aria-hidden />
+      ) : (
+        <Copy className="w-4 h-4" aria-hidden />
+      )}
     </Button>
   );
 }
 
 export function SurveyRoutingCallbacksSection() {
-  const base = usePublicSiteBase();
+  const postApiUrl = buildPublicApiUrl("/public/panel-routing-callback");
+  const showEnvWarning = shouldWarnMissingPublicSiteUrl();
 
   return (
     <DashboardSection
@@ -63,19 +58,23 @@ export function SurveyRoutingCallbacksSection() {
       actions={null}
     >
       <div className="space-y-4">
-        {!env.publicSiteUrl ? (
+        {showEnvWarning ? (
           <p className="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-4 py-2">
-            Set <code className="font-mono">NEXT_PUBLIC_APP_URL</code> in production so copied links
-            show your public domain. Until then we use the current origin ({base || "—"}).
+            Set <code className="font-mono">NEXT_PUBLIC_APP_URL</code> to your live domain (e.g.{" "}
+            <code className="font-mono">https://app.example.com</code>) in production so copied
+            callback links always use your public URL, not a preview host.
+          </p>
+        ) : env.publicSiteUrl ? (
+          <p className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2">
+            Public site URL: <code className="font-mono break-all">{env.publicSiteUrl}</code> —
+            callback links below use this domain.
           </p>
         ) : null}
 
         <p className="text-sm text-gray-600">
           <strong>POST API (for direct integration):</strong>{" "}
           <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded break-all">
-            {env.apiUrl.startsWith("http")
-              ? `${env.apiUrl.replace(/\/$/, "")}/public/panel-routing-callback`
-              : `${base}${env.apiUrl.replace(/\/$/, "")}/public/panel-routing-callback`}
+            {postApiUrl}
           </code>{" "}
           with JSON body{" "}
           <code className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded">
@@ -86,8 +85,11 @@ export function SurveyRoutingCallbacksSection() {
 
         <ul className="space-y-3">
           {SURVEY_CALLBACK_CONFIG.map((c) => {
-            const path = ROUTES.surveyCallback(c.slug);
-            const fullUrl = `${base || ""}${path}`;
+            const fullUrl = buildSurveyCallbackUrl(c.slug);
+            const copySample = buildSurveyCallbackUrl(c.slug, {
+              pid: "YOUR_PROJECT_PID",
+              toid: "RESPONDENT_REF",
+            });
             return (
               <li
                 key={c.slug}
@@ -100,12 +102,12 @@ export function SurveyRoutingCallbacksSection() {
                   </p>
                   <p className="text-xs text-gray-600 mb-2">{c.description}</p>
                   <code className="block text-xs font-mono text-gray-900 break-all bg-white border border-gray-100 rounded-xl px-3 py-2">
-                    {fullUrl || path}
+                    {fullUrl}
                     <span className="text-gray-400">?pid=…&amp;toid=…</span>
                   </code>
                 </div>
                 <div className="flex sm:flex-col justify-end gap-2 shrink-0">
-                  <CopyUrlButton fullUrl={`${fullUrl}?pid=YOUR_PROJECT_PID&toid=RESPONDENT_REF`} />
+                  <CopyUrlButton fullUrl={copySample} />
                 </div>
               </li>
             );

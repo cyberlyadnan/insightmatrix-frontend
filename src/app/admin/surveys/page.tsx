@@ -175,7 +175,7 @@ export default function AdminPanelSurveysPage() {
     mutationFn: seedDemoPanelSurveys,
     onSuccess: async (r) => {
       toast.success(
-        `Demo surveys seeded: ${r.inserted} inserted, ${r.updated} updated${
+        `Surveys seeded: ${r.inserted} inserted, ${r.updated} updated${
           r.skipped > 0 ? `, ${r.skipped} skipped (missing providers)` : ""
         }.`
       );
@@ -202,15 +202,16 @@ export default function AdminPanelSurveysPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 shrink-0">
-          {/* <button
+          <button
             type="button"
             onClick={() => seedMutation.mutate()}
             disabled={seedMutation.isPending}
-            className="h-11 px-5 rounded-xl border border-gray-300 bg-white text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-gray-50 disabled:opacity-60"
+            className="h-11 px-5 rounded-xl border border-gray-300 bg-white text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-gray-50 disabled:opacity-60 shrink-0"
+            title="Upserts demo routing surveys from seed data. Requires survey providers (e.g. Dynata) in the database."
           >
             <Database className="w-4 h-4 shrink-0" />
-            {seedMutation.isPending ? "Seeding…" : "Seed demo surveys"}
-          </button> */}
+            {seedMutation.isPending ? "Seeding…" : "Seed surveys"}
+          </button>
           <Link
             href={ROUTES.admin.surveysCreate}
             className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"

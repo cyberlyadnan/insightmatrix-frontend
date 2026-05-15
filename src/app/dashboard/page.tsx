@@ -212,7 +212,7 @@ export default function DashboardHome() {
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "42.5%" }}
-                    className="h-full bg-gradient-to-r from-brand-primary to-violet-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-brand-primary to-brand-accent2 rounded-full"
                   />
                 </div>
               </div>

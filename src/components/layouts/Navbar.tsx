@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ImxLogo } from "@/components/brand";
 import { ROUTES, isAuthRoute } from "@/constants";
 import { useAuthStore } from "@/store/authStore";
 
@@ -63,16 +64,14 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-12">
             <div className="flex-shrink-0 flex items-center gap-4">
-              <Link
+              <ImxLogo
                 href="/"
-                className={`text-2xl font-black tracking-tight transition-colors ${
-                  isScrolled || !isHomePage ? "text-brand-primary" : "text-white"
-                }`}
-              >
-                InsightMatrix<span className="text-xl align-top font-normal">&reg;</span>
-              </Link>
+                size="md"
+                priority
+                surface={isScrolled || !isHomePage ? "light" : "dark"}
+              />
 
-              <button
+              {/* <button
                 type="button"
                 className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors text-sm font-medium ${
                   isScrolled || !isHomePage
@@ -81,7 +80,7 @@ export default function Navbar() {
                 }`}
               >
                 <span>🇬🇧</span> UK
-              </button>
+              </button> */}
             </div>
 
             <div className="hidden lg:flex space-x-6 items-center">
@@ -180,9 +179,7 @@ export default function Navbar() {
               className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white z-[101] shadow-2xl lg:hidden flex flex-col"
             >
               <div className="p-6 flex items-center justify-between border-b border-gray-100">
-                <span className="text-xl font-black text-brand-primary tracking-tight">
-                  InsightMatrix<span className="text-lg align-top font-normal">&reg;</span>
-                </span>
+                <ImxLogo href="/" size="sm" surface="light" />
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}

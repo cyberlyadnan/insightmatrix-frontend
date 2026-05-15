@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AdminRoleGate } from "@/components/auth/admin-role-gate";
+import { ImxLogo } from "@/components/brand";
 import { useLogout } from "@/hooks/use-logout";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store";
@@ -65,15 +66,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             isSidebarOpen ? "w-64" : "w-20"
           }`}
         >
-          <div className="p-6 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-brand-primary flex items-center justify-center shrink-0 shadow-lg shadow-brand-primary/20">
-              <span className="font-black text-white text-xl">I</span>
-            </div>
-            {isSidebarOpen && (
-              <span className="font-black tracking-tighter text-xl">
-                Insight<span className="text-brand-primary">Matrix</span>
-              </span>
-            )}
+          <div className="p-6 flex items-center min-h-[4.5rem]">
+            <ImxLogo
+              href="/admin"
+              size={isSidebarOpen ? "sm" : "xs"}
+              surface="dark"
+              className={isSidebarOpen ? undefined : "mx-auto"}
+            />
           </div>
 
           <nav className="flex-1 px-4 py-6 space-y-2">
@@ -138,9 +137,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className="fixed top-0 left-0 bottom-0 w-72 bg-gray-950 text-white z-[60] p-6 lg:hidden flex flex-col"
               >
                 <div className="flex items-center justify-between mb-10">
-                  <span className="font-black tracking-tighter text-2xl">
-                    Insight<span className="text-brand-primary">Matrix</span>
-                  </span>
+                  <ImxLogo href="/admin" size="sm" surface="dark" />
                   <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400">
                     <X />
                   </button>
@@ -186,12 +183,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Menu size={20} />
               </button>
 
-              {/* Admin Home Logo */}
-              <Link href="/admin">
-                <span className="font-black tracking-tighter text-xl sm:text-2xl text-gray-900">
-                  Insight<span className="text-brand-primary">Matrix</span>
-                </span>
-              </Link>
+              <ImxLogo href="/admin" size="sm" surface="light" />
               <div className="relative max-w-md w-full hidden md:block">
                 <Search
                   className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Star, Bell, ChevronRight, Users, TrendingUp, Shield } from "lucide-react";
+import { ImxLogo } from "@/components/brand";
 
 const floatingAvatars = [
   { img: 11, label: "/spending habits", pos: { top: "5%", left: "2%" } },
@@ -18,8 +19,8 @@ export default function PanelCommunity() {
   return (
     <section className="relative py-32 bg-white overflow-hidden">
       {/* Background gradient wash */}
-      <div className="absolute inset-x-0 top-0 h-[700px] bg-gradient-to-b from-pink-50/60 via-violet-50/40 to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[600px] rounded-full bg-gradient-to-r from-pink-100/50 via-violet-100/50 to-sky-100/50 blur-3xl opacity-50 pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-[700px] bg-gradient-to-b from-brand-subtle/80 via-sky-50/40 to-transparent pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[600px] rounded-full bg-gradient-to-r from-brand-light/40 via-sky-100/50 to-brand-subtle blur-3xl opacity-50 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* ── Section Header ── */}
@@ -134,9 +135,7 @@ export default function PanelCommunity() {
                   <div className="bg-[#f5f5f7] min-h-[500px] flex flex-col">
                     {/* App top bar */}
                     <div className="bg-white px-4 pt-10 pb-3 flex items-center justify-between shadow-sm">
-                      <span className="font-extrabold text-brand-primary text-[15px] tracking-tight">
-                        InsightMatrix
-                      </span>
+                      <ImxLogo size="xs" surface="light" href={null} className="max-w-[5.5rem]" />
                       <div className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
                         <Users className="w-2.5 h-2.5" /> 2,400 &rsaquo;
                       </div>

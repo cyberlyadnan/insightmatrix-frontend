@@ -85,7 +85,7 @@ export default function PanelWallet() {
       ) : (
         <>
           <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-brand-primary to-violet-600 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
+            <div className="lg:col-span-2 p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-brand-primary to-brand-accent2 text-white relative overflow-hidden shadow-2xl shadow-brand-primary/20">
               <div className="absolute top-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-white/10 rounded-full blur-[60px] md:blur-[80px] -translate-y-1/2 translate-x-1/2" />
 
               <div className="relative z-10 flex flex-col h-full">

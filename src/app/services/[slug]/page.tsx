@@ -41,8 +41,8 @@ const servicesData: Record<string, ServiceDetail> = {
     longDescription:
       "InsightMatrix provides a premium bridge between your daily experiences and the brands shaping the future. As a participant, you're not just a data point; you're a strategic advisor. Our platform ensures that your time is respected, your privacy is iron-clad, and your compensation is guaranteed.",
     icon: ClipboardList,
-    color: "text-pink-600",
-    accent: "bg-pink-50",
+    color: "text-brand-primary",
+    accent: "bg-brand-subtle",
     features: [
       {
         title: "Verified Demographics",

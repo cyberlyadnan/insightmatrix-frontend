@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   const visualTags = [
-    { text: "Niche Demographics", color: "bg-pink-600" },
+    { text: "Niche Demographics", color: "bg-brand-primary" },
     { text: "Accuracy", color: "bg-brand-primary" },
     { text: "Scalability", color: "bg-brand-accent2" },
     { text: "Global Coverage", color: "bg-violet-600" },

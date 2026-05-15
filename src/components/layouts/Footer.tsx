@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Instagram, ArrowRight, Globe, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { ImxLogo } from "@/components/brand";
 import { isAuthRoute, ROUTES } from "@/constants";
 
 export default function Footer() {
@@ -24,15 +25,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/5">
           <div className="lg:col-span-4">
-            <Link
-              href="/"
-              className="text-2xl font-black text-white tracking-tighter inline-flex items-center gap-1 group"
-            >
-              InsightMatrix
-              <span className="text-xl align-top font-normal text-brand-primary group-hover:rotate-12 transition-transform">
-                &reg;
-              </span>
-            </Link>
+            <ImxLogo href="/" size="lg" surface="dark" />
             <p className="mt-6 text-base leading-relaxed max-w-sm">
               The world&apos;s most connected proprietary panel. Engineering accuracy into every
               step of the research process.
@@ -221,9 +214,9 @@ export default function Footer() {
         <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6 text-[10px] uppercase font-black tracking-widest text-gray-600">
             <p>&copy; {currentYear} InsightMatrix Global</p>
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
+            {/* <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
               <span>🇬🇧</span> UK-EN
-            </div>
+            </div> */}
           </div>
 
           <div className="flex gap-8">

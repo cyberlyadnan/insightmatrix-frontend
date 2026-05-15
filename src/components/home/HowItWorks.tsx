@@ -4,22 +4,28 @@ export default function HowItWorks() {
   const steps = [
     {
       title: "Register & Profile",
-      description: "Create your free account and complete your demographic profile to get matched with the most relevant studies.",
-      image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop",
-      color: "bg-pink-100",
-      accent: "from-pink-500/20 to-rose-500/20",
+      description:
+        "Create your free account and complete your demographic profile to get matched with the most relevant studies.",
+      image:
+        "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=800&auto=format&fit=crop",
+      color: "bg-brand-subtle",
+      accent: "from-brand-primary/20 to-brand-accent2/20",
     },
     {
       title: "Participate in Studies",
-      description: "Receive invitations to high-quality market research studies, exclusive product tests, and insightful opinion polls.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      description:
+        "Receive invitations to high-quality market research studies, exclusive product tests, and insightful opinion polls.",
+      image:
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
       color: "bg-violet-100",
       accent: "from-violet-500/20 to-purple-500/20",
     },
     {
       title: "Earn Rewards",
-      description: "Get compensated for your time and insights. Redeem points for cash, premium gift cards, or local charitable donations.",
-      image: "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?q=80&w=800&auto=format&fit=crop",
+      description:
+        "Get compensated for your time and insights. Redeem points for cash, premium gift cards, or local charitable donations.",
+      image:
+        "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?q=80&w=800&auto=format&fit=crop",
       color: "bg-sky-100",
       accent: "from-sky-500/20 to-cyan-500/20",
     },
@@ -29,7 +35,7 @@ export default function HowItWorks() {
     <section className="py-32 bg-[#fafafa] relative overflow-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-subtle rounded-full blur-[120px] opacity-60 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-50 rounded-full blur-[120px] opacity-60 pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-subtle rounded-full blur-[120px] opacity-60 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-20">
@@ -37,7 +43,11 @@ export default function HowItWorks() {
             Simple Process
           </span>
           <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 leading-tight text-gray-900">
-            How <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent1">InsightMatrix</span> Works
+            How{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent1">
+              InsightMatrix
+            </span>{" "}
+            Works
           </h2>
           <p className="text-gray-500 text-xl leading-relaxed font-medium">
             Join millions of users worldwide and start earning in three simple, transparent steps.
@@ -60,19 +70,25 @@ export default function HowItWorks() {
                     </div>
 
                     {/* Image Circle/Frame */}
-                    <div className={`relative aspect-square rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl transition-all duration-500 group-hover:shadow-brand-primary/20 group-hover:-translate-y-2`}>
-                      <img 
-                        src={step.image} 
+                    <div
+                      className={`relative aspect-square rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl transition-all duration-500 group-hover:shadow-brand-primary/20 group-hover:-translate-y-2`}
+                    >
+                      <img
+                        src={step.image}
                         alt={step.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      
+
                       {/* Gradient Overlay */}
-                      <div className={`absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                      />
                     </div>
 
                     {/* Decorative accent behind image */}
-                    <div className={`absolute inset-0 -z-10 rounded-[3rem] bg-gradient-to-br ${step.accent} blur-2xl opacity-40 group-hover:opacity-80 transition-opacity duration-500 transform scale-90 group-hover:scale-105`} />
+                    <div
+                      className={`absolute inset-0 -z-10 rounded-[3rem] bg-gradient-to-br ${step.accent} blur-2xl opacity-40 group-hover:opacity-80 transition-opacity duration-500 transform scale-90 group-hover:scale-105`}
+                    />
                   </div>
 
                   {/* Text Content */}
@@ -93,12 +109,12 @@ export default function HowItWorks() {
             })}
           </div>
         </div>
-        
+
         {/* Bottom CTA bar */}
         <div className="mt-20 flex justify-center">
-            <button className="bg-gray-900 text-white px-10 py-4 rounded-full font-black text-lg hover:bg-gray-800 shadow-2xl transition-all hover:scale-105 flex items-center gap-3">
-                Register for Free <ArrowRight className="w-6 h-6" />
-            </button>
+          <button className="bg-gray-900 text-white px-10 py-4 rounded-full font-black text-lg hover:bg-gray-800 shadow-2xl transition-all hover:scale-105 flex items-center gap-3">
+            Register for Free <ArrowRight className="w-6 h-6" />
+          </button>
         </div>
       </div>
     </section>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { ImxLogo } from "@/components/brand";
 import { DashboardRoleGate } from "@/components/auth/dashboard-role-gate";
 import { PanelPrescreenGate } from "@/components/auth/panel-prescreen-gate";
 import { ROUTES } from "@/constants/routes";
@@ -19,7 +20,6 @@ import {
   Bell,
   Search,
   User,
-  Zap,
   TrendingUp,
   Settings,
   LogOut,
@@ -60,15 +60,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               isSidebarOpen ? "w-72" : "w-24"
             }`}
           >
-            <div className="p-8 pb-12 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-primary to-violet-500 flex items-center justify-center shrink-0 shadow-xl shadow-brand-primary/20">
-                <Zap className="text-white" size={20} fill="currentColor" />
-              </div>
-              {isSidebarOpen && (
-                <span className="font-black tracking-tighter text-2xl text-gray-900">
-                  Insight<span className="text-brand-primary">Matrix</span>
-                </span>
-              )}
+            <div className="p-8 pb-12 flex items-center min-h-[5rem]">
+              <ImxLogo
+                href={ROUTES.dashboard.root}
+                size={isSidebarOpen ? "sm" : "xs"}
+                surface="light"
+                className={isSidebarOpen ? undefined : "mx-auto"}
+              />
             </div>
 
             <div className="px-5 mb-10 overflow-hidden">
@@ -164,11 +162,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50 w-full">
             <header className="h-24 px-4 sm:px-6 lg:px-12 flex items-center justify-between shrink-0 bg-white/40 backdrop-blur-md border-b border-slate-200/50 transition-all w-full">
               <div className="flex items-center gap-4 sm:gap-6">
-                <Link href={ROUTES.dashboard.root} className="lg:hidden">
-                  <span className="font-black tracking-tighter text-xl sm:text-2xl text-gray-900">
-                    Insight<span className="text-brand-primary">Matrix</span>
-                  </span>
-                </Link>
+                <ImxLogo
+                  href={ROUTES.dashboard.root}
+                  size="sm"
+                  surface="light"
+                  className="lg:hidden"
+                />
 
                 <h2 className="text-xl font-black text-gray-900 hidden lg:block">
                   Welcome back, <span className="text-brand-primary">{displayName}</span> 👋

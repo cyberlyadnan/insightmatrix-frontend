@@ -6,11 +6,11 @@ const features = [
     description:
       "Highly engaged panel members share true reflections of their realities — opinions, behavior & lived experiences you can act on.",
     icon: Users,
-    accentColor: "from-pink-500 to-rose-500",
-    bgAccent: "bg-pink-50",
-    borderAccent: "border-pink-100",
-    iconBg: "bg-pink-100",
-    iconColor: "text-pink-600",
+    accentColor: "from-brand-primary to-brand-accent2",
+    bgAccent: "bg-brand-subtle",
+    borderAccent: "border-brand-light",
+    iconBg: "bg-brand-light",
+    iconColor: "text-brand-primary",
     visual: "avatars",
   },
   {
@@ -71,7 +71,7 @@ function AvatarVisual() {
 
 function BarsVisual() {
   const bars = [65, 40, 80, 55, 90, 45, 70, 60, 85, 50, 75, 35];
-  const colors = ["bg-pink-400", "bg-violet-400", "bg-sky-400", "bg-rose-400"];
+  const colors = ["bg-brand-primary", "bg-brand-accent2", "bg-sky-400", "bg-brand-accent1"];
   return (
     <div className="flex items-end gap-1 h-12">
       {bars.map((h, i) => (
@@ -130,7 +130,7 @@ export default function WhyInsightMatrix() {
   return (
     <section className="py-24 bg-[#f8f7fc] relative overflow-hidden">
       {/* Subtle top gradient wash */}
-      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-500 via-violet-500 to-sky-500" />
+      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-accent1 via-brand-primary to-brand-accent2" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -139,10 +139,11 @@ export default function WhyInsightMatrix() {
             Why InsightMatrix
           </h2>
           <p className="text-lg text-gray-600 leading-relaxed">
-            Get access to <span className="font-semibold text-gray-800">real-world data</span> and market research
-            expertise, powered by reality — from <span className="font-semibold text-gray-800">real people</span>, in{" "}
-            <span className="font-semibold text-gray-800">real time</span>. Insights that help you make better
-            strategic decisions.
+            Get access to <span className="font-semibold text-gray-800">real-world data</span> and
+            market research expertise, powered by reality — from{" "}
+            <span className="font-semibold text-gray-800">real people</span>, in{" "}
+            <span className="font-semibold text-gray-800">real time</span>. Insights that help you
+            make better strategic decisions.
           </p>
         </div>
 
@@ -162,7 +163,9 @@ export default function WhyInsightMatrix() {
 
                 {/* Icon + Title */}
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-2xl ${f.iconBg} flex items-center justify-center shrink-0 shadow-sm`}>
+                  <div
+                    className={`w-12 h-12 rounded-2xl ${f.iconBg} flex items-center justify-center shrink-0 shadow-sm`}
+                  >
                     <Icon className={`w-6 h-6 ${f.iconColor}`} />
                   </div>
                   <h3 className="text-xl font-extrabold text-gray-900">{f.title}</h3>

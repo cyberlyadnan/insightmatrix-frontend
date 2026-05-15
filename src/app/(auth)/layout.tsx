@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { RedirectIfAuthenticated } from "@/components/auth/redirect-if-authenticated";
+import { ImxLogo } from "@/components/brand";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </Link>
 
       {/* Left Side - Visual/Branding */}
-      <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-[#596cc6] via-[#d74c86] to-[#f67b5f] overflow-hidden">
+      <div className="relative hidden lg:flex items-center justify-center bg-gradient-to-br from-brand-accent1 via-brand-primary to-brand-accent2 overflow-hidden">
         {/* Animated Shapes */}
         <motion.div
           animate={{
@@ -42,8 +43,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="flex flex-col items-center"
           >
-            <h2 className="text-4xl font-extrabold mb-6">Welcome to InsightMatrix</h2>
+            <ImxLogo href="/" size="lg" surface="dark" className="mb-8" />
+            <h2 className="text-4xl font-extrabold mb-6">Welcome back</h2>
             <p className="text-xl text-white/90 max-w-md mx-auto leading-relaxed">
               Join thousands of creators and brands and start collaborating today. Your perspective
               matters.
@@ -66,10 +69,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Right Side - Forms */}
       <div className="flex items-center justify-center p-8 bg-gray-50/50 pt-24 lg:pt-8">
         <div className="w-full max-w-md">
-          <div className="mb-8 text-center lg:hidden">
-            <Link href="/" className="inline-block text-2xl font-black text-brand-primary">
-              InsightMatrix
-            </Link>
+          <div className="mb-8 flex justify-center lg:hidden">
+            <ImxLogo href="/" size="md" surface="light" />
           </div>
           <RedirectIfAuthenticated>{children}</RedirectIfAuthenticated>
         </div>

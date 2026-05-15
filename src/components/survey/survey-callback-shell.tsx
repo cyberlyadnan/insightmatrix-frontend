@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect } from "react";
+import { ImxLogo } from "@/components/brand";
 import { cn } from "@/lib/utils";
 
 export type SurveyCallbackAccent = "complete" | "quota-full" | "terminate" | "quality" | "neutral";
@@ -19,33 +20,14 @@ const ACCENT_ORBS: Record<SurveyCallbackAccent, { a: string; b: string }> = {
     b: "from-rose-400/10 to-transparent",
   },
   quality: {
-    a: "from-rose-400/25 via-fuchsia-500/10",
-    b: "from-pink-400/10 to-transparent",
+    a: "from-brand-primary/25 via-brand-accent2/10",
+    b: "from-sky-400/10 to-transparent",
   },
   neutral: {
     a: "from-brand-primary/20 via-brand-accent2/10",
     b: "from-brand-light/10 to-transparent",
   },
 };
-
-function InsightMatrixLogo({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent2 shadow-lg shadow-brand-primary/35",
-        className
-      )}
-      aria-hidden
-    >
-      <svg viewBox="0 0 32 32" className="h-6 w-6 text-white" fill="currentColor">
-        <rect x="4" y="4" width="10" height="10" rx="2" className="opacity-95" />
-        <rect x="18" y="4" width="10" height="10" rx="2" className="opacity-75" />
-        <rect x="4" y="18" width="10" height="10" rx="2" className="opacity-75" />
-        <rect x="18" y="18" width="10" height="10" rx="2" className="opacity-95" />
-      </svg>
-    </div>
-  );
-}
 
 export function SurveyCallbackShell({
   children,
@@ -97,17 +79,11 @@ export function SurveyCallbackShell({
       <div className="relative z-10 flex min-h-dvh flex-col">
         <header className="border-b border-white/5 bg-slate-950/40 px-4 py-5 backdrop-blur-xl sm:px-8 sm:py-6">
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <InsightMatrixLogo />
-              <div className="min-w-0">
-                <p className="text-lg font-black tracking-tight text-white sm:text-xl">
-                  InsightMatrix
-                  <span className="text-base font-normal text-white/70 sm:text-lg">®</span>
-                </p>
-                <p className="truncate text-xs font-semibold uppercase tracking-[0.2em] text-white/45 sm:text-[11px]">
-                  InsightMatrix Global · Panel routing
-                </p>
-              </div>
+            <div className="flex min-w-0 flex-col gap-2 sm:gap-3">
+              <ImxLogo href="/" size="md" surface="dark" priority />
+              <p className="truncate text-xs font-semibold uppercase tracking-[0.2em] text-white/45 sm:text-[11px]">
+                Panel routing · secure callback
+              </p>
             </div>
             {badge ? (
               <div className="flex shrink-0 justify-start sm:justify-end">{badge}</div>

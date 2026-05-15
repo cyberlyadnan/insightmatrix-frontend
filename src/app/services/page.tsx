@@ -34,9 +34,9 @@ export default function ServicesPage() {
         "Mobile-First Interface",
         "Strict Privacy",
       ],
-      color: "text-pink-600",
-      bg: "bg-pink-50/50",
-      border: "group-hover:border-pink-200",
+      color: "text-brand-primary",
+      bg: "bg-brand-subtle/50",
+      border: "group-hover:border-brand-light",
     },
     {
       title: "Market Insight Data",

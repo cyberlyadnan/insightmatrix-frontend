@@ -6,18 +6,27 @@
 }
 
 @theme {
-  --color-brand-primary: #3392de;
-  --color-brand-hover: #2878b8;
-  --color-brand-light: #b8dbf5;
-  --color-brand-subtle: #edf5fc;
-  --color-brand-accent1: #1e6bb5;
-  --color-brand-accent2: #5ba8e8;
+  /* Primary Brand Colors Inspired by IMX Logo */
+  --color-brand-primary: #0b4fd9;
+  --color-brand-hover: #083ea9;
+  --color-brand-light: #5eb8ff;
+  --color-brand-subtle: #eef5ff;
+  --color-brand-accent1: #061f5c;
+  --color-brand-accent2: #1792ff;
+
+  /* Premium Dark Shades */
+  --color-brand-dark: #03163f;
+  --color-brand-deep: #02102d;
 
   /* UI Colors */
-  --color-muted-foreground: #6b7280;
-  --color-input: #e5e7eb;
-  --color-ring: #3392de;
-  --color-border: #e5e7eb;
+  --color-muted-foreground: #5f6b85;
+  --color-input: #d7e3f5;
+  --color-ring: #0b4fd9;
+  --color-border: #dbe6f7;
+
+  /* Optional Background Helpers */
+  --color-background: #ffffff;
+  --color-surface: #f7faff;
 }
 
 @media (prefers-color-scheme: dark) {

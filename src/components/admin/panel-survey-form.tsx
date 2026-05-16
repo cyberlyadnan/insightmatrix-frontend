@@ -34,6 +34,14 @@ import {
   PANEL_SURVEY_STATUS_LABELS,
 } from "@/constants/panel-survey";
 import {
+  PANEL_COMPANY_SIZE_OPTIONS,
+  PANEL_COUNTRY_OPTIONS,
+  PANEL_INDUSTRY_OPTIONS,
+  PANEL_LANGUAGE_OPTIONS,
+  PANEL_PROFESSION_OPTIONS,
+} from "@/constants/panel-targeting-options";
+import { TargetingMultiSelect } from "@/components/admin/targeting-multi-select";
+import {
   flattenPanelSurveyFieldErrors,
   humanizePanelSurveyFieldPath,
   PANEL_SURVEY_SECTION_IDS,
@@ -493,17 +501,20 @@ export function PanelSurveyForm({
               name="countriesLine"
               render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel className="font-bold text-gray-700">
-                    Target countries (ISO codes)
-                  </FormLabel>
+                  <FormLabel className="font-bold text-gray-700">Target countries</FormLabel>
                   <FormControl>
-                    <Input
-                      className="rounded-xl h-11 border-gray-200"
-                      placeholder="MX, US, CA"
-                      {...field}
+                    <TargetingMultiSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      options={PANEL_COUNTRY_OPTIONS}
+                      placeholder="Select countries…"
+                      searchPlaceholder="Search countries…"
                     />
                   </FormControl>
-                  <p className="text-xs text-gray-500">Comma-separated ISO 3166-1 alpha-2 codes.</p>
+                  <p className="text-xs text-gray-500">
+                    Stored as ISO codes (e.g. US, GB). Leave empty for all countries.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -573,10 +584,13 @@ export function PanelSurveyForm({
                 <FormItem className="md:col-span-2">
                   <FormLabel className="font-bold text-gray-700">Professions / segments</FormLabel>
                   <FormControl>
-                    <Textarea
-                      className="rounded-xl border-gray-200 min-h-[72px]"
-                      placeholder="Comma-separated"
-                      {...field}
+                    <TargetingMultiSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      options={PANEL_PROFESSION_OPTIONS}
+                      placeholder="Select professions…"
+                      searchPlaceholder="Search professions…"
                     />
                   </FormControl>
                   <FormMessage />
@@ -590,10 +604,13 @@ export function PanelSurveyForm({
                 <FormItem className="md:col-span-2">
                   <FormLabel className="font-bold text-gray-700">Industries</FormLabel>
                   <FormControl>
-                    <Textarea
-                      className="rounded-xl border-gray-200 min-h-[72px]"
-                      placeholder="Comma-separated"
-                      {...field}
+                    <TargetingMultiSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      options={PANEL_INDUSTRY_OPTIONS}
+                      placeholder="Select industries…"
+                      searchPlaceholder="Search industries…"
                     />
                   </FormControl>
                   <FormMessage />
@@ -607,10 +624,13 @@ export function PanelSurveyForm({
                 <FormItem className="md:col-span-2">
                   <FormLabel className="font-bold text-gray-700">Company sizes</FormLabel>
                   <FormControl>
-                    <Input
-                      className="rounded-xl h-11 border-gray-200"
-                      placeholder="Comma-separated"
-                      {...field}
+                    <TargetingMultiSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      options={PANEL_COMPANY_SIZE_OPTIONS}
+                      placeholder="Select company sizes…"
+                      searchPlaceholder="Search…"
                     />
                   </FormControl>
                   <FormMessage />
@@ -624,10 +644,13 @@ export function PanelSurveyForm({
                 <FormItem className="md:col-span-2">
                   <FormLabel className="font-bold text-gray-700">Languages</FormLabel>
                   <FormControl>
-                    <Input
-                      className="rounded-xl h-11 border-gray-200"
-                      placeholder="en, es…"
-                      {...field}
+                    <TargetingMultiSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      options={PANEL_LANGUAGE_OPTIONS}
+                      placeholder="Select languages…"
+                      searchPlaceholder="Search languages…"
                     />
                   </FormControl>
                   <FormMessage />

@@ -73,4 +73,17 @@ export const queryKeys = {
     profile: ["vendor-auth", "profile"] as const,
     dashboard: ["vendor-auth", "dashboard"] as const,
   },
+  vendorAllocations: {
+    all: ["vendor-allocations"] as const,
+    list: (filters: Record<string, unknown>) => ["vendor-allocations", "list", filters] as const,
+    detail: (id: string) => ["vendor-allocations", id] as const,
+    analytics: (id: string) => ["vendor-allocations", id, "analytics"] as const,
+    bySurvey: (surveyId: string) => ["vendor-allocations", "survey", surveyId] as const,
+  },
+  vendorPortalSurveys: {
+    all: ["vendor-portal", "surveys"] as const,
+    list: (filters: Record<string, unknown>) =>
+      ["vendor-portal", "surveys", "list", filters] as const,
+    detail: (id: string) => ["vendor-portal", "surveys", id] as const,
+  },
 } as const;

@@ -26,17 +26,25 @@ import { toast } from "sonner";
 import { Modal } from "@/components/shared/Modal";
 import {
   PANEL_QUOTA_GROUP_STATUS_LABELS,
-  PANEL_SURVEY_DEVICE_TYPES,
   PANEL_GENDER_LABELS,
   PANEL_SURVEY_STATUS_LABELS,
   type PanelSurveyStatus,
 } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
+import { VendorAllocationsSection } from "@/components/admin/VendorAllocationsSection";
 import { deletePanelSurvey, getPanelSurvey, patchPanelSurveyStatus } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
 
-type TabId = "overview" | "provider" | "targeting" | "quotas" | "metrics" | "url" | "notes";
+type TabId =
+  | "overview"
+  | "provider"
+  | "targeting"
+  | "quotas"
+  | "metrics"
+  | "url"
+  | "vendors"
+  | "notes";
 
 function StatusBadge({ status }: { status: PanelSurveyStatus }) {
   const styles: Record<PanelSurveyStatus, string> = {
@@ -61,6 +69,7 @@ const tabs: { id: TabId; label: string }[] = [
   { id: "quotas", label: "Quotas" },
   { id: "metrics", label: "Metrics" },
   { id: "url", label: "URL config" },
+  { id: "vendors", label: "Vendor allocations" },
   { id: "notes", label: "Notes" },
 ];
 
@@ -522,6 +531,15 @@ export default function PanelSurveyDetailPage() {
               enabled.
             </p>
           </div>
+        </div>
+      )}
+
+      {tab === "vendors" && (
+        <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
+          <VendorAllocationsSection
+            surveyId={id}
+            surveyRemainingQuota={survey.remainingQuota ?? 0}
+          />
         </div>
       )}
 

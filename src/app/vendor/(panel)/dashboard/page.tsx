@@ -12,6 +12,9 @@ import {
   XCircle,
 } from "lucide-react";
 
+import Link from "next/link";
+
+import { ROUTES } from "@/constants/routes";
 import { getVendorDashboardSummary } from "@/services/vendor-portal";
 import { queryKeys } from "@/services/queries";
 import { useVendorAuthStore } from "@/store/vendorAuthStore";
@@ -161,13 +164,19 @@ export default function VendorDashboardPage() {
             />
           </div>
 
-          <div className="rounded-2xl border border-dashed border-brand-light bg-brand-subtle/40 p-6">
-            <p className="text-sm font-bold text-brand-accent1">Coming next</p>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              Survey assignment, vendor-specific start links, callback relay, gateway verification
-              (IP, country, VPN, fingerprint), and session-level tracking will plug into this
-              dashboard without changing your vendor account.
-            </p>
+          <div className="rounded-2xl border border-brand-light bg-brand-subtle/40 p-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-brand-accent1">Assigned surveys</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                View allocations, routing links, and performance metrics.
+              </p>
+            </div>
+            <Link
+              href={ROUTES.vendor.surveys}
+              className="inline-flex rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-black"
+            >
+              Open surveys
+            </Link>
           </div>
         </>
       )}

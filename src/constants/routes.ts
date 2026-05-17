@@ -41,6 +41,9 @@ export const ROUTES = {
     login: "/vendor/login",
     dashboard: "/vendor/dashboard",
     profile: "/vendor/profile",
+    surveys: "/vendor/surveys",
+    survey: (allocationId: string) => `/vendor/surveys/${allocationId}`,
+    start: (allocationCode: string) => `/vendor/start/${allocationCode}`,
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
   /** Partner redirect targets — each records a different outcome via POST to the API */

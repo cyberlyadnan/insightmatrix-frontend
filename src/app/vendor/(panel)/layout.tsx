@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LogOut, User, Store } from "lucide-react";
+import { ClipboardList, LayoutDashboard, LogOut, User, Store } from "lucide-react";
 
 import { VendorRoleGate } from "@/components/auth/vendor-role-gate";
 import { ImxLogo } from "@/components/brand";
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: ROUTES.vendor.dashboard, label: "Dashboard", icon: LayoutDashboard },
+  { href: ROUTES.vendor.surveys, label: "Surveys", icon: ClipboardList },
   { href: ROUTES.vendor.profile, label: "Profile", icon: User },
 ] as const;
 
@@ -40,7 +41,9 @@ export default function VendorPanelLayout({ children }: { children: React.ReactN
               <ImxLogo href={ROUTES.vendor.dashboard} size="sm" surface="light" />
               <nav className="hidden sm:flex items-center gap-1">
                 {navLinks.map((link) => {
-                  const active = pathname === link.href;
+                  const active =
+                    pathname === link.href ||
+                    (link.href === ROUTES.vendor.surveys && pathname.startsWith("/vendor/surveys"));
                   return (
                     <Link
                       key={link.href}

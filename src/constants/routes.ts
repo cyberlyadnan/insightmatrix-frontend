@@ -25,6 +25,10 @@ export const ROUTES = {
     companiesCreate: "/admin/companies/create",
     company: (id: string) => `/admin/companies/${id}`,
     companyEdit: (id: string) => `/admin/companies/${id}/edit`,
+    vendors: "/admin/vendors",
+    vendorsCreate: "/admin/vendors/create",
+    vendor: (id: string) => `/admin/vendors/${id}`,
+    vendorEdit: (id: string) => `/admin/vendors/${id}/edit`,
     surveys: "/admin/surveys",
     surveysCreate: "/admin/surveys/create",
     survey: (id: string) => `/admin/surveys/${id}`,
@@ -32,6 +36,11 @@ export const ROUTES = {
     surveyAnalytics: (id: string) => `/admin/surveys/${id}/analytics`,
     companyPayments: "/admin/company-payments",
     panelBook: "/admin/panel-book",
+  },
+  vendor: {
+    login: "/vendor/login",
+    dashboard: "/vendor/dashboard",
+    profile: "/vendor/profile",
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
   /** Partner redirect targets — each records a different outcome via POST to the API */

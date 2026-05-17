@@ -2,4 +2,6 @@
 export const COOKIE_KEYS = {
   accessToken: "accessToken",
   refreshToken: "refreshToken",
+  vendorAccessToken: "vendorAccessToken",
+  vendorRefreshToken: "vendorRefreshToken",
 } as const;

@@ -63,4 +63,14 @@ export const queryKeys = {
     leads: (filters: Record<string, unknown>) => ["panel-book", "leads", filters] as const,
     asset: ["panel-book", "asset"] as const,
   },
+  vendors: {
+    all: ["vendors"] as const,
+    list: (filters: Record<string, unknown>) => ["vendors", "list", filters] as const,
+    detail: (id: string) => ["vendors", id] as const,
+    analytics: (id: string) => ["vendors", id, "analytics"] as const,
+  },
+  vendorAuth: {
+    profile: ["vendor-auth", "profile"] as const,
+    dashboard: ["vendor-auth", "dashboard"] as const,
+  },
 } as const;

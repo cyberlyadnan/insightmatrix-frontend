@@ -86,4 +86,8 @@ export const queryKeys = {
       ["vendor-portal", "surveys", "list", filters] as const,
     detail: (id: string) => ["vendor-portal", "surveys", id] as const,
   },
+  routingLogs: {
+    webhooks: (filters: Record<string, unknown>) => ["routing-logs", "webhooks", filters] as const,
+    gateway: (filters: Record<string, unknown>) => ["routing-logs", "gateway", filters] as const,
+  },
 } as const;

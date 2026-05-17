@@ -5,17 +5,18 @@
  * stores context for callback correlation, and redirects with tracking param on the supplier URL.
  */
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, Clock, Gift, Loader2, MapPin, Rocket } from "lucide-react";
 
 import { PANEL_SURVEY_STATUS_LABELS } from "@/constants/panel-survey";
 import {
-  buildVendorEntryUrl,
   extractParticipantIdFromSearchParams,
   persistParticipantContext,
 } from "@/lib/survey-participant";
+import { postPanelGatewayRedirect } from "@/lib/routing-gateway-api";
 import { panelPointsFromPayout } from "@/lib/panel-points";
 import { getPublicPanelSurvey } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
@@ -24,6 +25,7 @@ export function SurveyStartClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const surveyId = typeof params.surveyId === "string" ? params.surveyId : "";
+  const [starting, setStarting] = useState(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.panelSurveys.public(surveyId),
@@ -48,20 +50,24 @@ export function SurveyStartClient() {
     });
   }, [data, participantId]);
 
-  const handleStart = () => {
-    if (!data?.externalSurveyUrl) return;
-    try {
-      if (participantId) {
-        window.location.href = buildVendorEntryUrl(
-          data.externalSurveyUrl,
-          data.trackingParameterName ?? "toid",
-          participantId
-        );
-      } else {
-        window.location.href = data.externalSurveyUrl;
-      }
-    } catch {
+  const handleStart = async () => {
+    if (!data?.externalSurveyUrl || starting) return;
+
+    if (!participantId) {
       window.location.href = data.externalSurveyUrl;
+      return;
+    }
+
+    setStarting(true);
+    try {
+      const result = await postPanelGatewayRedirect({
+        surveyId: data.id,
+        attemptToken: participantId,
+      });
+      window.location.href = result.redirectUrl;
+    } catch (e) {
+      setStarting(false);
+      toast.error(e instanceof Error ? e.message : "Could not start survey");
     }
   };
 
@@ -174,11 +180,11 @@ export function SurveyStartClient() {
         <button
           type="button"
           onClick={handleStart}
-          disabled={!data.externalSurveyUrl}
+          disabled={!data.externalSurveyUrl || starting}
           className="w-full h-14 rounded-2xl bg-brand-primary text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-brand-primary/25 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 transition-opacity"
         >
-          <Rocket className="w-5 h-5" />
-          Start survey
+          {starting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Rocket className="w-5 h-5" />}
+          {starting ? "Starting…" : "Start survey"}
         </button>
 
         <p className="text-[11px] text-gray-500 text-center mt-6 leading-relaxed">

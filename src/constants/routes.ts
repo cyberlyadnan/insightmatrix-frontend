@@ -36,6 +36,10 @@ export const ROUTES = {
     surveyAnalytics: (id: string) => `/admin/surveys/${id}/analytics`,
     companyPayments: "/admin/company-payments",
     panelBook: "/admin/panel-book",
+    routingLogs: "/admin/routing-logs",
+    vendorAllocations: "/admin/vendor-allocations",
+    vendorAllocationsCreate: "/admin/vendor-allocations/create",
+    vendorAllocation: (id: string) => `/admin/vendor-allocations/${id}`,
   },
   vendor: {
     login: "/vendor/login",

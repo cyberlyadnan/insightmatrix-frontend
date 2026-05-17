@@ -10,8 +10,6 @@ import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store";
 import {
   LayoutDashboard,
-  FileText,
-  Briefcase,
   MessageSquare,
   Settings,
   LogOut,
@@ -20,13 +18,14 @@ import {
   Menu,
   X,
   User,
-  Users,
   ListChecks,
   Building2,
   Store,
   ClipboardList,
   Receipt,
   BookOpen,
+  Activity,
+  Share2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -40,6 +39,8 @@ const sidebarLinks = [
   { name: "Survey providers", icon: Building2, href: "/admin/companies" },
   { name: "Vendors", icon: Store, href: "/admin/vendors" },
   { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },
+  { name: "Vendor allocations", icon: Share2, href: "/admin/vendor-allocations" },
+  { name: "Routing logs", icon: Activity, href: "/admin/routing-logs" },
   { name: "Company payments", icon: Receipt, href: "/admin/company-payments" },
   // { name: "Case Studies", icon: FileText, href: "/admin/case-studies" },
   // { name: "Services", icon: Briefcase, href: "/admin/services" },

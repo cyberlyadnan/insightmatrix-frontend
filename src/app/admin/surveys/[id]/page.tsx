@@ -32,7 +32,7 @@ import {
 } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
-import { VendorAllocationsSection } from "@/components/admin/VendorAllocationsSection";
+import { SurveyAllocationLinkCard } from "@/components/admin/vendor-allocations/survey-allocation-link-card";
 import { deletePanelSurvey, getPanelSurvey, patchPanelSurveyStatus } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
 
@@ -534,13 +534,12 @@ export default function PanelSurveyDetailPage() {
         </div>
       )}
 
-      {tab === "vendors" && (
-        <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
-          <VendorAllocationsSection
-            surveyId={id}
-            surveyRemainingQuota={survey.remainingQuota ?? 0}
-          />
-        </div>
+      {tab === "vendors" && survey && (
+        <SurveyAllocationLinkCard
+          surveyId={id}
+          surveyName={survey.surveyName}
+          surveyRemainingQuota={survey.remainingQuota ?? 0}
+        />
       )}
 
       {tab === "notes" && (

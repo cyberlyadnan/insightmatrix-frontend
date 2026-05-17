@@ -23,6 +23,13 @@ export type CreateVendorAllocationPayload = {
   notes?: string;
 };
 
+export async function getVendorAllocation(id: string) {
+  const { data } = await apiClient.get<ApiEnvelope<VendorSurveyAllocation>>(
+    `/vendor-allocations/${id}`
+  );
+  return data.data;
+}
+
 export async function listVendorAllocations(params?: {
   page?: number;
   pageSize?: number;

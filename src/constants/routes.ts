@@ -63,3 +63,8 @@ export const AUTH_ROUTE_LIST = [
 export function isAuthRoute(pathname: string): boolean {
   return (AUTH_ROUTE_LIST as readonly string[]).includes(pathname);
 }
+
+/** B2B vendor portal — uses vendor* cookies, not member session */
+export function isVendorRoute(pathname: string): boolean {
+  return pathname === ROUTES.vendor.login || pathname.startsWith("/vendor/");
+}

@@ -13,10 +13,18 @@ export default function Footer() {
   const isDashboardPage = pathname.startsWith("/dashboard");
   const isSurveyStartPage = pathname.startsWith("/survey/start");
   const isSurveyCallbackPage = pathname.startsWith("/survey/callback");
+  const isVendorPage = pathname.startsWith("/vendor");
 
   const currentYear = new Date().getFullYear();
 
-  if (isAuthPage || isAdminPage || isDashboardPage || isSurveyStartPage || isSurveyCallbackPage) {
+  if (
+    isAuthPage ||
+    isAdminPage ||
+    isDashboardPage ||
+    isSurveyStartPage ||
+    isSurveyCallbackPage ||
+    isVendorPage
+  ) {
     return null;
   }
 

@@ -37,8 +37,7 @@ export function middleware(request: NextRequest) {
   }
 
   const requiresMemberAuth = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
-  const requiresVendorAuth =
-    pathname.startsWith("/vendor") && !pathname.startsWith(VENDOR_AUTH_PATH);
+  const requiresVendorAuth = pathname.startsWith("/vendor") && pathname !== VENDOR_AUTH_PATH;
 
   if (requiresMemberAuth && !token) {
     const loginUrl = new URL("/login", request.url);

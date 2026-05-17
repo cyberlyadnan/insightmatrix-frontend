@@ -82,17 +82,17 @@ export default function VendorDashboardPage() {
         <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
           Overview
         </p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight text-brand-accent1">
+        <h1 className="mt-1 text-3xl font-black tracking-tight text-gray-900">
           {vendor?.companyName ?? "Vendor dashboard"}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
+        <p className="mt-2 text-sm text-gray-500 max-w-2xl">
           Routing assignments and live traffic metrics will appear here in the next release.
           Counters below reflect your account totals and placeholder time-series fields.
         </p>
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Loading metrics…</p>
+        <p className="text-sm text-gray-500">Loading metrics…</p>
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

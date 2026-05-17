@@ -19,7 +19,7 @@ function toPayload(values: VendorFormValues): CreateVendorPayload {
     companyName: values.companyName.trim(),
     contactPerson: values.contactPerson?.trim() || undefined,
     email: values.email.trim(),
-    password: values.password ?? "",
+    password: values.password?.trim() ?? "",
     phone: values.phone?.trim() || undefined,
     website: values.website?.trim() || undefined,
     callbackUrls: vendorCallbackUrlsToPayload(values.callbackUrls),

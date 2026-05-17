@@ -19,6 +19,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { VendorCallbackFields } from "@/components/admin/vendor-callback-fields";
 import { emptyVendorCallbackUrls } from "@/constants/vendor-callback";
+import {
+  vendorFormLabelClass,
+  vendorInputClass,
+  vendorOutlineButtonClass,
+  vendorPrimaryButtonClass,
+} from "@/constants/vendor-ui";
 import { parseApiError } from "@/services/api/errors";
 import { normalizeVendorCallbackUrls, vendorCallbackUrlsToPayload } from "@/utils/vendor-callback";
 import { vendorCallbackUrlsSchema } from "@/validations/vendor.schema";
@@ -97,19 +103,20 @@ export default function VendorProfilePage() {
   });
 
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="w-full space-y-8">
       <div>
         <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
           Account
         </p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight text-brand-accent1">Profile</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Vendor code <span className="font-mono font-bold">{vendor?.vendorCode}</span> ·{" "}
+        <h1 className="mt-1 text-3xl font-black tracking-tight text-gray-900">Profile</h1>
+        <p className="mt-2 text-sm text-gray-500">
+          Vendor code{" "}
+          <span className="font-mono font-bold text-gray-900">{vendor?.vendorCode}</span> ·{" "}
           {vendor?.email}
         </p>
       </div>
 
-      <section className="rounded-2xl border border-border bg-white p-6 shadow-sm space-y-6">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-6">
         <h2 className="text-sm font-black uppercase tracking-widest text-gray-500">
           Company details
         </h2>
@@ -121,69 +128,77 @@ export default function VendorProfilePage() {
                 callbackUrls: vendorCallbackUrlsToPayload(v.callbackUrls),
               })
             )}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <FormField
-              control={profileForm.control}
-              name="companyName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={profileForm.control}
-              name="contactPerson"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact person</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={profileForm.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={profileForm.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Website</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="https://" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid gap-6 md:grid-cols-2">
+              <FormField
+                control={profileForm.control}
+                name="companyName"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className={vendorFormLabelClass}>Company name</FormLabel>
+                    <FormControl>
+                      <Input className={vendorInputClass} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={profileForm.control}
+                name="contactPerson"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={vendorFormLabelClass}>Contact person</FormLabel>
+                    <FormControl>
+                      <Input className={vendorInputClass} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={profileForm.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={vendorFormLabelClass}>Phone</FormLabel>
+                    <FormControl>
+                      <Input className={vendorInputClass} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={profileForm.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={vendorFormLabelClass}>Website</FormLabel>
+                    <FormControl>
+                      <Input className={vendorInputClass} placeholder="https://" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <VendorCallbackFields control={profileForm.control} />
-            <Button type="submit" disabled={profileMutation.isPending}>
-              {profileMutation.isPending ? "Saving…" : "Save profile"}
-            </Button>
+            <div className="flex justify-end border-t border-gray-100 pt-6">
+              <Button
+                type="submit"
+                disabled={profileMutation.isPending}
+                className={vendorPrimaryButtonClass}
+              >
+                {profileMutation.isPending ? "Saving…" : "Save profile"}
+              </Button>
+            </div>
           </form>
         </Form>
       </section>
 
-      <section className="rounded-2xl border border-border bg-white p-6 shadow-sm space-y-6">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-6">
         <h2 className="text-sm font-black uppercase tracking-widest text-gray-500">Security</h2>
         <Form {...passwordForm}>
           <form
@@ -193,50 +208,73 @@ export default function VendorProfilePage() {
                 newPassword: v.newPassword,
               })
             )}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <FormField
-              control={passwordForm.control}
-              name="currentPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current password</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="current-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={passwordForm.control}
-              name="newPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New password</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="new-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={passwordForm.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm new password</FormLabel>
-                  <FormControl>
-                    <Input type="password" autoComplete="new-password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" variant="outline" disabled={passwordMutation.isPending}>
-              {passwordMutation.isPending ? "Updating…" : "Change password"}
-            </Button>
+            <div className="grid gap-6 md:grid-cols-3">
+              <FormField
+                control={passwordForm.control}
+                name="currentPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={vendorFormLabelClass}>Current password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="current-password"
+                        className={vendorInputClass}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={passwordForm.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={vendorFormLabelClass}>New password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        className={vendorInputClass}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={passwordForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={vendorFormLabelClass}>Confirm new password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        className={vendorInputClass}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex justify-end border-t border-gray-100 pt-6">
+              <Button
+                type="submit"
+                disabled={passwordMutation.isPending}
+                className={vendorOutlineButtonClass}
+              >
+                {passwordMutation.isPending ? "Updating…" : "Change password"}
+              </Button>
+            </div>
           </form>
         </Form>
       </section>

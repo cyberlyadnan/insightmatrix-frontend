@@ -33,7 +33,7 @@ export default function VendorPanelLayout({ children }: { children: React.ReactN
 
   return (
     <VendorRoleGate>
-      <div className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="min-h-screen bg-slate-50 flex flex-col text-gray-900 [color-scheme:light]">
         <header className="border-b border-border bg-white">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
             <div className="flex items-center gap-6 min-w-0">
@@ -67,7 +67,7 @@ export default function VendorPanelLayout({ children }: { children: React.ReactN
               <button
                 type="button"
                 onClick={logout}
-                className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-semibold text-muted-foreground hover:bg-slate-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
               >
                 <LogOut className="h-4 w-4" />
                 Sign out

@@ -79,7 +79,8 @@ export function attachInterceptors(instance: AxiosInstance) {
           path.startsWith("/forgot-password") ||
           path.startsWith("/reset-password") ||
           path.startsWith("/verify-email");
-        if (!onAuthRoute) {
+        const onVendorRoute = path.startsWith("/vendor");
+        if (!onAuthRoute && !onVendorRoute) {
           window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
         }
       }

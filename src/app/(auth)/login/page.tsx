@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, ArrowRight, Eye, EyeOff, Store } from "lucide-react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ROUTES } from "@/constants/routes";
 import { getPostLoginDestination } from "@/lib/auth/redirect";
 import { parseApiError } from "@/services/api/errors";
 import { loginRequest } from "@/services/auth";
@@ -170,8 +171,15 @@ function LoginForm() {
         </form>
       </Form>
 
-      <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-        <p className="text-gray-600">
+      <div className="pt-8 border-t border-gray-100 space-y-6">
+        <Link
+          href={ROUTES.vendor.login}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold text-gray-900 transition hover:border-brand-primary hover:bg-brand-subtle/50"
+        >
+          <Store className="h-4 w-4 text-brand-primary" />
+          Vendor partner login
+        </Link>
+        <p className="text-center text-gray-600">
           Don&apos;t have an account?{" "}
           <Link
             href="/register"

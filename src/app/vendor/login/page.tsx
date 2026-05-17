@@ -22,6 +22,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
+import {
+  vendorFormLabelClass,
+  vendorInputClass,
+  vendorPrimaryButtonClass,
+} from "@/constants/vendor-ui";
 import { parseApiError } from "@/services/api/errors";
 import { vendorLoginRequest } from "@/services/vendor-auth";
 import { queryKeys } from "@/services/queries";
@@ -72,23 +77,37 @@ function VendorLoginForm() {
           <h1 className="mt-4 text-2xl font-black tracking-tight text-brand-accent1">
             Partner sign in
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-gray-500">
             B2B subpanel access — separate from panel member accounts
           </p>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((v) => loginMutation.mutate(v))} className="space-y-5">
+          <form
+            onSubmit={form.handleSubmit((v) =>
+              loginMutation.mutate({
+                email: v.email.trim().toLowerCase(),
+                password: v.password.trim(),
+              })
+            )}
+            className="space-y-5"
+          >
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className={vendorFormLabelClass}>Email</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                      <Input className="pl-10" type="email" autoComplete="email" {...field} />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                      <Input
+                        className={`pl-10 ${vendorInputClass}`}
+                        type="email"
+                        autoComplete="email"
+                        placeholder="you@company.com"
+                        {...field}
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -100,19 +119,20 @@ function VendorLoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className={vendorFormLabelClass}>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                       <Input
-                        className="pl-10 pr-10"
+                        className={`pl-10 pr-10 ${vendorInputClass}`}
                         type={showPassword ? "text" : "password"}
                         autoComplete="current-password"
+                        placeholder="Enter your password"
                         {...field}
                       />
                       <button
                         type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800"
                         onClick={() => setShowPassword((s) => !s)}
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
@@ -130,7 +150,7 @@ function VendorLoginForm() {
             />
             <Button
               type="submit"
-              className="w-full h-11 font-bold"
+              className={`w-full ${vendorPrimaryButtonClass}`}
               disabled={loginMutation.isPending}
             >
               {loginMutation.isPending ? "Signing in…" : "Sign in"}
@@ -138,7 +158,7 @@ function VendorLoginForm() {
           </form>
         </Form>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
+        <p className="mt-6 text-center text-xs text-gray-500">
           Panel members use{" "}
           <Link href={ROUTES.login} className="font-semibold text-brand-primary hover:underline">
             member login

@@ -19,28 +19,27 @@ function VendorStartError({ message }: { message: string }) {
 }
 
 /**
- * Public vendor routing entry — vendors send respondents here (never to supplier URLs).
- * Creates session, sets toid=sessionToken on supplier URL server-side, then redirects.
+ * Public vendor routing entry — opaque slug in URL (not guessable ALLOC-1001 codes).
  */
 export default function VendorStartPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const allocationCode =
-    typeof params.allocationCode === "string" ? decodeURIComponent(params.allocationCode) : "";
+  const routingSlug =
+    typeof params.routingSlug === "string" ? decodeURIComponent(params.routingSlug) : "";
   const [error, setError] = useState<string | null>(null);
 
   const vendorRespondentId = searchParams.get("vrid") ?? searchParams.get("rid") ?? undefined;
   const trafficSource = searchParams.get("source") ?? searchParams.get("utm_source") ?? undefined;
 
   useEffect(() => {
-    if (!allocationCode) return;
+    if (!routingSlug) return;
 
     let cancelled = false;
 
     (async () => {
       try {
         const result = await postVendorRoutingStart({
-          allocationCode,
+          routingSlug,
           vendorRespondentId,
           trafficSource,
         });
@@ -57,9 +56,9 @@ export default function VendorStartPage() {
     return () => {
       cancelled = true;
     };
-  }, [allocationCode, vendorRespondentId, trafficSource]);
+  }, [routingSlug, vendorRespondentId, trafficSource]);
 
-  if (!allocationCode) {
+  if (!routingSlug) {
     return <VendorStartError message="Invalid routing link." />;
   }
 

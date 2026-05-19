@@ -47,7 +47,7 @@ export const ROUTES = {
     profile: "/vendor/profile",
     surveys: "/vendor/surveys",
     survey: (allocationId: string) => `/vendor/surveys/${allocationId}`,
-    start: (allocationCode: string) => `/vendor/start/${allocationCode}`,
+    start: (routingSlug: string) => `/vendor/start/${routingSlug}`,
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
   /** Partner redirect targets — each records a different outcome via POST to the API */

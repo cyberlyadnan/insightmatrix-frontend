@@ -146,7 +146,7 @@ export default function AdminVendorAllocationsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-[10px] font-black uppercase tracking-widest text-gray-500">
-                <th className="px-4 py-3">Code</th>
+                <th className="px-4 py-3">Ref</th>
                 <th className="px-4 py-3">Survey</th>
                 <th className="px-4 py-3">Vendor</th>
                 <th className="px-4 py-3">Status</th>
@@ -158,7 +158,9 @@ export default function AdminVendorAllocationsPage() {
             <tbody>
               {items.map((row) => (
                 <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/60">
-                  <td className="px-4 py-4 font-mono text-xs font-bold">{row.allocationCode}</td>
+                  <td className="px-4 py-4 font-mono text-xs font-bold" title={row.routingSlug}>
+                    {row.allocationCode}
+                  </td>
                   <td className="px-4 py-4">
                     <p className="font-semibold text-gray-900 line-clamp-1">
                       {row.panelSurvey?.surveyName ?? "—"}

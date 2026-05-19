@@ -1,7 +1,7 @@
 import { buildPublicApiUrl } from "@/lib/site-url";
 
 export type VendorRoutingStartPayload = {
-  allocationCode: string;
+  routingSlug: string;
   vendorRespondentId?: string;
   trafficSource?: string;
 };
@@ -9,7 +9,6 @@ export type VendorRoutingStartPayload = {
 export type VendorRoutingStartResult = {
   sessionToken: string;
   redirectUrl: string;
-  allocationCode: string;
 };
 
 export async function postVendorRoutingStart(

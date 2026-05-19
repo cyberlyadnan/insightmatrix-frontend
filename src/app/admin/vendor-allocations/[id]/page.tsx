@@ -135,7 +135,7 @@ export default function VendorAllocationDetailPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="font-mono text-sm font-bold text-brand-primary">
-            {allocation.allocationCode}
+            Ref {allocation.allocationCode}
           </p>
           <h1 className="text-2xl font-black mt-1">{allocation.panelSurvey?.surveyName}</h1>
           <p className="text-sm text-gray-500 mt-0.5">

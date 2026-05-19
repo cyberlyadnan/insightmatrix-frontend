@@ -3,6 +3,7 @@ import type { VendorAllocationStatus } from "@/constants/vendor-allocation";
 export type VendorSurveyAllocation = {
   id: string;
   allocationCode: string;
+  routingSlug: string;
   panelSurveyId: string;
   vendorId: string;
   panelSurvey: {

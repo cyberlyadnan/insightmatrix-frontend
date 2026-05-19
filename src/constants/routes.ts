@@ -40,6 +40,7 @@ export const ROUTES = {
     vendorAllocations: "/admin/vendor-allocations",
     vendorAllocationsCreate: "/admin/vendor-allocations/create",
     vendorAllocation: (id: string) => `/admin/vendor-allocations/${id}`,
+    vendorRespondentTracking: "/admin/vendor-respondent-tracking",
   },
   vendor: {
     login: "/vendor/login",

@@ -14,3 +14,13 @@ export const VENDOR_ALLOCATION_STATUS_STYLES: Record<VendorAllocationStatus, str
   completed: "bg-slate-100 text-slate-600",
   closed: "bg-gray-100 text-gray-600",
 };
+
+export const VENDOR_RESPONDENT_SESSION_STATUSES = [
+  "started",
+  "redirected",
+  "complete",
+  "terminate",
+  "quota_full",
+  "quality_reject",
+] as const;
+export type VendorRespondentSessionStatus = (typeof VENDOR_RESPONDENT_SESSION_STATUSES)[number];

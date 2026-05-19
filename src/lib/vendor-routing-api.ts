@@ -2,6 +2,7 @@ import { buildPublicApiUrl } from "@/lib/site-url";
 
 export type VendorRoutingStartPayload = {
   routingSlug: string;
+  vendorRespondentToid?: string;
   vendorRespondentId?: string;
   trafficSource?: string;
 };

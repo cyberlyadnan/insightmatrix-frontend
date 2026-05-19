@@ -94,10 +94,13 @@ export default function VendorSurveyDetailPage() {
 
       <div className="rounded-2xl border border-border bg-white p-6 space-y-4">
         <p className="text-sm font-semibold text-gray-700">Routing link</p>
-        <p className="text-xs font-mono text-gray-600 break-all bg-slate-50 rounded-lg p-3">
-          {allocation.routingLink}
+        <p className="text-xs text-gray-500">
+          Append your respondent id: <code className="font-mono">?toid=USER_ID</code>
         </p>
-        <CopyRoutingLinkButton routingLink={allocation.routingLink} />
+        <p className="text-xs font-mono text-gray-600 break-all bg-slate-50 rounded-lg p-3">
+          {allocation.routingLink}?toid=RESPONDENT_ID
+        </p>
+        <CopyRoutingLinkButton routingLink={`${allocation.routingLink}?toid=RESPONDENT_ID`} />
       </div>
 
       <div>

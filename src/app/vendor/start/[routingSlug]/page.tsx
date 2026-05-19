@@ -19,7 +19,8 @@ function VendorStartError({ message }: { message: string }) {
 }
 
 /**
- * Public vendor routing entry — opaque slug in URL (not guessable ALLOC-1001 codes).
+ * Public vendor entry: /vendor/start/ALC7X9K2P4?toid=VENUSER123
+ * Vendor's toid is stored; supplier receives our internal IMX token only.
  */
 export default function VendorStartPage() {
   const params = useParams();
@@ -28,7 +29,8 @@ export default function VendorStartPage() {
     typeof params.routingSlug === "string" ? decodeURIComponent(params.routingSlug) : "";
   const [error, setError] = useState<string | null>(null);
 
-  const vendorRespondentId = searchParams.get("vrid") ?? searchParams.get("rid") ?? undefined;
+  const vendorRespondentToid =
+    searchParams.get("toid") ?? searchParams.get("vrid") ?? searchParams.get("rid") ?? undefined;
   const trafficSource = searchParams.get("source") ?? searchParams.get("utm_source") ?? undefined;
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function VendorStartPage() {
       try {
         const result = await postVendorRoutingStart({
           routingSlug,
-          vendorRespondentId,
+          vendorRespondentToid,
           trafficSource,
         });
         if (!cancelled && result.redirectUrl) {
@@ -56,7 +58,7 @@ export default function VendorStartPage() {
     return () => {
       cancelled = true;
     };
-  }, [routingSlug, vendorRespondentId, trafficSource]);
+  }, [routingSlug, vendorRespondentToid, trafficSource]);
 
   if (!routingSlug) {
     return <VendorStartError message="Invalid routing link." />;

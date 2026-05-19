@@ -199,10 +199,14 @@ export default function VendorAllocationDetailPage() {
 
       <div className="rounded-2xl border border-gray-100 bg-white p-6 space-y-4">
         <h2 className="text-sm font-bold text-gray-900">Routing link (vendor-facing)</h2>
-        <p className="text-xs font-mono text-gray-600 break-all bg-slate-50 rounded-lg p-3">
-          {allocation.routingLink}
+        <p className="text-xs text-gray-500">
+          Vendors append their respondent id:{" "}
+          <code className="font-mono bg-slate-100 px-1 rounded">?toid=THEIR_USER_ID</code>
         </p>
-        <CopyRoutingLinkButton routingLink={allocation.routingLink} />
+        <p className="text-xs font-mono text-gray-600 break-all bg-slate-50 rounded-lg p-3">
+          {allocation.routingLink}?toid=RESPONDENT_ID
+        </p>
+        <CopyRoutingLinkButton routingLink={`${allocation.routingLink}?toid=RESPONDENT_ID`} />
       </div>
 
       <div className="rounded-2xl border border-gray-100 bg-white p-6">

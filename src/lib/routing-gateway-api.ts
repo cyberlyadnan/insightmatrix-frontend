@@ -1,9 +1,19 @@
 import { buildPublicApiUrl } from "@/lib/site-url";
+import type { PrescreenForm } from "@/types/prescreen";
+import {
+  postCompleteRoutingPrescreen,
+  type CompleteRoutingPrescreenResult,
+} from "@/lib/vendor-routing-api";
+
+export type { CompleteRoutingPrescreenResult };
 
 export type PanelGatewayRedirectResult = {
   sessionToken: string;
-  redirectUrl: string;
+  redirectUrl?: string;
   channel: "panel" | "vendor";
+  requiresPrescreen?: boolean;
+  profileId?: string;
+  prescreenForm?: PrescreenForm | null;
 };
 
 export async function postPanelGatewayRedirect(payload: {
@@ -27,9 +37,11 @@ export async function postPanelGatewayRedirect(payload: {
     /* ignore */
   }
 
-  if (!res.ok || !data.data?.redirectUrl) {
+  if (!res.ok || !data.data?.sessionToken) {
     throw new Error(data.message || "Unable to start survey through gateway");
   }
 
   return data.data;
 }
+
+export { postCompleteRoutingPrescreen };

@@ -16,7 +16,9 @@ import {
   extractParticipantIdFromSearchParams,
   persistParticipantContext,
 } from "@/lib/survey-participant";
-import { postPanelGatewayRedirect } from "@/lib/routing-gateway-api";
+import { postPanelGatewayRedirect, postCompleteRoutingPrescreen } from "@/lib/routing-gateway-api";
+import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
+import type { PrescreenForm } from "@/types/prescreen";
 import { panelPointsFromPayout } from "@/lib/panel-points";
 import { getPublicPanelSurvey } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
@@ -26,6 +28,10 @@ export function SurveyStartClient() {
   const searchParams = useSearchParams();
   const surveyId = typeof params.surveyId === "string" ? params.surveyId : "";
   const [starting, setStarting] = useState(false);
+  const [prescreenForm, setPrescreenForm] = useState<PrescreenForm | null>(null);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [gatewayToken, setGatewayToken] = useState<string | null>(null);
+  const [prescreenStartedAt, setPrescreenStartedAt] = useState<number | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.panelSurveys.public(surveyId),
@@ -64,12 +70,53 @@ export function SurveyStartClient() {
         surveyId: data.id,
         attemptToken: participantId,
       });
-      window.location.href = result.redirectUrl;
+
+      if (result.requiresPrescreen && result.prescreenForm && result.profileId) {
+        setPrescreenForm(result.prescreenForm);
+        setProfileId(result.profileId);
+        setGatewayToken(result.sessionToken);
+        setPrescreenStartedAt(Date.now());
+        setStarting(false);
+        return;
+      }
+
+      if (result.redirectUrl) {
+        window.location.href = result.redirectUrl;
+        return;
+      }
     } catch (e) {
       setStarting(false);
       toast.error(e instanceof Error ? e.message : "Could not start survey");
     }
   };
+
+  const handlePrescreenSubmit = async (answers: Record<string, unknown>) => {
+    if (!profileId || !gatewayToken) return;
+    setStarting(true);
+    try {
+      const result = await postCompleteRoutingPrescreen({
+        profileId,
+        internalSessionToken: gatewayToken,
+        channel: "panel",
+        answers,
+        durationMs: prescreenStartedAt ? Date.now() - prescreenStartedAt : undefined,
+      });
+      window.location.href = result.redirectUrl;
+    } catch (e) {
+      setStarting(false);
+      toast.error(e instanceof Error ? e.message : "Could not submit prescreen");
+    }
+  };
+
+  if (prescreenForm) {
+    return (
+      <RoutingPrescreenForm
+        form={prescreenForm}
+        onSubmit={handlePrescreenSubmit}
+        isSubmitting={starting}
+      />
+    );
+  }
 
   if (!surveyId) {
     return (

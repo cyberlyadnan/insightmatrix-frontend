@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2, AlertCircle } from "lucide-react";
 
-import { postVendorRoutingStart } from "@/lib/vendor-routing-api";
+import { postVendorRoutingStart, postCompleteRoutingPrescreen } from "@/lib/vendor-routing-api";
+import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
+import type { PrescreenForm } from "@/types/prescreen";
 
 function VendorStartError({ message }: { message: string }) {
   return (
@@ -18,16 +20,19 @@ function VendorStartError({ message }: { message: string }) {
   );
 }
 
-/**
- * Public vendor entry: /vendor/start/ALC7X9K2P4?toid=VENUSER123
- * Vendor's toid is stored; supplier receives our internal IMX token only.
- */
 export default function VendorStartPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const routingSlug =
     typeof params.routingSlug === "string" ? decodeURIComponent(params.routingSlug) : "";
+
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [prescreenForm, setPrescreenForm] = useState<PrescreenForm | null>(null);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [startedAt] = useState(() => Date.now());
 
   const vendorRespondentToid =
     searchParams.get("toid") ?? searchParams.get("vrid") ?? searchParams.get("rid") ?? undefined;
@@ -35,7 +40,6 @@ export default function VendorStartPage() {
 
   useEffect(() => {
     if (!routingSlug) return;
-
     let cancelled = false;
 
     (async () => {
@@ -45,12 +49,25 @@ export default function VendorStartPage() {
           vendorRespondentToid,
           trafficSource,
         });
-        if (!cancelled && result.redirectUrl) {
-          window.location.replace(result.redirectUrl);
+        if (cancelled) return;
+
+        if (result.requiresPrescreen && result.prescreenForm && result.profileId) {
+          setPrescreenForm(result.prescreenForm);
+          setProfileId(result.profileId);
+          setSessionToken(result.sessionToken);
+          setLoading(false);
+          return;
         }
+        if (result.redirectUrl) {
+          window.location.replace(result.redirectUrl);
+          return;
+        }
+        setError("Unable to start survey");
+        setLoading(false);
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "Unable to start survey");
+          setLoading(false);
         }
       }
     })();
@@ -60,18 +77,55 @@ export default function VendorStartPage() {
     };
   }, [routingSlug, vendorRespondentToid, trafficSource]);
 
-  if (!routingSlug) {
-    return <VendorStartError message="Invalid routing link." />;
-  }
+  const handlePrescreenSubmit = async (answers: Record<string, unknown>) => {
+    if (!profileId || !sessionToken) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const result = await postCompleteRoutingPrescreen({
+        profileId,
+        internalSessionToken: sessionToken,
+        channel: "vendor",
+        answers,
+        durationMs: Date.now() - startedAt,
+      });
+      window.location.replace(result.redirectUrl);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unable to submit prescreen");
+      setSubmitting(false);
+    }
+  };
 
-  if (error) {
-    return <VendorStartError message={error} />;
+  if (!routingSlug) return <VendorStartError message="Invalid routing link." />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-brand-primary" />
+        <p className="text-sm font-medium text-gray-500">Starting survey…</p>
+      </div>
+    );
   }
-
+  if (error && !prescreenForm) return <VendorStartError message={error} />;
+  if (prescreenForm) {
+    return (
+      <>
+        {error ? (
+          <p className="text-center text-sm text-rose-600 py-2 bg-rose-50">{error}</p>
+        ) : null}
+        <RoutingPrescreenForm
+          form={prescreenForm}
+          onSubmit={handlePrescreenSubmit}
+          isSubmitting={submitting}
+          title="Before you begin"
+          subtitle="Answer a few questions, then you'll continue to the survey."
+        />
+      </>
+    );
+  }
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
       <Loader2 className="h-10 w-10 animate-spin text-brand-primary" />
-      <p className="text-sm font-medium text-gray-500">Starting survey…</p>
+      <p className="text-sm font-medium text-gray-500">Redirecting…</p>
     </div>
   );
 }

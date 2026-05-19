@@ -26,6 +26,7 @@ import {
   BookOpen,
   Activity,
   Share2,
+  Users,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -40,7 +41,9 @@ const sidebarLinks = [
   { name: "Vendors", icon: Store, href: "/admin/vendors" },
   { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },
   { name: "Vendor allocations", icon: Share2, href: "/admin/vendor-allocations" },
-  { name: "Vendor respondents", icon: Activity, href: "/admin/vendor-respondent-tracking" },
+  { name: "Survey respondents", icon: Users, href: "/admin/survey-respondents" },
+  { name: "Respondent analytics", icon: Activity, href: "/admin/respondent-analytics" },
+  { name: "Export center", icon: Share2, href: "/admin/respondent-exports" },
   // { name: "Routing logs", icon: Activity, href: "/admin/routing-logs" },
   { name: "Company payments", icon: Receipt, href: "/admin/company-payments" },
   // { name: "Case Studies", icon: FileText, href: "/admin/case-studies" },

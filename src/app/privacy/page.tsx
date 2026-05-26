@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageLayout, LegalSection } from "@/components/legal/LegalPageLayout";
 import { ROUTES } from "@/constants/routes";
+import { LEGAL_SHORT } from "@/constants/site-content";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | InsightMatrix",
@@ -14,6 +15,7 @@ const LAST_UPDATED = "May 12, 2026";
 export default function PrivacyPage() {
   return (
     <LegalPageLayout title="Privacy Policy" lastUpdated={LAST_UPDATED}>
+      <p className="text-gray-600 font-medium">{LEGAL_SHORT.privacyIntro}</p>
       <p className="text-gray-600">
         InsightMatrix (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) respects your privacy.
         This Privacy Policy explains how we collect, use, disclose, and safeguard information when

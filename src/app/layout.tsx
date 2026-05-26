@@ -4,14 +4,20 @@ import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import { Navbar, Footer } from "@/components/layouts";
 import { AppProviders } from "@/providers";
+import { SEO_CONTENT } from "@/constants/site-content";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "InsightMatrix | Professional Survey Platform",
-  description:
-    "Join the premier platform for high-quality survey research and data collection. Earn rewards and shape the future.",
-  keywords: ["surveys", "market research", "rewards", "panel management"],
+  title: SEO_CONTENT.defaultTitle,
+  description: SEO_CONTENT.defaultDescription,
+  keywords: [
+    "market research",
+    "business intelligence",
+    "healthcare research",
+    "B2B research",
+    "consumer insights",
+  ],
 };
 
 export default function RootLayout({

@@ -5,6 +5,7 @@ import { Facebook, Twitter, Linkedin, Instagram, ArrowRight, Globe, Mail } from 
 import { usePathname } from "next/navigation";
 import { ImxLogo } from "@/components/brand";
 import { isAuthRoute, ROUTES } from "@/constants";
+import { FOOTER_CONTENT, SITE_CONTACT } from "@/constants/site-content";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -34,10 +35,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/5">
           <div className="lg:col-span-4">
             <ImxLogo href="/" size="lg" surface="dark" />
-            <p className="mt-6 text-base leading-relaxed max-w-sm">
-              The world&apos;s most connected proprietary panel. Engineering accuracy into every
-              step of the research process.
-            </p>
+            <p className="mt-6 text-base leading-relaxed max-w-sm">{FOOTER_CONTENT.description}</p>
             <div className="mt-8 flex items-center gap-4">
               {[
                 { icon: Facebook, href: "#" },
@@ -84,13 +82,13 @@ export default function Footer() {
             </h3>
             <div className="space-y-4">
               <a
-                href="mailto:help@insightmatrix.com"
+                href={`mailto:${SITE_CONTACT.email}`}
                 className="flex items-center gap-3 group text-sm"
               >
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
                   <Mail size={14} className="group-hover:text-brand-primary transition-colors" />
                 </div>
-                help@insightmatrix.com
+                {SITE_CONTACT.email}
               </a>
               <div className="flex items-center gap-3 text-sm">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">

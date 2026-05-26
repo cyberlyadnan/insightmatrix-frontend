@@ -3,20 +3,20 @@ import ContactForm from "@/components/forms/ContactForm";
 import { Mail, Phone, MapPin, BuildingIcon, Sparkles } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import { StackedVisual } from "@/components/shared/HeaderVisuals";
+import { CONTACT_CONTENT, SITE_CONTACT } from "@/constants/site-content";
 
 export const metadata: Metadata = {
   title: "Contact Us | InsightMatrix",
-  description:
-    "Get in touch with our team for sales inquiries, support, or partnership opportunities.",
+  description: CONTACT_CONTENT.header.description,
 };
 
 export default function ContactPage() {
   return (
     <div className="bg-[#fafafa] min-h-screen">
       <PageHeader
-        badge="Contact Our Global Team"
-        title="We'd love to hear from you"
-        description="Whether you have a strategic enterprise inquiry or need support with your account, our dedicated team is here to assist you."
+        badge={CONTACT_CONTENT.header.badge}
+        title={CONTACT_CONTENT.header.title}
+        description={CONTACT_CONTENT.header.description}
         visual={
           <StackedVisual
             image1="https://i.pravatar.cc/300?img=11"
@@ -39,15 +39,15 @@ export default function ContactPage() {
                 {
                   icon: Mail,
                   title: "Email",
-                  info: "sales@insightmatrix.com",
-                  info2: "help@insightmatrix.com",
+                  info: SITE_CONTACT.email,
+                  info2: "",
                   accent: "bg-brand-subtle text-brand-primary",
                 },
                 {
                   icon: Phone,
-                  title: "Phone",
-                  info: "+1 (800) 555-0199",
-                  info2: "+1 (415) 555-0198",
+                  title: "Contact Numbers",
+                  info: SITE_CONTACT.phones[0],
+                  info2: SITE_CONTACT.phones[1],
                   accent: "bg-violet-50 text-violet-600",
                 },
               ].map((item, i) => (
@@ -62,10 +62,15 @@ export default function ContactPage() {
                   </div>
                   <h3 className="text-xl font-extrabold text-gray-900 mb-2">{item.title}</h3>
                   <p className="text-gray-500 text-sm mb-1">{item.info}</p>
-                  <p className="text-gray-500 text-sm">{item.info2}</p>
+                  {item.info2 ? <p className="text-gray-500 text-sm">{item.info2}</p> : null}
                 </div>
               ))}
             </div>
+
+            <p className="text-gray-600 text-sm font-medium">
+              <span className="font-extrabold text-gray-900">Business Hours: </span>
+              {SITE_CONTACT.businessHours}
+            </p>
 
             <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-8 items-center lg:items-start group transition-all hover:shadow-xl">
               <div className="w-full sm:w-1/2">

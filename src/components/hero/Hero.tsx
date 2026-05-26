@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Star } from "lucide-react";
+import { HOME_CONTENT } from "@/constants/site-content";
 
 export default function Hero() {
+  const { hero } = HOME_CONTENT;
+
   return (
     <div className="relative bg-gradient-to-r from-brand-accent1 via-brand-primary to-brand-accent2 overflow-hidden">
       {/* Abstract Background Shapes to add texture */}
@@ -20,31 +23,32 @@ export default function Hero() {
             </div> */}
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
-              Connect. <br className="hidden lg:block" />
-              Collaborate. <br className="hidden lg:block" />
-              Influence.
+              {hero.headline}
             </h1>
 
             <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium drop-shadow-sm">
-              The premier social platform bridging the gap between innovative brands and insightful
-              creators. Share your voice, test new products, and get rewarded.
+              {hero.description}
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6">
               <Link
-                href="/register"
+                href={hero.ctaPrimary.href}
                 className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-brand-primary bg-white hover:bg-gray-50 shadow-xl shadow-black/10 transition-all hover:-translate-y-0.5"
               >
-                Start Collaborating
+                {hero.ctaPrimary.label}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <Link
-                href="/about"
+                href={hero.ctaSecondary.href}
                 className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-white bg-transparent border border-white/30 hover:bg-white/10 transition-all"
               >
-                Explore Platform
+                {hero.ctaSecondary.label}
               </Link>
             </div>
+
+            <p className="text-sm text-white/80 font-medium mb-12 max-w-xl mx-auto lg:mx-0">
+              {hero.trustLine}
+            </p>
 
             <div className="flex items-center justify-center lg:justify-start gap-8">
               <div className="flex -space-x-3">

@@ -13,6 +13,7 @@ import {
 import PageHeader from "@/components/shared/PageHeader";
 import { FloatingTagsVisual } from "@/components/shared/HeaderVisuals";
 import { ROUTES } from "@/constants/routes";
+import { ABOUT_CONTENT } from "@/constants/site-content";
 
 export const metadata: Metadata = {
   title: "About Us | InsightMatrix",
@@ -33,9 +34,9 @@ export default function AboutPage() {
   return (
     <div className="bg-white">
       <PageHeader
-        badge="About Our Mission"
-        title="Unmatched data accuracy"
-        description="When data quality fails, everything built on it collapses - decisions, budgets, even reputations. That’s why InsightMatrix has spent decades engineering accuracy into every step of our process."
+        badge={ABOUT_CONTENT.header.badge}
+        title={ABOUT_CONTENT.header.title}
+        description={ABOUT_CONTENT.header.description}
         buttonText="Talk to experts"
         buttonHref="/contact"
         visual={
@@ -62,9 +63,7 @@ export default function AboutPage() {
               </div>
               <p className="text-xl text-gray-600 leading-relaxed p-10 bg-white border border-gray-100 rounded-3xl shadow-xl shadow-gray-200/40 relative">
                 <span className="absolute top-4 left-6 text-6xl font-serif text-brand-primary/10">{`"`}</span>
-                To democratize market research by providing a transparent, rewarding platform for
-                participants while delivering unparalleled data accuracy and speed to researchers
-                worldwide.
+                {ABOUT_CONTENT.mission}
               </p>
             </div>
             <div className="group">
@@ -78,8 +77,7 @@ export default function AboutPage() {
               </div>
               <p className="text-xl text-gray-600 leading-relaxed p-10 bg-white border border-gray-100 rounded-3xl shadow-xl shadow-gray-200/40 relative">
                 <span className="absolute top-4 left-6 text-6xl font-serif text-brand-primary/10">{`"`}</span>
-                To become the global standard for ethical data collection, where every opinion is
-                valued, protected, and utilized to create better products and services for tomorrow.
+                {ABOUT_CONTENT.vision}
               </p>
             </div>
           </div>

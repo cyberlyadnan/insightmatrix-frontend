@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalPageLayout, LegalSection } from "@/components/legal/LegalPageLayout";
 import { ROUTES } from "@/constants/routes";
+import { LEGAL_SHORT } from "@/constants/site-content";
 
 export const metadata: Metadata = {
   title: "Terms of Service | InsightMatrix",
@@ -14,6 +15,7 @@ const LAST_UPDATED = "May 12, 2026";
 export default function TermsPage() {
   return (
     <LegalPageLayout title="Terms of Service" lastUpdated={LAST_UPDATED}>
+      <p className="text-gray-600 font-medium">{LEGAL_SHORT.termsIntro}</p>
       <p className="text-gray-600">
         These Terms of Service (&quot;Terms&quot;) govern your access to and use of the websites,
         applications, and services operated by InsightMatrix (&quot;we,&quot; &quot;us,&quot; or

@@ -45,6 +45,7 @@ export const ROUTES = {
     surveyRespondent: (id: string) => `/admin/survey-respondents/${id}`,
     respondentExports: "/admin/respondent-exports",
     respondentAnalytics: "/admin/respondent-analytics",
+    securityLogs: "/admin/security-logs",
   },
   vendor: {
     login: "/vendor/login",

@@ -27,6 +27,7 @@ import {
   Activity,
   Share2,
   Users,
+  Shield,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -44,6 +45,7 @@ const sidebarLinks = [
   { name: "Survey respondents", icon: Users, href: "/admin/survey-respondents" },
   { name: "Respondent analytics", icon: Activity, href: "/admin/respondent-analytics" },
   { name: "Export center", icon: Share2, href: "/admin/respondent-exports" },
+  { name: "Security logs", icon: Shield, href: "/admin/security-logs" },
   // { name: "Routing logs", icon: Activity, href: "/admin/routing-logs" },
   { name: "Company payments", icon: Receipt, href: "/admin/company-payments" },
   // { name: "Case Studies", icon: FileText, href: "/admin/case-studies" },

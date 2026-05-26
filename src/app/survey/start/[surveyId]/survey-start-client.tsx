@@ -18,7 +18,11 @@ import {
 } from "@/lib/survey-participant";
 import { postPanelGatewayRedirect, postCompleteRoutingPrescreen } from "@/lib/routing-gateway-api";
 import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
+import { GatewayCaptcha } from "@/components/routing/GatewayCaptcha";
+import { SecurityBlockedScreen } from "@/components/routing/SecurityBlockedScreen";
 import type { PrescreenForm } from "@/types/prescreen";
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "";
 import { panelPointsFromPayout } from "@/lib/panel-points";
 import { getPublicPanelSurvey } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
@@ -32,6 +36,8 @@ export function SurveyStartClient() {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [gatewayToken, setGatewayToken] = useState<string | null>(null);
   const [prescreenStartedAt, setPrescreenStartedAt] = useState<number | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(RECAPTCHA_SITE_KEY ? null : "");
+  const [securityError, setSecurityError] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: queryKeys.panelSurveys.public(surveyId),
@@ -64,12 +70,25 @@ export function SurveyStartClient() {
       return;
     }
 
+    if (RECAPTCHA_SITE_KEY && captchaToken === null) {
+      setSecurityError("Please complete security verification first.");
+      return;
+    }
+
     setStarting(true);
+    setSecurityError(null);
     try {
       const result = await postPanelGatewayRedirect({
         surveyId: data.id,
         attemptToken: participantId,
+        captchaToken: captchaToken || undefined,
       });
+
+      if (result.requiresCaptcha && RECAPTCHA_SITE_KEY) {
+        setCaptchaToken(null);
+        setStarting(false);
+        return;
+      }
 
       if (result.requiresPrescreen && result.prescreenForm && result.profileId) {
         setPrescreenForm(result.prescreenForm);
@@ -86,7 +105,9 @@ export function SurveyStartClient() {
       }
     } catch (e) {
       setStarting(false);
-      toast.error(e instanceof Error ? e.message : "Could not start survey");
+      const msg = e instanceof Error ? e.message : "Could not start survey";
+      setSecurityError(msg);
+      toast.error(msg);
     }
   };
 
@@ -107,6 +128,30 @@ export function SurveyStartClient() {
       toast.error(e instanceof Error ? e.message : "Could not submit prescreen");
     }
   };
+
+  if (RECAPTCHA_SITE_KEY && captchaToken === null && participantId) {
+    return (
+      <GatewayCaptcha
+        siteKey={RECAPTCHA_SITE_KEY}
+        onToken={(t) => {
+          setCaptchaToken(t);
+          setSecurityError(null);
+        }}
+      />
+    );
+  }
+
+  if (securityError && !prescreenForm) {
+    return (
+      <SecurityBlockedScreen
+        message={securityError}
+        onRetry={() => {
+          setSecurityError(null);
+          setCaptchaToken(RECAPTCHA_SITE_KEY ? null : "");
+        }}
+      />
+    );
+  }
 
   if (prescreenForm) {
     return (

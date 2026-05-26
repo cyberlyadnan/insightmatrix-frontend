@@ -12,6 +12,8 @@ export type PanelGatewayRedirectResult = {
   redirectUrl?: string;
   channel: "panel" | "vendor";
   requiresPrescreen?: boolean;
+  requiresCaptcha?: boolean;
+  captchaSiteKey?: string;
   profileId?: string;
   prescreenForm?: PrescreenForm | null;
 };
@@ -19,6 +21,7 @@ export type PanelGatewayRedirectResult = {
 export async function postPanelGatewayRedirect(payload: {
   surveyId: string;
   attemptToken: string;
+  captchaToken?: string;
 }): Promise<PanelGatewayRedirectResult> {
   const res = await fetch(buildPublicApiUrl("/public/routing/gateway/panel-redirect"), {
     method: "POST",

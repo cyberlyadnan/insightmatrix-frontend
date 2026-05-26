@@ -6,12 +6,15 @@ export type VendorRoutingStartPayload = {
   vendorRespondentToid?: string;
   vendorRespondentId?: string;
   trafficSource?: string;
+  captchaToken?: string;
 };
 
 export type VendorRoutingStartResult = {
   sessionToken: string;
   redirectUrl?: string;
   requiresPrescreen: boolean;
+  requiresCaptcha?: boolean;
+  captchaSiteKey?: string;
   profileId?: string;
   prescreenForm?: PrescreenForm | null;
 };

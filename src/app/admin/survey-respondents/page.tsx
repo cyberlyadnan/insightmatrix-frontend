@@ -29,7 +29,7 @@ export default function SurveyRespondentsPage() {
   return (
     <div className="space-y-8 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
           <Database className="h-7 w-7 text-brand-primary" />
           Respondent data warehouse
         </h1>
@@ -38,42 +38,44 @@ export default function SurveyRespondentsPage() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Vendor toid, internal token…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 pl-10 pr-4 py-2.5 text-sm"
-          />
+      <div className="rounded-[2rem] border border-gray-100 bg-white p-4 md:p-5 shadow-sm">
+        <div className="flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-[200px] max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="search"
+              placeholder="Vendor toid, internal token…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+            />
+          </div>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+          >
+            <option value="">All statuses</option>
+            <option value="prescreen_pending">Prescreen pending</option>
+            <option value="redirected">Redirected</option>
+            <option value="complete">Complete</option>
+            <option value="terminate">Terminate</option>
+            <option value="quota_full">Quota full</option>
+            <option value="quality_reject">Quality reject</option>
+          </select>
+          <Link
+            href={ROUTES.admin.respondentExports}
+            className="h-11 inline-flex items-center rounded-xl border border-gray-200 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Export center
+          </Link>
         </div>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="rounded-xl border border-gray-200 px-3 py-2.5 text-sm"
-        >
-          <option value="">All statuses</option>
-          <option value="prescreen_pending">Prescreen pending</option>
-          <option value="redirected">Redirected</option>
-          <option value="complete">Complete</option>
-          <option value="terminate">Terminate</option>
-          <option value="quota_full">Quota full</option>
-          <option value="quality_reject">Quality reject</option>
-        </select>
-        <Link
-          href={ROUTES.admin.respondentExports}
-          className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold hover:bg-gray-50"
-        >
-          Export center
-        </Link>
       </div>
 
       {isLoading ? (
         <p className="text-sm text-gray-500 py-12 text-center">Loading…</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-[2rem] border border-gray-100 bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-[10px] font-black uppercase tracking-widest text-gray-500">

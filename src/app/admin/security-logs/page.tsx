@@ -30,11 +30,11 @@ export default function AdminSecurityLogsPage() {
   return (
     <div className="space-y-8 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-black flex items-center gap-2">
+        <h1 className="text-3xl font-black tracking-tight text-gray-900 flex items-center gap-2">
           <Shield className="h-7 w-7 text-brand-primary" />
           Security audit
         </h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 mt-2">
           Blocked traffic, captcha failures, geo mismatches, and bot signals.
         </p>
       </div>
@@ -48,7 +48,10 @@ export default function AdminSecurityLogsPage() {
             ["Captcha fail %", stats.captchaFailureRate],
             ["Bot signals %", stats.botTrafficRate],
           ].map(([label, val]) => (
-            <div key={String(label)} className="rounded-2xl border bg-white p-4">
+            <div
+              key={String(label)}
+              className="rounded-[1.5rem] border border-gray-100 bg-white p-4 shadow-sm"
+            >
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
                 {label}
               </p>
@@ -58,18 +61,23 @@ export default function AdminSecurityLogsPage() {
         </div>
       )}
 
-      <select
-        value={decision}
-        onChange={(e) => setDecision(e.target.value)}
-        className="rounded-xl border px-3 py-2 text-sm"
-      >
-        <option value="">All decisions</option>
-        <option value="allow">Allow</option>
-        <option value="block">Block</option>
-        <option value="review">Review</option>
-      </select>
+      <div className="rounded-[2rem] border border-gray-100 bg-white p-4 shadow-sm">
+        <label className="block text-sm max-w-xs">
+          <span className="font-bold text-gray-700">Decision</span>
+          <select
+            value={decision}
+            onChange={(e) => setDecision(e.target.value)}
+            className="mt-2 h-11 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+          >
+            <option value="">All decisions</option>
+            <option value="allow">Allow</option>
+            <option value="block">Block</option>
+            <option value="review">Review</option>
+          </select>
+        </label>
+      </div>
 
-      <div className="overflow-x-auto rounded-2xl border bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-[2rem] border border-gray-100 bg-white shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-left text-[10px] font-black uppercase text-gray-500">

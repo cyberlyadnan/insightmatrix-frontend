@@ -71,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="h-screen bg-gray-50 flex overflow-hidden">
         {/* Desktop Sidebar */}
         <aside
-          className={`hidden lg:flex flex-col bg-gray-900 text-white transition-all duration-300 border-r border-white/5 ${
+          className={`hidden lg:flex flex-col bg-gray-900 text-white transition-all duration-300 border-r border-white/5 min-h-0 ${
             isSidebarOpen ? "w-64" : "w-20"
           }`}
         >
@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             />
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-2">
             {sidebarLinks.map((link) => {
               const isActive = isSidebarActive(pathname, link.href);
               const Icon = link.icon;
@@ -143,7 +143,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
-                className="fixed top-0 left-0 bottom-0 w-72 bg-gray-950 text-white z-[60] p-6 lg:hidden flex flex-col"
+                className="fixed top-0 left-0 bottom-0 w-72 bg-gray-950 text-white z-[60] p-6 lg:hidden flex flex-col min-h-0"
               >
                 <div className="flex items-center justify-between mb-10">
                   <ImxLogo href="/admin" size="sm" surface="dark" />
@@ -151,7 +151,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <X />
                   </button>
                 </div>
-                <nav className="flex-1 space-y-4">
+                <nav className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">
                   {sidebarLinks.map((link) => {
                     const isActive = isSidebarActive(pathname, link.href);
                     const Icon = link.icon;

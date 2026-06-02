@@ -36,6 +36,7 @@ export function SurveyStartClient() {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [gatewayToken, setGatewayToken] = useState<string | null>(null);
   const [prescreenStartedAt, setPrescreenStartedAt] = useState<number | null>(null);
+  const [prescreenSubmitError, setPrescreenSubmitError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(RECAPTCHA_SITE_KEY ? null : "");
   const [securityError, setSecurityError] = useState<string | null>(null);
 
@@ -112,8 +113,14 @@ export function SurveyStartClient() {
   };
 
   const handlePrescreenSubmit = async (answers: Record<string, unknown>) => {
-    if (!profileId || !gatewayToken) return;
+    if (!profileId || !gatewayToken) {
+      const msg = "Session expired. Please refresh and start the survey again.";
+      setPrescreenSubmitError(msg);
+      toast.error(msg);
+      return;
+    }
     setStarting(true);
+    setPrescreenSubmitError(null);
     try {
       const result = await postCompleteRoutingPrescreen({
         profileId,
@@ -125,7 +132,9 @@ export function SurveyStartClient() {
       window.location.href = result.redirectUrl;
     } catch (e) {
       setStarting(false);
-      toast.error(e instanceof Error ? e.message : "Could not submit prescreen");
+      const msg = e instanceof Error ? e.message : "Could not submit prescreen";
+      setPrescreenSubmitError(msg);
+      toast.error(msg);
     }
   };
 
@@ -159,6 +168,7 @@ export function SurveyStartClient() {
         form={prescreenForm}
         onSubmit={handlePrescreenSubmit}
         isSubmitting={starting}
+        submitError={prescreenSubmitError}
       />
     );
   }

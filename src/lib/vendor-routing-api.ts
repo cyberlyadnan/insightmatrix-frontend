@@ -81,8 +81,13 @@ export async function postCompleteRoutingPrescreen(
     /* ignore */
   }
 
-  if (!res.ok || !data.data?.redirectUrl) {
+  if (!res.ok) {
     throw new Error(data.message || "Unable to complete prescreen");
+  }
+  if (!data.data?.redirectUrl) {
+    throw new Error(
+      data.message || "Prescreen saved but survey redirect URL is missing. Contact support."
+    );
   }
 
   return data.data;

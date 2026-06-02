@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { postVendorRoutingStart, postCompleteRoutingPrescreen } from "@/lib/vendor-routing-api";
 import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
@@ -25,6 +26,7 @@ export default function VendorStartPage() {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [startedAt] = useState(() => Date.now());
 
   const vendorRespondentToid =
@@ -80,8 +82,14 @@ export default function VendorStartPage() {
   }, [routingSlug, vendorRespondentToid, trafficSource, captchaToken]);
 
   const handlePrescreenSubmit = async (answers: Record<string, unknown>) => {
-    if (!profileId || !sessionToken) return;
+    if (!profileId || !sessionToken) {
+      const msg = "Session expired. Please refresh the page and try again.";
+      setSubmitError(msg);
+      toast.error(msg);
+      return;
+    }
     setSubmitting(true);
+    setSubmitError(null);
     try {
       const result = await postCompleteRoutingPrescreen({
         profileId,
@@ -92,7 +100,9 @@ export default function VendorStartPage() {
       });
       window.location.replace(result.redirectUrl);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Unable to submit prescreen");
+      const msg = e instanceof Error ? e.message : "Unable to submit prescreen";
+      setSubmitError(msg);
+      toast.error(msg);
       setSubmitting(false);
     }
   };
@@ -142,6 +152,7 @@ export default function VendorStartPage() {
         form={prescreenForm}
         onSubmit={handlePrescreenSubmit}
         isSubmitting={submitting}
+        submitError={submitError}
         title="Before you begin"
         subtitle="Answer a few questions, then you'll continue to the survey."
       />

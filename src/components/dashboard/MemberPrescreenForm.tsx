@@ -17,8 +17,35 @@ function sortedQuestions(form: PrescreenForm): PrescreenQuestion[] {
   return [...form.questions].sort((a, b) => a.order - b.order);
 }
 
+function isEmptyAnswer(value: unknown): boolean {
+  if (value === undefined || value === null || value === "") return true;
+  if (Array.isArray(value)) return value.length === 0;
+  return false;
+}
+
+function validateRequiredBeforeSubmit(
+  form: PrescreenForm,
+  answers: Record<string, unknown>
+): string | null {
+  for (const q of sortedQuestions(form)) {
+    if (!q.required) continue;
+    if (q.type === "checkbox") {
+      if (!Array.isArray(answers[q.id]) || (answers[q.id] as unknown[]).length === 0) {
+        return `Please complete: ${q.title}`;
+      }
+      continue;
+    }
+    if (isEmptyAnswer(answers[q.id])) {
+      return `Please complete: ${q.title}`;
+    }
+  }
+  return null;
+}
+
 export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
   const questions = useMemo(() => sortedQuestions(form), [form]);
+
+  const [clientError, setClientError] = useState<string | null>(null);
 
   const [answers, setAnswers] = useState<Record<string, unknown>>(() => {
     const initial: Record<string, unknown> = {};
@@ -51,6 +78,12 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const validationError = validateRequiredBeforeSubmit(form, answers);
+    if (validationError) {
+      setClientError(validationError);
+      return;
+    }
+    setClientError(null);
     await onSubmit(answers);
   };
 
@@ -203,6 +236,12 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
           ) : null}
         </div>
       ))}
+
+      {clientError ? (
+        <p role="alert" className="text-sm font-semibold text-rose-600">
+          {clientError}
+        </p>
+      ) : null}
 
       <Button
         type="submit"

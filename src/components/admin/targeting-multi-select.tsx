@@ -139,14 +139,14 @@ export function TargetingMultiSelect({
                 />
               </div>
             </div>
-            <ul className="max-h-56 overflow-auto py-1" role="listbox">
+            <ul className="max-h-80 overflow-y-auto py-1" role="listbox">
               {filtered.length === 0 ? (
                 <li className="px-3 py-2.5 text-sm text-gray-500">{emptyMessage}</li>
               ) : (
                 filtered.map((opt) => {
                   const checked = selectedSet.has(opt.value.toLowerCase());
                   return (
-                    <li key={opt.value}>
+                    <li key={`${opt.value}-${opt.label}`}>
                       <button
                         type="button"
                         role="option"
@@ -174,6 +174,13 @@ export function TargetingMultiSelect({
                 })
               )}
             </ul>
+            {filtered.length > 0 ? (
+              <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">
+                {filtered.length === options.length
+                  ? `${options.length} countries — scroll or search`
+                  : `${filtered.length} of ${options.length} countries`}
+              </p>
+            ) : null}
           </div>
         </>
       ) : null}

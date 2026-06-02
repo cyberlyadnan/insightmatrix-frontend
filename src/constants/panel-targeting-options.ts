@@ -1,13 +1,14 @@
-import { COUNTRIES } from "@/constants/countries-data";
-import { COUNTRY_ISO_BY_NAME } from "@/constants/country-iso-codes";
+import { getCountrySelectOptions } from "@/lib/country-options";
 
 export type TargetingOption = { value: string; label: string };
 
-/** Countries for survey targeting (ISO code stored, full name shown). */
-export const PANEL_COUNTRY_OPTIONS: TargetingOption[] = COUNTRIES.map((name) => {
-  const code = COUNTRY_ISO_BY_NAME[name] ?? name.slice(0, 2).toUpperCase();
-  return { value: code, label: `${name} (${code})` };
-}).sort((a, b) => a.label.localeCompare(b.label));
+/** Full ISO 3166-1 alpha-2 list (English names via Intl.DisplayNames — no external API). */
+export const PANEL_COUNTRY_OPTIONS: TargetingOption[] = getCountrySelectOptions().map(
+  ({ value, label }) => ({
+    value,
+    label: `${label} (${value})`,
+  })
+);
 
 /** Employment / profession tokens (aligned with panel matching & seeds). */
 export const PANEL_PROFESSION_OPTIONS: TargetingOption[] = [

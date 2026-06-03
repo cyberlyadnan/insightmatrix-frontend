@@ -17,6 +17,7 @@ import {
   publishPrescreen,
   seedDefaultPrescreens,
   seedPanelMemberPrescreen,
+  setPrescreenRequiredForPanel,
   unpublishPrescreen,
 } from "@/services/prescreen";
 import { queryKeys } from "@/services/queries";
@@ -66,6 +67,17 @@ export default function AdminPrescreenListPage() {
       toast.success("Prescreen published");
       await refresh();
     },
+  });
+
+  const setRequiredMutation = useMutation({
+    mutationFn: setPrescreenRequiredForPanel,
+    onSuccess: async () => {
+      toast.success("This prescreen is now required for panel & routing");
+      await refresh();
+      await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
+      await qc.invalidateQueries({ queryKey: queryKeys.panelPrescreen.bundle });
+    },
+    onError: (error) => toast.error(parseApiError(error, "Could not set as required prescreen")),
   });
 
   const unpublishMutation = useMutation({
@@ -187,9 +199,13 @@ export default function AdminPrescreenListPage() {
                       <p className="font-bold text-gray-900">{item.title}</p>
                       <p className="text-xs text-gray-500">
                         {item.slug}
-                        {item.isRequiredForPanel ? (
-                          <span className="ml-2 text-[10px] font-black uppercase text-brand-primary">
-                            · Required for panel
+                        {item.isRequiredForPanel && item.status === "published" ? (
+                          <span className="ml-2 text-[10px] font-black uppercase text-emerald-700">
+                            · Active required
+                          </span>
+                        ) : item.isRequiredForPanel ? (
+                          <span className="ml-2 text-[10px] font-black uppercase text-amber-700">
+                            · Required (publish to activate)
                           </span>
                         ) : null}
                       </p>
@@ -219,6 +235,16 @@ export default function AdminPrescreenListPage() {
                           <Copy className="w-3 h-3" />
                           Duplicate
                         </button>
+                        {!(item.isRequiredForPanel && item.status === "published") ? (
+                          <button
+                            type="button"
+                            className="h-9 px-3 border border-brand-primary/30 rounded-lg text-xs font-bold text-brand-primary bg-brand-subtle hover:bg-brand-light disabled:opacity-50"
+                            disabled={setRequiredMutation.isPending}
+                            onClick={() => setRequiredMutation.mutate(item.id)}
+                          >
+                            Set as required
+                          </button>
+                        ) : null}
                         {item.status === "published" ? (
                           <button
                             className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-white hover:bg-gray-50"

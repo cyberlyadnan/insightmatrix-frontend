@@ -67,6 +67,14 @@ export async function publishPrescreen(id: string): Promise<PrescreenForm> {
   return data.data;
 }
 
+/** Clears required flag on other forms; sets this one required and publishes if needed. */
+export async function setPrescreenRequiredForPanel(id: string): Promise<PrescreenForm> {
+  const { data } = await apiClient.patch<ApiEnvelope<PrescreenForm>>(
+    `/prescreens/${id}/set-required-for-panel`
+  );
+  return data.data;
+}
+
 export async function unpublishPrescreen(id: string): Promise<PrescreenForm> {
   const { data } = await apiClient.patch<ApiEnvelope<PrescreenForm>>(`/prescreens/${id}/unpublish`);
   return data.data;

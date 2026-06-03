@@ -21,6 +21,7 @@ import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm"
 import { GatewayCaptcha } from "@/components/routing/GatewayCaptcha";
 import { SecurityBlockedScreen } from "@/components/routing/SecurityBlockedScreen";
 import type { PrescreenForm } from "@/types/prescreen";
+import { normalizePrescreenForm } from "@/lib/normalize-prescreen-form";
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "";
 import { panelPointsFromPayout } from "@/lib/panel-points";
@@ -92,7 +93,13 @@ export function SurveyStartClient() {
       }
 
       if (result.requiresPrescreen && result.prescreenForm && result.profileId) {
-        setPrescreenForm(result.prescreenForm);
+        const normalized = normalizePrescreenForm(result.prescreenForm);
+        if (!normalized || normalized.questions.length === 0) {
+          setSecurityError("Prescreen form is not configured correctly. Please contact support.");
+          setStarting(false);
+          return;
+        }
+        setPrescreenForm(normalized);
         setProfileId(result.profileId);
         setGatewayToken(result.sessionToken);
         setPrescreenStartedAt(Date.now());

@@ -14,7 +14,7 @@ type Props = {
 };
 
 function sortedQuestions(form: PrescreenForm): PrescreenQuestion[] {
-  return [...form.questions].sort((a, b) => a.order - b.order);
+  return [...(form.questions ?? [])].sort((a, b) => a.order - b.order);
 }
 
 function isEmptyAnswer(value: unknown): boolean {
@@ -132,8 +132,8 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
                 setVal(q.id, v === "" ? null : Number(v));
               }}
               placeholder={q.placeholder || undefined}
-              min={q.validation.minValue ?? undefined}
-              max={q.validation.maxValue ?? undefined}
+              min={q.validation?.minValue ?? undefined}
+              max={q.validation?.maxValue ?? undefined}
               className="text-gray-900 border-gray-200"
               required={q.required}
             />
@@ -157,7 +157,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
               required={q.required}
             >
               <option value="">{q.placeholder || "Select…"}</option>
-              {q.options.map((opt) => (
+              {(q.options ?? []).map((opt) => (
                 <option key={opt.id} value={opt.value}>
                   {opt.label}
                 </option>
@@ -167,7 +167,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
 
           {q.type === "radio" ? (
             <fieldset className="space-y-2">
-              {q.options.map((opt) => (
+              {(q.options ?? []).map((opt) => (
                 <label
                   key={opt.id}
                   className="flex items-center gap-2 text-sm text-gray-800 cursor-pointer"
@@ -188,7 +188,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
 
           {q.type === "checkbox" ? (
             <fieldset className="space-y-2">
-              {q.options.map((opt) => {
+              {(q.options ?? []).map((opt) => {
                 const arr = Array.isArray(answers[q.id]) ? (answers[q.id] as string[]) : [];
                 return (
                   <label

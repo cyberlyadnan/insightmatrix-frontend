@@ -1,4 +1,5 @@
 import { buildPublicApiUrl } from "@/lib/site-url";
+import { parseGatewayApiResponse } from "@/lib/parse-gateway-api-response";
 import type { PrescreenForm } from "@/types/prescreen";
 
 export type VendorRoutingStartPayload = {
@@ -10,7 +11,7 @@ export type VendorRoutingStartPayload = {
 };
 
 export type VendorRoutingStartResult = {
-  sessionToken: string;
+  sessionToken?: string;
   redirectUrl?: string;
   requiresPrescreen: boolean;
   requiresCaptcha?: boolean;
@@ -47,18 +48,11 @@ export async function postVendorRoutingStart(
   });
 
   const text = await res.text();
-  let data: { data?: VendorRoutingStartResult; message?: string } = {};
-  try {
-    data = text ? (JSON.parse(text) as typeof data) : {};
-  } catch {
-    /* ignore */
-  }
-
-  if (!res.ok || !data.data?.sessionToken) {
-    throw new Error(data.message || "Unable to start survey session");
-  }
-
-  return data.data;
+  return parseGatewayApiResponse<VendorRoutingStartResult>(
+    res,
+    text,
+    "Unable to start survey session"
+  );
 }
 
 export async function postCompleteRoutingPrescreen(

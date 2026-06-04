@@ -8,12 +8,11 @@ import { toast } from "sonner";
 import { postVendorRoutingStart, postCompleteRoutingPrescreen } from "@/lib/vendor-routing-api";
 import { normalizePrescreenForm } from "@/lib/normalize-prescreen-form";
 import { safeDecodeURIComponent } from "@/lib/safe-decode-uri";
+import { getGatewayCaptchaSiteKey, isGatewayCaptchaActive } from "@/lib/gateway-security";
 import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
 import { GatewayCaptcha } from "@/components/routing/GatewayCaptcha";
 import { SecurityBlockedScreen } from "@/components/routing/SecurityBlockedScreen";
 import type { PrescreenForm } from "@/types/prescreen";
-
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "";
 
 export function VendorStartClient() {
   const params = useParams();
@@ -21,9 +20,11 @@ export function VendorStartClient() {
   const routingSlug =
     typeof params.routingSlug === "string" ? safeDecodeURIComponent(params.routingSlug).trim() : "";
 
-  const [captchaToken, setCaptchaToken] = useState<string | null>(RECAPTCHA_SITE_KEY ? null : "");
+  const [captchaSiteKey, setCaptchaSiteKey] = useState(() => getGatewayCaptchaSiteKey());
+  const captchaRequired = isGatewayCaptchaActive(captchaSiteKey);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(captchaRequired ? null : "");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(!RECAPTCHA_SITE_KEY);
+  const [loading, setLoading] = useState(!captchaRequired);
   const [prescreenForm, setPrescreenForm] = useState<PrescreenForm | null>(null);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
@@ -50,7 +51,16 @@ export function VendorStartClient() {
         });
         if (cancelled) return;
 
-        if (result.requiresCaptcha && RECAPTCHA_SITE_KEY) {
+        if (result.requiresCaptcha) {
+          const nextSiteKey = getGatewayCaptchaSiteKey(result.captchaSiteKey);
+          if (!nextSiteKey) {
+            setError(
+              "Security verification is required but is not configured. Please contact support."
+            );
+            setLoading(false);
+            return;
+          }
+          setCaptchaSiteKey(nextSiteKey);
           setCaptchaToken(null);
           setLoading(false);
           return;
@@ -115,14 +125,23 @@ export function VendorStartClient() {
     }
   };
 
+  const resetStart = () => {
+    setError(null);
+    const siteKey = getGatewayCaptchaSiteKey();
+    setCaptchaSiteKey(siteKey);
+    const needsCaptcha = isGatewayCaptchaActive(siteKey);
+    setLoading(!needsCaptcha);
+    setCaptchaToken(needsCaptcha ? null : "");
+  };
+
   if (!routingSlug) {
     return <SecurityBlockedScreen message="Invalid routing link." />;
   }
 
-  if (RECAPTCHA_SITE_KEY && captchaToken === null) {
+  if (isGatewayCaptchaActive(captchaSiteKey) && captchaToken === null) {
     return (
       <GatewayCaptcha
-        siteKey={RECAPTCHA_SITE_KEY}
+        siteKey={captchaSiteKey}
         onToken={(token) => {
           setError(null);
           setCaptchaToken(token);
@@ -133,16 +152,7 @@ export function VendorStartClient() {
   }
 
   if (error && !prescreenForm) {
-    return (
-      <SecurityBlockedScreen
-        message={error}
-        onRetry={() => {
-          setError(null);
-          setLoading(!RECAPTCHA_SITE_KEY);
-          setCaptchaToken(RECAPTCHA_SITE_KEY ? null : "");
-        }}
-      />
-    );
+    return <SecurityBlockedScreen message={error} onRetry={resetStart} />;
   }
 
   if (loading && !prescreenForm) {

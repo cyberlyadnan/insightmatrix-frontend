@@ -17,16 +17,18 @@ import {
   persistParticipantContext,
 } from "@/lib/survey-participant";
 import { postPanelGatewayRedirect, postCompleteRoutingPrescreen } from "@/lib/routing-gateway-api";
+import { getGatewayCaptchaSiteKey, isGatewayCaptchaActive } from "@/lib/gateway-security";
 import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
 import { GatewayCaptcha } from "@/components/routing/GatewayCaptcha";
 import { SecurityBlockedScreen } from "@/components/routing/SecurityBlockedScreen";
 import type { PrescreenForm } from "@/types/prescreen";
 import { normalizePrescreenForm } from "@/lib/normalize-prescreen-form";
-
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? "";
 import { panelPointsFromPayout } from "@/lib/panel-points";
 import { getPublicPanelSurvey } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
+
+const RECAPTCHA_SITE_KEY = getGatewayCaptchaSiteKey();
+const CAPTCHA_REQUIRED = isGatewayCaptchaActive(RECAPTCHA_SITE_KEY);
 
 export function SurveyStartClient() {
   const params = useParams();
@@ -38,7 +40,8 @@ export function SurveyStartClient() {
   const [gatewayToken, setGatewayToken] = useState<string | null>(null);
   const [prescreenStartedAt, setPrescreenStartedAt] = useState<number | null>(null);
   const [prescreenSubmitError, setPrescreenSubmitError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(RECAPTCHA_SITE_KEY ? null : "");
+  const [captchaSiteKey, setCaptchaSiteKey] = useState(RECAPTCHA_SITE_KEY);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(CAPTCHA_REQUIRED ? null : "");
   const [securityError, setSecurityError] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
@@ -72,7 +75,7 @@ export function SurveyStartClient() {
       return;
     }
 
-    if (RECAPTCHA_SITE_KEY && captchaToken === null) {
+    if (isGatewayCaptchaActive(captchaSiteKey) && captchaToken === null) {
       setSecurityError("Please complete security verification first.");
       return;
     }
@@ -86,7 +89,16 @@ export function SurveyStartClient() {
         captchaToken: captchaToken || undefined,
       });
 
-      if (result.requiresCaptcha && RECAPTCHA_SITE_KEY) {
+      if (result.requiresCaptcha) {
+        const nextSiteKey = getGatewayCaptchaSiteKey(result.captchaSiteKey);
+        if (!nextSiteKey) {
+          setSecurityError(
+            "Security verification is required but is not configured. Please contact support."
+          );
+          setStarting(false);
+          return;
+        }
+        setCaptchaSiteKey(nextSiteKey);
         setCaptchaToken(null);
         setStarting(false);
         return;
@@ -145,10 +157,10 @@ export function SurveyStartClient() {
     }
   };
 
-  if (RECAPTCHA_SITE_KEY && captchaToken === null && participantId) {
+  if (isGatewayCaptchaActive(captchaSiteKey) && captchaToken === null && participantId) {
     return (
       <GatewayCaptcha
-        siteKey={RECAPTCHA_SITE_KEY}
+        siteKey={captchaSiteKey}
         onToken={(t) => {
           setCaptchaToken(t);
           setSecurityError(null);
@@ -163,7 +175,9 @@ export function SurveyStartClient() {
         message={securityError}
         onRetry={() => {
           setSecurityError(null);
-          setCaptchaToken(RECAPTCHA_SITE_KEY ? null : "");
+          const siteKey = getGatewayCaptchaSiteKey();
+          setCaptchaSiteKey(siteKey);
+          setCaptchaToken(isGatewayCaptchaActive(siteKey) ? null : "");
         }}
       />
     );

@@ -1,4 +1,5 @@
 import { buildPublicApiUrl } from "@/lib/site-url";
+import { parseGatewayApiResponse } from "@/lib/parse-gateway-api-response";
 import type { PrescreenForm } from "@/types/prescreen";
 import {
   postCompleteRoutingPrescreen,
@@ -8,7 +9,7 @@ import {
 export type { CompleteRoutingPrescreenResult };
 
 export type PanelGatewayRedirectResult = {
-  sessionToken: string;
+  sessionToken?: string;
   redirectUrl?: string;
   channel: "panel" | "vendor";
   requiresPrescreen?: boolean;
@@ -33,18 +34,11 @@ export async function postPanelGatewayRedirect(payload: {
   });
 
   const text = await res.text();
-  let data: { data?: PanelGatewayRedirectResult; message?: string } = {};
-  try {
-    data = text ? (JSON.parse(text) as typeof data) : {};
-  } catch {
-    /* ignore */
-  }
-
-  if (!res.ok || !data.data?.sessionToken) {
-    throw new Error(data.message || "Unable to start survey through gateway");
-  }
-
-  return data.data;
+  return parseGatewayApiResponse<PanelGatewayRedirectResult>(
+    res,
+    text,
+    "Unable to start survey through gateway"
+  );
 }
 
 export { postCompleteRoutingPrescreen };

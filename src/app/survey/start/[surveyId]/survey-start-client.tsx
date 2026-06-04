@@ -104,7 +104,12 @@ export function SurveyStartClient() {
         return;
       }
 
-      if (result.requiresPrescreen && result.prescreenForm && result.profileId) {
+      if (
+        result.requiresPrescreen &&
+        result.prescreenForm &&
+        result.profileId &&
+        result.sessionToken
+      ) {
         const normalized = normalizePrescreenForm(result.prescreenForm);
         if (!normalized || normalized.questions.length === 0) {
           setSecurityError("Prescreen form is not configured correctly. Please contact support.");

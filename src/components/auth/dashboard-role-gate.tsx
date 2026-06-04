@@ -6,20 +6,29 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { fetchProfileOptional } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
+import { useAuthStore } from "@/store/authStore";
 
 /** Blocks `admin` from the member dashboard; sends them to `/admin` only */
 export function DashboardRoleGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: user, isFetched } = useQuery({
+  const storeUser = useAuthStore((s) => s.user);
+  const {
+    data: profileUser,
+    isFetched,
+    isFetching,
+    isPending,
+  } = useQuery({
     queryKey: queryKeys.auth.profile,
     queryFn: fetchProfileOptional,
     staleTime: 60_000,
     retry: false,
   });
+  const user = profileUser ?? storeUser;
+  const authChecking = !isFetched || isFetching || isPending;
 
   useEffect(() => {
-    if (!isFetched) return;
+    if (authChecking) return;
     if (!user) {
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(pathname)}`);
       return;
@@ -27,9 +36,9 @@ export function DashboardRoleGate({ children }: { children: ReactNode }) {
     if (user.role === "admin") {
       router.replace(ROUTES.admin.root);
     }
-  }, [isFetched, user, router, pathname]);
+  }, [authChecking, user, router, pathname]);
 
-  if (!isFetched || !user || user.role === "admin") {
+  if (authChecking || !user || user.role === "admin") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-50">
         <div

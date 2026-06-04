@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { getPostLoginDestination } from "@/lib/auth/redirect";
+import { completeMemberLogin } from "@/lib/auth/complete-login";
 import { parseApiError } from "@/services/api/errors";
 import { fetchProfileOptional, registerRequest } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
@@ -68,9 +69,8 @@ export default function RegisterPage() {
       await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
       const hydrated = await fetchProfileOptional();
       if (hydrated) {
-        setUser(hydrated);
+        completeMemberLogin(qc, setUser, hydrated, getPostLoginDestination(hydrated, null));
         toast.success("Account ready");
-        router.replace(getPostLoginDestination(hydrated, null));
       } else {
         toast.success("Check your email to verify your account, then sign in.");
         router.replace("/login");

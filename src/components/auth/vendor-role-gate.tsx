@@ -14,26 +14,39 @@ export function VendorRoleGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const setVendor = useVendorAuthStore((s) => s.setVendor);
-  const vendor = useVendorAuthStore((s) => s.vendor);
+  const storeVendor = useVendorAuthStore((s) => s.vendor);
 
-  const { data, isLoading, isError, isFetched } = useQuery({
+  const { data, isLoading, isError, isFetched, isFetching } = useQuery({
     queryKey: queryKeys.vendorAuth.profile,
     queryFn: vendorMeRequest,
     retry: false,
   });
+
+  const vendor = data ?? storeVendor;
 
   useEffect(() => {
     if (data) setVendor(data);
   }, [data, setVendor]);
 
   useEffect(() => {
-    if (!isFetched) return;
-    if (isError || !data) {
-      router.replace(`${ROUTES.vendor.login}?redirect=${encodeURIComponent(pathname)}`);
+    if (isFetching) return;
+    if (!vendor && (isFetched || !storeVendor)) {
+      if (isError || (isFetched && !data && !storeVendor)) {
+        router.replace(`${ROUTES.vendor.login}?redirect=${encodeURIComponent(pathname)}`);
+      }
     }
-  }, [isFetched, isError, data, router, pathname]);
+  }, [isFetching, isFetched, isError, vendor, data, storeVendor, router, pathname]);
 
-  if (isLoading || !vendor) {
+  if ((isLoading || isFetching || !isFetched) && !vendor) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-50">
+        <Loader2 className="h-9 w-9 animate-spin text-brand-primary" />
+        <p className="text-sm font-medium text-muted-foreground">Loading vendor portal…</p>
+      </div>
+    );
+  }
+
+  if (!vendor) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-slate-50">
         <Loader2 className="h-9 w-9 animate-spin text-brand-primary" />

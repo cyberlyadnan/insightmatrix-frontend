@@ -28,7 +28,16 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthPath(pathname) && token) {
-    return NextResponse.redirect(new URL(ROUTES.dashboard.root, request.url));
+    const redirectTarget =
+      pathname === ROUTES.login && request.nextUrl.searchParams.get("redirect");
+    const safeRedirect =
+      redirectTarget &&
+      redirectTarget.startsWith("/") &&
+      !redirectTarget.startsWith("//") &&
+      redirectTarget.startsWith(ROUTES.admin.root)
+        ? redirectTarget
+        : ROUTES.dashboard.root;
+    return NextResponse.redirect(new URL(safeRedirect, request.url));
   }
 
   const guardEnabled = process.env.NEXT_PUBLIC_ENABLE_ROUTE_GUARD === "true";

@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, Store } from "lucide-react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -24,9 +24,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
 import { getPostLoginDestination } from "@/lib/auth/redirect";
+import { completeMemberLogin } from "@/lib/auth/complete-login";
 import { parseApiError } from "@/services/api/errors";
 import { loginRequest } from "@/services/auth";
-import { queryKeys } from "@/services/queries";
 import { useAuthStore } from "@/store/authStore";
 
 const loginSchema = z.object({
@@ -40,7 +40,6 @@ const loginSchema = z.object({
 
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const qc = useQueryClient();
   const setUser = useAuthStore((s) => s.setUser);
@@ -64,12 +63,10 @@ function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: loginRequest,
-    onSuccess: async (user) => {
-      setUser(user);
-      await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
+    onSuccess: (user) => {
       toast.success("Welcome back");
       const redirect = searchParams.get("redirect");
-      router.replace(getPostLoginDestination(user, redirect));
+      completeMemberLogin(qc, setUser, user, getPostLoginDestination(user, redirect));
     },
     onError: (err) => {
       toast.error(parseApiError(err, "Could not sign in"));

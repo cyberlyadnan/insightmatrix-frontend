@@ -53,7 +53,8 @@ function VendorLoginForm() {
     mutationFn: vendorLoginRequest,
     onSuccess: async (vendor) => {
       setVendor(vendor);
-      await qc.invalidateQueries({ queryKey: queryKeys.vendorAuth.profile });
+      qc.setQueryData(queryKeys.vendorAuth.profile, vendor);
+      void qc.invalidateQueries({ queryKey: queryKeys.vendorAuth.profile });
       toast.success("Welcome back");
       const redirect = searchParams.get("redirect");
       const dest =

@@ -1,5 +1,6 @@
 import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { env } from "@/config";
+import { isAuthProbeRequest } from "./auth-request-config";
 import { refreshSession } from "./refresh-session";
 
 let refreshFlow: Promise<boolean> | null = null;
@@ -71,7 +72,7 @@ export function attachInterceptors(instance: AxiosInstance) {
         return instance(originalRequest);
       }
 
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && !isAuthProbeRequest(originalRequest)) {
         const path = window.location.pathname;
         const onAuthRoute =
           path.startsWith("/login") ||

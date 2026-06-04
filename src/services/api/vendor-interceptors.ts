@@ -1,6 +1,7 @@
 import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { env } from "@/config";
 import { ROUTES } from "@/constants/routes";
+import { isAuthProbeRequest } from "./auth-request-config";
 import { refreshVendorSession } from "./vendor-refresh-session";
 
 let refreshFlow: Promise<boolean> | null = null;
@@ -71,7 +72,7 @@ export function attachVendorInterceptors(instance: AxiosInstance) {
         return instance(originalRequest);
       }
 
-      if (typeof window !== "undefined") {
+      if (typeof window !== "undefined" && !isAuthProbeRequest(originalRequest)) {
         const path = window.location.pathname;
         const onVendorAuth = path.startsWith(ROUTES.vendor.login);
         if (!onVendorAuth && path.startsWith("/vendor")) {

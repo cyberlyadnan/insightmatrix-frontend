@@ -1,4 +1,5 @@
 import { apiClient } from "@/services/api";
+import type { AuthAxiosRequestConfig } from "@/services/api/auth-request-config";
 import type { AuthUser } from "@/types";
 
 export type ApiEnvelope<T> = {
@@ -38,7 +39,9 @@ export async function resendVerificationRequest(email: string) {
 }
 
 export async function fetchProfile(): Promise<AuthUser> {
-  const { data } = await apiClient.get<ApiEnvelope<AuthUser>>("/users/profile");
+  const { data } = await apiClient.get<ApiEnvelope<AuthUser>>("/users/profile", {
+    skipAuthRedirect: true,
+  } as AuthAxiosRequestConfig);
   return data.data;
 }
 

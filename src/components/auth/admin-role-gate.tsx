@@ -6,19 +6,28 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { fetchProfileOptional } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
+import { useAuthStore } from "@/store/authStore";
 
 /** Client gate for `/admin` — middleware only checks for an access cookie */
 export function AdminRoleGate({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { data: user, isFetched } = useQuery({
+  const storeUser = useAuthStore((s) => s.user);
+  const {
+    data: profileUser,
+    isFetched,
+    isFetching,
+    isPending,
+  } = useQuery({
     queryKey: queryKeys.auth.profile,
     queryFn: fetchProfileOptional,
     staleTime: 60_000,
     retry: false,
   });
+  const user = profileUser ?? storeUser;
+  const authChecking = !isFetched || isFetching || isPending;
 
   useEffect(() => {
-    if (!isFetched) return;
+    if (authChecking) return;
     if (!user) {
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(ROUTES.admin.root)}`);
       return;
@@ -26,9 +35,9 @@ export function AdminRoleGate({ children }: { children: ReactNode }) {
     if (user.role !== "admin") {
       router.replace(ROUTES.dashboard.root);
     }
-  }, [isFetched, user, router]);
+  }, [authChecking, user, router]);
 
-  if (!isFetched || !user || user.role !== "admin") {
+  if (authChecking || !user || user.role !== "admin") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-gray-50">
         <div

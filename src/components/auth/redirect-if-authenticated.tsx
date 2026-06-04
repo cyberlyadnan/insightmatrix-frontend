@@ -6,23 +6,32 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { fetchProfileOptional } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
+import { useAuthStore } from "@/store/authStore";
 
 /** Auth pages (login/register/…) are for guests only */
 export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { data: user, isFetched } = useQuery({
+  const storeUser = useAuthStore((s) => s.user);
+  const {
+    data: profileUser,
+    isFetched,
+    isFetching,
+    isPending,
+  } = useQuery({
     queryKey: queryKeys.auth.profile,
     queryFn: fetchProfileOptional,
     staleTime: 60_000,
     retry: false,
   });
+  const user = profileUser ?? storeUser;
+  const authChecking = !isFetched || isFetching || isPending;
 
   useEffect(() => {
-    if (!isFetched || !user) return;
+    if (authChecking || !user) return;
     router.replace(user.role === "admin" ? ROUTES.admin.root : ROUTES.dashboard.root);
-  }, [isFetched, user, router]);
+  }, [authChecking, user, router]);
 
-  if (!isFetched || user) {
+  if (authChecking || user) {
     return (
       <div className="flex min-h-[50vh] w-full items-center justify-center">
         <div

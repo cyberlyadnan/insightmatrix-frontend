@@ -28,3 +28,14 @@ export function getGatewayCaptchaSiteKey(override?: string): string {
 export function isGatewayCaptchaActive(siteKeyOverride?: string): boolean {
   return isGatewayCaptchaEnabled() && Boolean(getGatewayCaptchaSiteKey(siteKeyOverride));
 }
+
+/** Show captcha when env enables it or the routing API explicitly requires a challenge. */
+export function shouldShowRoutingCaptcha(
+  siteKey: string,
+  backendRequiresCaptcha?: boolean
+): boolean {
+  const key = siteKey.trim();
+  if (!key) return false;
+  if (backendRequiresCaptcha) return true;
+  return isGatewayCaptchaActive(key);
+}

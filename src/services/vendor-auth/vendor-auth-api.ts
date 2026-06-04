@@ -1,4 +1,5 @@
 import { vendorApiClient } from "@/services/api/vendor-client";
+import type { AuthAxiosRequestConfig } from "@/services/api/auth-request-config";
 import type { VendorPublicProfile } from "@/types/vendor";
 
 type ApiEnvelope<T> = {
@@ -23,6 +24,11 @@ export async function vendorLogoutRequest(): Promise<void> {
 }
 
 export async function vendorMeRequest(): Promise<VendorPublicProfile> {
-  const { data } = await vendorApiClient.get<ApiEnvelope<VendorPublicProfile>>("/vendor-portal/me");
+  const { data } = await vendorApiClient.get<ApiEnvelope<VendorPublicProfile>>(
+    "/vendor-portal/me",
+    {
+      skipAuthRedirect: true,
+    } as AuthAxiosRequestConfig
+  );
   return data.data;
 }

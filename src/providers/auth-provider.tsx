@@ -12,11 +12,16 @@ import { useAuthStore } from "@/store/authStore";
 /** Hydrates Zustand user from `/users/profile` using session cookies */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const storeUser = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const clearSession = useAuthStore((s) => s.clearSession);
   const skipMemberHydration = isVendorRoute(pathname);
 
-  const { data: profile, isFetched } = useQuery({
+  const {
+    data: profile,
+    isFetched,
+    isFetching,
+  } = useQuery({
     queryKey: queryKeys.auth.profile,
     queryFn: fetchProfileOptional,
     staleTime: 60_000,
@@ -26,10 +31,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    if (skipMemberHydration || !isFetched) return;
+    if (skipMemberHydration || isFetching || !isFetched) return;
     if (profile) setUser(profile);
-    else clearSession();
-  }, [profile, isFetched, setUser, clearSession, skipMemberHydration]);
+    else if (!storeUser) clearSession();
+  }, [profile, isFetched, isFetching, storeUser, setUser, clearSession, skipMemberHydration]);
 
   return children;
 }

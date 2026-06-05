@@ -64,7 +64,7 @@ export function buildSurveyCallbackUrl(
 
 /**
  * Public API endpoint (browser or copy). Uses `NEXT_PUBLIC_API_URL` when absolute,
- * otherwise `${site origin}${api path}`.
+ * otherwise `${current origin}${api path}` in the browser (so localhost never hits production).
  */
 export function buildPublicApiUrl(apiPath: string): string {
   const path = apiPath.startsWith("/") ? apiPath : `/${apiPath}`;
@@ -74,12 +74,14 @@ export function buildPublicApiUrl(apiPath: string): string {
     return `${apiBase}${path}`;
   }
 
-  const site = resolvePublicSiteUrl();
-  if (site) return `${site}${apiBase}${path}`;
-
+  // Relative API base (/api/v1) — always follow the page origin in the browser.
+  // NEXT_PUBLIC_APP_URL is for callback/copy links, not cross-origin API calls.
   if (typeof window !== "undefined") {
     return `${window.location.origin}${apiBase}${path}`;
   }
+
+  const site = getConfiguredSiteUrl();
+  if (site) return `${site}${apiBase}${path}`;
 
   return `${apiBase}${path}`;
 }

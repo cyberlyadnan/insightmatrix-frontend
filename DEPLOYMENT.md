@@ -2,6 +2,61 @@
 
 When you move from `localhost` to a live domain, set these variables so the site, API proxy, auth cookies, and **supplier callback redirect URLs** all use the correct hosts.
 
+## Quick production setup
+
+1. Copy env templates on the server:
+   - Frontend: use committed `.env.production` (or copy to `.env` before build)
+   - Backend: copy `.env.production` → fill `REPLACE_*` secrets → save as `.env` **or** keep as `.env.production` with `NODE_ENV=production`
+2. Build and start (never use `next dev` in production):
+
+```bash
+# Backend
+cd survey-platform-backend
+npm ci
+npm run build
+NODE_ENV=production npm start   # or pm2 — port 5000
+
+# Frontend
+cd survey-platform-frontend
+npm ci
+npm run build                  # uses .env.production + webpack
+npm run start                  # port 3000
+```
+
+3. Configure nginx using `nginx.conf.example` — **required** for same-server deploys.
+
+---
+
+## Troubleshooting: ChunkLoadError / 500 on `/_next/static/chunks/*.js`
+
+**Symptoms in browser console:**
+
+```
+Failed to load resource: 500 (Internal Server Error)  …/_next/static/chunks/….js
+Uncaught ChunkLoadError: Failed to load chunk …
+```
+
+**Root cause (confirmed on insightmatrix.online):** Static Next.js assets under `/_next/static/` return HTTP 500 while `/` may still load. This is almost always a **deployment / reverse-proxy** issue, not an API env mismatch.
+
+| Check | Fix |
+|-------|-----|
+| `/_next/static/*` proxied to Express (port 5000) | Route `/_next/` and `/` to Next.js (port 3000) — see `nginx.conf.example` |
+| `next dev` running in production | Use `npm run build && npm run start` |
+| Stale `.next` after git pull | Delete `.next`, rebuild, restart `next start` |
+| `NEXT_PUBLIC_*` changed without rebuild | Re-run `npm run build` (values are baked in at build time) |
+| Turbopack build instability | Build uses `next build --webpack` (see `package.json`) |
+
+**Verify on server:**
+
+```bash
+curl -I https://insightmatrix.online/_next/static/chunks/webpack.js
+# Should be 200 (or 404 on old builds), NOT 500
+curl -I https://insightmatrix.online/login
+# Should be 200
+curl -I https://insightmatrix.online/api/v1/
+# Should be 200 JSON from Express
+```
+
 ## Frontend (`survey-platform-frontend`)
 
 | Variable | Purpose |

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Eye, Link2, Plus, Search } from "lucide-react";
+import { Check, Copy, Eye, Link2, Plus, Search } from "lucide-react";
+import { toast } from "sonner";
 
 import { AllocationQuotaBar } from "@/components/admin/vendor-allocations/allocation-quota-bar";
 import { AllocationStatusBadge } from "@/components/admin/vendor-allocations/allocation-status-badge";
@@ -32,6 +33,19 @@ export default function AdminVendorAllocationsPage() {
   const [status, setStatus] = useState<VendorAllocationStatus | "">("");
   const [surveyId, setSurveyId] = useState(() => surveyFromUrl);
   const [vendorId, setVendorId] = useState("");
+  const [copiedAllocationId, setCopiedAllocationId] = useState<string | null>(null);
+
+  const copyRoutingLink = async (routingLink: string, allocationId: string) => {
+    const link = `${routingLink}?toid=RESPONDENT_ID`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedAllocationId(allocationId);
+      toast.success("Vendor routing link copied");
+      setTimeout(() => setCopiedAllocationId(null), 2000);
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
 
   const filters = useMemo(
     () => ({
@@ -200,6 +214,19 @@ export default function AdminVendorAllocationsPage() {
                       >
                         <Eye className="h-4 w-4" />
                       </Link>
+                      <button
+                        type="button"
+                        onClick={() => copyRoutingLink(row.routingLink, row.id)}
+                        className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                        title="Copy vendor routing link"
+                        aria-label="Copy vendor routing link"
+                      >
+                        {copiedAllocationId === row.id ? (
+                          <Check className="h-4 w-4 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
                       <a
                         href={row.routingLink}
                         target="_blank"

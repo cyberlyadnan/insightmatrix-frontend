@@ -32,6 +32,7 @@ import {
 } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
+import { PanelSurveyShareLinkCard } from "@/components/admin/panel-survey-share-link-card";
 import { SurveyAllocationLinkCard } from "@/components/admin/vendor-allocations/survey-allocation-link-card";
 import { deletePanelSurvey, getPanelSurvey, patchPanelSurveyStatus } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
@@ -137,8 +138,6 @@ export default function PanelSurveyDetailPage() {
     );
   }
 
-  const startHref = ROUTES.surveyStart(survey.id);
-
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
@@ -157,14 +156,6 @@ export default function PanelSurveyDetailPage() {
             <StatusBadge status={survey.surveyStatus} />
           </div>
           <p className="text-sm font-mono text-gray-500 mt-1">{survey.surveyCode}</p>
-          <a
-            href={startHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-3 text-xs font-black uppercase tracking-widest text-brand-primary hover:underline"
-          >
-            Open participant landing <ExternalLink className="w-3 h-3" />
-          </a>
         </div>
         <div className="flex flex-wrap gap-2 shrink-0">
           {survey.surveyStatus === "active" ? (
@@ -212,6 +203,13 @@ export default function PanelSurveyDetailPage() {
           </button>
         </div>
       </div>
+
+      <PanelSurveyShareLinkCard
+        surveyId={survey.id}
+        surveyName={survey.surveyName}
+        surveyStatus={survey.surveyStatus}
+        panelShareLink={survey.panelShareLink}
+      />
 
       <div className="flex flex-wrap gap-2 border-b border-gray-100 pb-1 overflow-x-auto">
         {tabs.map((t) => (

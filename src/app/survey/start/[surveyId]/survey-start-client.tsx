@@ -1,22 +1,23 @@
 "use client";
 
 /**
- * Participant-facing survey landing: loads public survey config, captures ?pid= (or configured key),
- * stores context for callback correlation, and redirects with tracking param on the supplier URL.
+ * Participant-facing survey landing: loads public survey config, auto-creates im_attempt for
+ * share links, stores context for callback correlation, and redirects with tracking on supplier URL.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, Clock, Gift, Loader2, MapPin, Rocket } from "lucide-react";
 
 import { PANEL_SURVEY_STATUS_LABELS } from "@/constants/panel-survey";
+import { persistParticipantContext } from "@/lib/survey-participant";
 import {
-  extractParticipantIdFromSearchParams,
-  persistParticipantContext,
-} from "@/lib/survey-participant";
-import { postPanelGatewayRedirect, postCompleteRoutingPrescreen } from "@/lib/routing-gateway-api";
+  postPanelGatewayRedirect,
+  postCompleteRoutingPrescreen,
+  postSharedPanelSurveyAttempt,
+} from "@/lib/routing-gateway-api";
 import { getGatewayCaptchaSiteKey, isGatewayCaptchaActive } from "@/lib/gateway-security";
 import { RoutingPrescreenForm } from "@/components/routing/RoutingPrescreenForm";
 import { GatewayCaptcha } from "@/components/routing/GatewayCaptcha";
@@ -30,10 +31,20 @@ import { queryKeys } from "@/services/queries";
 const RECAPTCHA_SITE_KEY = getGatewayCaptchaSiteKey();
 const CAPTCHA_REQUIRED = isGatewayCaptchaActive(RECAPTCHA_SITE_KEY);
 
+function readAttemptTokenFromUrl(searchParams: URLSearchParams): string | null {
+  const token = searchParams.get("im_attempt")?.trim();
+  return token && token.length >= 8 ? token : null;
+}
+
 export function SurveyStartClient() {
   const params = useParams();
   const searchParams = useSearchParams();
   const surveyId = typeof params.surveyId === "string" ? params.surveyId : "";
+  const attemptFromUrl = useMemo(() => readAttemptTokenFromUrl(searchParams), [searchParams]);
+  const sessionInitRef = useRef(false);
+
+  const [attemptToken, setAttemptToken] = useState<string | null>(attemptFromUrl);
+  const [sessionPreparing, setSessionPreparing] = useState(Boolean(surveyId) && !attemptFromUrl);
   const [starting, setStarting] = useState(false);
   const [prescreenForm, setPrescreenForm] = useState<PrescreenForm | null>(null);
   const [profileId, setProfileId] = useState<string | null>(null);
@@ -51,29 +62,64 @@ export function SurveyStartClient() {
     retry: false,
   });
 
-  const participantId = useMemo(() => {
-    if (!data) return null;
-    return extractParticipantIdFromSearchParams(searchParams, data.participantQueryParam ?? "pid");
-  }, [data, searchParams]);
+  useEffect(() => {
+    setAttemptToken(attemptFromUrl);
+    setSessionPreparing(Boolean(surveyId && data) && !attemptFromUrl);
+    sessionInitRef.current = false;
+  }, [attemptFromUrl, surveyId, data?.id]);
 
   useEffect(() => {
-    if (!data || !participantId) return;
+    if (!data || attemptFromUrl || sessionInitRef.current) return;
+    sessionInitRef.current = true;
+
+    let cancelled = false;
+    (async () => {
+      setSessionPreparing(true);
+      setSecurityError(null);
+      try {
+        const result = await postSharedPanelSurveyAttempt(data.id);
+        if (cancelled) return;
+
+        setAttemptToken(result.attemptToken);
+        persistParticipantContext({
+          surveyId: data.id,
+          participantId: result.attemptToken,
+          participantQueryParam: "im_attempt",
+          outboundTrackingKey: data.trackingParameterName ?? "toid",
+          capturedAt: new Date().toISOString(),
+        });
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("im_attempt", result.attemptToken);
+        window.history.replaceState(null, "", url.toString());
+      } catch (e) {
+        if (cancelled) return;
+        const msg = e instanceof Error ? e.message : "Could not prepare survey session";
+        setSecurityError(msg);
+        toast.error(msg);
+      } finally {
+        if (!cancelled) setSessionPreparing(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [data, attemptFromUrl]);
+
+  useEffect(() => {
+    if (!data || !attemptToken) return;
     persistParticipantContext({
       surveyId: data.id,
-      participantId,
-      participantQueryParam: data.participantQueryParam ?? "pid",
+      participantId: attemptToken,
+      participantQueryParam: "im_attempt",
       outboundTrackingKey: data.trackingParameterName ?? "toid",
       capturedAt: new Date().toISOString(),
     });
-  }, [data, participantId]);
+  }, [data, attemptToken]);
 
   const handleStart = async () => {
-    if (!data?.externalSurveyUrl || starting) return;
-
-    if (!participantId) {
-      window.location.href = data.externalSurveyUrl;
-      return;
-    }
+    if (!data?.externalSurveyUrl || starting || !attemptToken) return;
 
     if (isGatewayCaptchaActive(captchaSiteKey) && captchaToken === null) {
       setSecurityError("Please complete security verification first.");
@@ -85,7 +131,7 @@ export function SurveyStartClient() {
     try {
       const result = await postPanelGatewayRedirect({
         surveyId: data.id,
-        attemptToken: participantId,
+        attemptToken,
         captchaToken: captchaToken || undefined,
       });
 
@@ -162,7 +208,7 @@ export function SurveyStartClient() {
     }
   };
 
-  if (isGatewayCaptchaActive(captchaSiteKey) && captchaToken === null && participantId) {
+  if (isGatewayCaptchaActive(captchaSiteKey) && captchaToken === null && attemptToken) {
     return (
       <GatewayCaptcha
         siteKey={captchaSiteKey}
@@ -207,11 +253,13 @@ export function SurveyStartClient() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || sessionPreparing) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-brand-primary" />
-        <p className="text-sm font-medium text-gray-500">Loading survey…</p>
+        <p className="text-sm font-medium text-gray-500">
+          {isLoading ? "Loading survey…" : "Preparing your session…"}
+        </p>
       </div>
     );
   }
@@ -242,27 +290,15 @@ export function SurveyStartClient() {
           {data.surveyName}
         </h1>
 
-        {!participantId ? (
-          <p className="text-sm text-amber-200/90 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 mb-6 leading-relaxed">
-            No participant id was found in this link (
-            <span className="font-mono">{data.participantQueryParam ?? "pid"}</span>
-            ). Add{" "}
-            <span className="font-mono whitespace-nowrap">
-              ?{data.participantQueryParam ?? "pid"}=&lt;id&gt;
-            </span>{" "}
-            for routing-tracked completes; you can still open the supplier URL without it for dry
-            runs.
-          </p>
-        ) : (
+        {attemptToken ? (
           <p className="text-xs text-gray-400 mb-6 font-mono break-all">
-            Participant id captured ({data.participantQueryParam ?? "pid"}). Supplier redirect will
-            include{" "}
+            Session ready. Supplier redirect will include{" "}
             <span className="text-brand-primary font-bold">
               {data.trackingParameterName ?? "toid"}
             </span>
             <span className="text-gray-500">=…</span>
           </p>
-        )}
+        ) : null}
 
         <ul className="space-y-4 mb-10 text-sm text-gray-300">
           <li className="flex items-start gap-3">
@@ -308,7 +344,7 @@ export function SurveyStartClient() {
         <button
           type="button"
           onClick={handleStart}
-          disabled={!data.externalSurveyUrl || starting}
+          disabled={!data.externalSurveyUrl || starting || !attemptToken}
           className="w-full h-14 rounded-2xl bg-brand-primary text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-brand-primary/25 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 transition-opacity"
         >
           {starting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Rocket className="w-5 h-5" />}
@@ -316,8 +352,8 @@ export function SurveyStartClient() {
         </button>
 
         <p className="text-[11px] text-gray-500 text-center mt-6 leading-relaxed">
-          You will be sent to the partner survey host. The same participant id can be echoed on your
-          callback URL for completion matching when integrations are enabled.
+          You will be sent to the partner survey host. Your session is tracked automatically for
+          completion matching when integrations are enabled.
         </p>
       </div>
     </div>

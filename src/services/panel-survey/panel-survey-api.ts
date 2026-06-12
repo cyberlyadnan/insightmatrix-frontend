@@ -58,6 +58,8 @@ export type PanelSurvey = {
   startDate: string | null;
   endDate: string | null;
   notes: string;
+  panelShareLink: string;
+  panelShareLinkExample: string;
   createdAt: string | null;
   updatedAt: string | null;
 };

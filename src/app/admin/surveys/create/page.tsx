@@ -35,11 +35,11 @@ export default function CreatePanelSurveyPage() {
 
   const mutation = useMutation({
     mutationFn: createPanelSurvey,
-    onSuccess: async () => {
-      toast.success("Survey created");
+    onSuccess: async (survey) => {
+      toast.success("Survey created — copy the share link for your team");
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
       await qc.invalidateQueries({ queryKey: queryKeys.companyPayments.all });
-      router.push(ROUTES.admin.surveys);
+      router.push(ROUTES.admin.survey(survey.id));
     },
     onError: (e) => toast.error(parseApiError(e, "Could not create survey")),
   });
@@ -56,7 +56,8 @@ export default function CreatePanelSurveyPage() {
         </Link>
         <h1 className="text-3xl font-black text-gray-900 tracking-tight">Create routing survey</h1>
         <p className="text-gray-500 font-medium mt-1">
-          Link an external supplier URL, targeting, and quota segments — no form builder required.
+          Link an external supplier URL, targeting, and quota segments — no form builder required. A
+          shareable team link is generated automatically after creation.
         </p>
       </div>
 

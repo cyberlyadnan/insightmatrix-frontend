@@ -75,8 +75,8 @@ export default function DashboardPrescreenPage() {
         <ClipboardCheck className="w-12 h-12 text-amber-600 mx-auto mb-4" />
         <h1 className="text-xl font-black text-gray-900 mb-2">Prescreen not ready</h1>
         <p className="text-sm text-gray-600 leading-relaxed">
-          An administrator must publish the member profile prescreen (Admin → Prescreening → Seed
-          panel profile). Until then, survey matching profiles are unavailable.
+          An administrator must publish the required member profile prescreen (Admin →
+          Prescreening). Until then, survey matching profiles are unavailable.
         </p>
       </div>
     );

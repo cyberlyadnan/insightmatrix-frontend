@@ -7,8 +7,9 @@ import {
   ArrowDown,
   ArrowUp,
   BarChart3,
+  Check,
   ClipboardList,
-  Database,
+  Copy,
   Eye,
   MoreHorizontal,
   Pencil,
@@ -25,12 +26,12 @@ import { Modal } from "@/components/shared/Modal";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PANEL_SURVEY_STATUS_LABELS, type PanelSurveyStatus } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
+import { buildPanelSurveyShareLink } from "@/lib/panel-survey-share-link";
 import { parseApiError } from "@/services/api/errors";
 import {
   deletePanelSurvey,
   listPanelSurveys,
   patchPanelSurveyStatus,
-  seedDemoPanelSurveys,
   type PanelSurvey,
 } from "@/services/panel-survey";
 import { listSurveyCompanies } from "@/services/survey-company";
@@ -107,6 +108,19 @@ export default function AdminPanelSurveysPage() {
   const [sortBy, setSortBy] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [deleteTarget, setDeleteTarget] = useState<PanelSurvey | null>(null);
+  const [copiedSurveyId, setCopiedSurveyId] = useState<string | null>(null);
+
+  const copySurveyLink = async (row: PanelSurvey) => {
+    const link = row.panelShareLink ?? buildPanelSurveyShareLink(row.id);
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedSurveyId(row.id);
+      toast.success("Survey link copied");
+      setTimeout(() => setCopiedSurveyId(null), 2000);
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
 
   const { data: providersData } = useQuery({
     queryKey: queryKeys.surveyCompanies.list({ page: 1, pageSize: 500 }),
@@ -171,25 +185,6 @@ export default function AdminPanelSurveysPage() {
     onError: (e) => toast.error(parseApiError(e, "Could not delete survey")),
   });
 
-  const seedMutation = useMutation({
-    mutationFn: seedDemoPanelSurveys,
-    onSuccess: async (r) => {
-      toast.success(
-        `Surveys seeded: ${r.inserted} inserted, ${r.updated} updated${
-          r.skipped > 0 ? `, ${r.skipped} skipped (missing providers)` : ""
-        }.`
-      );
-      for (const w of r.warnings.slice(0, 5)) {
-        toast.warning(w);
-      }
-      if (r.warnings.length > 5) {
-        toast.warning(`…and ${r.warnings.length - 5} more warnings.`);
-      }
-      await refresh();
-    },
-    onError: (e) => toast.error(parseApiError(e, "Could not seed surveys.")),
-  });
-
   const totalPages = meta?.totalPages ?? 1;
 
   return (
@@ -202,16 +197,6 @@ export default function AdminPanelSurveysPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => seedMutation.mutate()}
-            disabled={seedMutation.isPending}
-            className="h-11 px-5 rounded-xl border border-gray-300 bg-white text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-gray-50 disabled:opacity-60 shrink-0"
-            title="Upserts demo routing surveys from seed data. Requires survey providers (e.g. Dynata) in the database."
-          >
-            <Database className="w-4 h-4 shrink-0" />
-            {seedMutation.isPending ? "Seeding…" : "Seed surveys"}
-          </button>
           <Link
             href={ROUTES.admin.surveysCreate}
             className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
@@ -423,6 +408,19 @@ export default function AdminPanelSurveysPage() {
                           >
                             <Pencil className="w-4 h-4" aria-hidden />
                           </Link>
+                          <button
+                            type="button"
+                            title="Copy share link"
+                            aria-label="Copy share link"
+                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
+                            onClick={() => copySurveyLink(row)}
+                          >
+                            {copiedSurveyId === row.id ? (
+                              <Check className="w-4 h-4 text-emerald-600" aria-hidden />
+                            ) : (
+                              <Copy className="w-4 h-4" aria-hidden />
+                            )}
+                          </button>
                           {row.surveyStatus === "active" ? (
                             <button
                               type="button"
@@ -499,6 +497,18 @@ export default function AdminPanelSurveysPage() {
                     >
                       Edit
                     </Link>
+                    <button
+                      type="button"
+                      className="flex-1 min-w-[90px] h-10 rounded-xl border border-gray-200 bg-white text-gray-900 text-xs font-black uppercase tracking-widest inline-flex items-center justify-center gap-1.5"
+                      onClick={() => copySurveyLink(row)}
+                    >
+                      {copiedSurveyId === row.id ? (
+                        <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" aria-hidden />
+                      )}
+                      {copiedSurveyId === row.id ? "Copied" : "Copy link"}
+                    </button>
                     {row.surveyStatus === "active" ? (
                       <button
                         type="button"

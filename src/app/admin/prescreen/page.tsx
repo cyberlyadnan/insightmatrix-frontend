@@ -15,8 +15,6 @@ import {
   duplicatePrescreen,
   listPrescreens,
   publishPrescreen,
-  seedDefaultPrescreens,
-  seedPanelMemberPrescreen,
   setPrescreenRequiredForPanel,
   unpublishPrescreen,
 } from "@/services/prescreen";
@@ -88,26 +86,6 @@ export default function AdminPrescreenListPage() {
     },
   });
 
-  const seedMutation = useMutation({
-    mutationFn: seedDefaultPrescreens,
-    onSuccess: async (forms) => {
-      toast.success(`${forms.length} demo prescreens ready`);
-      await refresh();
-    },
-    onError: (error) => toast.error(parseApiError(error, "Could not seed demo prescreens")),
-  });
-
-  const seedPanelMutation = useMutation({
-    mutationFn: seedPanelMemberPrescreen,
-    onSuccess: async () => {
-      toast.success("Panel profile prescreen published (required for members)");
-      await refresh();
-      await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
-      await qc.invalidateQueries({ queryKey: queryKeys.panelPrescreen.bundle });
-    },
-    onError: (error) => toast.error(parseApiError(error, "Could not seed panel prescreen")),
-  });
-
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -118,22 +96,6 @@ export default function AdminPrescreenListPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          {/* <button
-            type="button"
-            onClick={() => seedMutation.mutate()}
-            disabled={seedMutation.isPending}
-            className="h-11 px-5 rounded-xl border border-gray-300 bg-white text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-gray-50 disabled:opacity-60"
-          >
-            {seedMutation.isPending ? "Seeding..." : "Seed Demo Prescreens"}
-          </button> */}
-          {/* <button
-            type="button"
-            onClick={() => seedPanelMutation.mutate()}
-            disabled={seedPanelMutation.isPending}
-            className="h-11 px-5 rounded-xl border border-brand-primary/40 bg-brand-primary/5 text-gray-900 inline-flex items-center justify-center gap-2 font-bold hover:bg-brand-primary/10 disabled:opacity-60"
-          >
-            {seedPanelMutation.isPending ? "Seeding…" : "Seed panel profile (required)"}
-          </button> */}
           <Link
             href={ROUTES.admin.prescreenCreate}
             className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black"
@@ -304,8 +266,8 @@ export default function AdminPrescreenListPage() {
         }
       >
         <p className="text-sm text-gray-600">
-          Members may be blocked from surveys if this was the active required panel prescreen. Seed
-          or publish another required prescreen afterward if needed.
+          Members may be blocked from surveys if this was the active required panel prescreen.
+          Publish another required prescreen afterward if needed.
         </p>
       </Modal>
     </div>

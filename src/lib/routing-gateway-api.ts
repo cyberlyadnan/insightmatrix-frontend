@@ -19,6 +19,44 @@ export type PanelGatewayRedirectResult = {
   prescreenForm?: PrescreenForm | null;
 };
 
+export type PanelShareStartResult = {
+  attemptToken: string;
+  surveyId: string;
+  supplierProjectPid: string;
+  startPath: string;
+};
+
+export async function postSharedPanelSurveyAttempt(
+  surveyId: string
+): Promise<PanelShareStartResult> {
+  const res = await fetch(buildPublicApiUrl("/public/routing/panel-share-start"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ surveyId }),
+  });
+
+  const text = await res.text();
+  let data: { data?: PanelShareStartResult; message?: string } = {};
+  try {
+    data = text ? (JSON.parse(text) as typeof data) : {};
+  } catch {
+    /* ignore malformed JSON */
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || "Unable to prepare survey session");
+  }
+
+  if (!data.data?.attemptToken) {
+    throw new Error(data.message || "Unable to prepare survey session");
+  }
+
+  return data.data;
+}
+
 export async function postPanelGatewayRedirect(payload: {
   surveyId: string;
   attemptToken: string;

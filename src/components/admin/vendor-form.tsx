@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VendorCallbackFields } from "@/components/admin/vendor-callback-fields";
+import { useFormHydrateFromDefaults } from "@/hooks/use-form-hydrate-from-defaults";
 import type { Vendor } from "@/types/vendor";
 import { normalizeVendorCallbackUrls } from "@/utils/vendor-callback";
 import { vendorCreateFormSchema, vendorEditFormSchema, type VendorFormValues } from "@/validations";
@@ -39,6 +40,7 @@ export function vendorToFormValues(vendor: Vendor): VendorFormValues {
 
 type VendorFormProps = {
   mode: "create" | "edit";
+  entityId?: string;
   defaultValues: VendorFormValues;
   vendorCode?: string;
   onSubmit: (values: VendorFormValues) => void | Promise<void>;
@@ -48,6 +50,7 @@ type VendorFormProps = {
 
 export function VendorForm({
   mode,
+  entityId,
   defaultValues,
   vendorCode,
   onSubmit,
@@ -60,9 +63,7 @@ export function VendorForm({
     defaultValues,
   });
 
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
+  useFormHydrateFromDefaults(form, defaultValues, { mode, entityId });
 
   return (
     <Form {...form}>

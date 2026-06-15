@@ -15,6 +15,5 @@ export function completeMemberLogin(
 ): void {
   setUser(user);
   qc.setQueryData(queryKeys.auth.profile, user);
-  void qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
   window.location.replace(destination);
 }

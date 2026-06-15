@@ -100,6 +100,7 @@ export default function EditVendorPage() {
 
       <VendorForm
         mode="edit"
+        entityId={id}
         vendorCode={vendor.vendorCode}
         defaultValues={vendorToFormValues(vendor)}
         onSubmit={(values) => mutation.mutate(toUpdatePayload(values))}

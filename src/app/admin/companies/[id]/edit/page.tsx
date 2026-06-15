@@ -103,6 +103,7 @@ export default function EditSurveyCompanyPage() {
 
       <SurveyCompanyForm
         mode="edit"
+        entityId={id}
         defaultValues={surveyCompanyToFormValues(company)}
         onSubmit={(values) => mutation.mutate(toUpdatePayload(values))}
         isSubmitting={mutation.isPending}

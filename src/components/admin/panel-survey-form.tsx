@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useFormHydrateFromDefaults } from "@/hooks/use-form-hydrate-from-defaults";
 import {
   useFieldArray,
   useForm,
@@ -211,6 +212,7 @@ const defaultQuotaRow = (): PanelSurveyFormValues["quotaGroups"][number] => ({
 
 type PanelSurveyFormProps = {
   mode: "create" | "edit";
+  entityId?: string;
   defaultValues: PanelSurveyFormValues;
   providers: Pick<SurveyCompany, "id" | "companyName" | "companyCode">[];
   onSubmit: (values: PanelSurveyFormValues) => void | Promise<void>;
@@ -241,6 +243,7 @@ function SectionCard({
 
 export function PanelSurveyForm({
   mode,
+  entityId,
   defaultValues,
   providers,
   onSubmit,
@@ -256,9 +259,7 @@ export function PanelSurveyForm({
     name: "quotaGroups",
   });
 
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
+  useFormHydrateFromDefaults(form, defaultValues, { mode, entityId });
 
   const handleInvalid = (errors: FieldErrors<PanelSurveyFormValues>) => {
     const flat = flattenPanelSurveyFieldErrors(errors);

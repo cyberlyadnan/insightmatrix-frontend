@@ -108,6 +108,7 @@ export default function EditPanelSurveyPage() {
 
       <PanelSurveyForm
         mode="edit"
+        entityId={id}
         defaultValues={defaults}
         providers={providers}
         onSubmit={handleSubmit}

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -22,6 +21,7 @@ import {
   type SurveyProviderType,
 } from "@/constants/survey-company";
 import type { SurveyCompany } from "@/services/survey-company";
+import { useFormHydrateFromDefaults } from "@/hooks/use-form-hydrate-from-defaults";
 import { surveyCompanyFormSchema, type SurveyCompanyFormValues } from "@/validations";
 
 export const emptySurveyCompanyFormValues: SurveyCompanyFormValues = {
@@ -52,6 +52,7 @@ export function surveyCompanyToFormValues(company: SurveyCompany): SurveyCompany
 
 type SurveyCompanyFormProps = {
   mode: "create" | "edit";
+  entityId?: string;
   defaultValues: SurveyCompanyFormValues;
   onSubmit: (values: SurveyCompanyFormValues) => void | Promise<void>;
   isSubmitting: boolean;
@@ -60,6 +61,7 @@ type SurveyCompanyFormProps = {
 
 export function SurveyCompanyForm({
   mode,
+  entityId,
   defaultValues,
   onSubmit,
   isSubmitting,
@@ -70,9 +72,7 @@ export function SurveyCompanyForm({
     defaultValues,
   });
 
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
+  useFormHydrateFromDefaults(form, defaultValues, { mode, entityId });
 
   return (
     <Form {...form}>

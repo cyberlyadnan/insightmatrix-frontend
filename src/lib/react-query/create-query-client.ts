@@ -37,7 +37,7 @@ const defaultOptions: QueryClientConfig["defaultOptions"] = {
       return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),
-    refetchOnWindowFocus: env.isProd,
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true,
     /** Prefer explicit `throwOnError` / error boundaries per route */
     throwOnError: false,

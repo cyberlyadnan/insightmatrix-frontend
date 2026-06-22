@@ -26,7 +26,7 @@ import { Modal } from "@/components/shared/Modal";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PANEL_SURVEY_STATUS_LABELS, type PanelSurveyStatus } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
-import { buildPanelSurveyShareLink } from "@/lib/panel-survey-share-link";
+import { buildPanelSurveyShareLinkExample } from "@/lib/panel-survey-share-link";
 import { parseApiError } from "@/services/api/errors";
 import {
   deletePanelSurvey,
@@ -111,7 +111,9 @@ export default function AdminPanelSurveysPage() {
   const [copiedSurveyId, setCopiedSurveyId] = useState<string | null>(null);
 
   const copySurveyLink = async (row: PanelSurvey) => {
-    const link = row.panelShareLink ?? buildPanelSurveyShareLink(row.id);
+    const link =
+      row.panelShareLinkExample ??
+      buildPanelSurveyShareLinkExample(row.id, row.participantQueryParam ?? "toid");
     try {
       await navigator.clipboard.writeText(link);
       setCopiedSurveyId(row.id);

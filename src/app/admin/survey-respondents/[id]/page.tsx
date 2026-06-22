@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { ROUTES } from "@/constants/routes";
 import { getSurveyRespondentProfile } from "@/services/survey-respondent-profile/survey-respondent-profile-api";
+import { resolveTrackingParticipantId } from "@/lib/survey-respondent-tracking";
 import { queryKeys } from "@/services/queries";
 
 export default function SurveyRespondentDetailPage() {
@@ -28,6 +29,9 @@ export default function SurveyRespondentDetailPage() {
 
   const answers = profile.prescreenAnswers ?? {};
 
+  const trackingId = resolveTrackingParticipantId(profile);
+  const isVendor = profile.respondentOwnerType === "vendor";
+
   return (
     <div className="space-y-8 max-w-4xl">
       <Link
@@ -44,7 +48,7 @@ export default function SurveyRespondentDetailPage() {
         </p>
         <h1 className="text-2xl font-black mt-1">{profile.panelSurvey?.surveyName}</h1>
         <p className="text-sm text-gray-500">
-          Status: <strong>{profile.surveyStatus}</strong> · Token{" "}
+          Status: <strong>{profile.surveyStatus}</strong> · Platform token{" "}
           <code className="font-mono">{profile.internalSessionToken}</code>
         </p>
       </div>
@@ -53,12 +57,19 @@ export default function SurveyRespondentDetailPage() {
         <div className="rounded-2xl border bg-white p-5 space-y-2 text-sm">
           <h2 className="font-bold">Identity</h2>
           <p>
-            Vendor toid: <span className="font-mono">{profile.vendorRespondentToid || "—"}</span>
+            Tracking id:{" "}
+            <span className="font-mono font-semibold text-brand-primary">{trackingId || "—"}</span>
           </p>
-          <p>
-            Vendor: {profile.vendor?.companyName ?? "—"} ({profile.vendor?.vendorCode})
-          </p>
-          <p>Allocation: {profile.allocation?.allocationCode ?? "—"}</p>
+          {isVendor ? (
+            <>
+              <p>
+                Vendor: {profile.vendor?.companyName ?? "—"} ({profile.vendor?.vendorCode})
+              </p>
+              <p>Allocation: {profile.allocation?.allocationCode ?? "—"}</p>
+            </>
+          ) : (
+            <p>Internal team share link — id from link query param (pid, toid, gid, etc.)</p>
+          )}
         </div>
         <div className="rounded-2xl border bg-white p-5 space-y-2 text-sm">
           <h2 className="font-bold">Timestamps</h2>

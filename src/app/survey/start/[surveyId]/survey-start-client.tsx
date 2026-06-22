@@ -12,7 +12,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Building2, Clock, Gift, Loader2, MapPin, Rocket } from "lucide-react";
 
 import { PANEL_SURVEY_STATUS_LABELS } from "@/constants/panel-survey";
-import { persistParticipantContext } from "@/lib/survey-participant";
+import {
+  persistParticipantContext,
+  readExternalTeamParticipantRef,
+} from "@/lib/survey-participant";
 import {
   postPanelGatewayRedirect,
   postCompleteRoutingPrescreen,
@@ -34,6 +37,14 @@ const CAPTCHA_REQUIRED = isGatewayCaptchaActive(RECAPTCHA_SITE_KEY);
 function readAttemptTokenFromUrl(searchParams: URLSearchParams): string | null {
   const token = searchParams.get("im_attempt")?.trim();
   return token && token.length >= 8 ? token : null;
+}
+
+function readTrackingRefFromBrowser(participantQueryParam?: string): string | null {
+  if (typeof window === "undefined") return null;
+  return readExternalTeamParticipantRef(
+    new URLSearchParams(window.location.search),
+    participantQueryParam
+  );
 }
 
 export function SurveyStartClient() {
@@ -62,6 +73,14 @@ export function SurveyStartClient() {
     retry: false,
   });
 
+  const externalParticipantRef = useMemo(
+    () =>
+      data
+        ? readExternalTeamParticipantRef(searchParams, data.participantQueryParam)
+        : readExternalTeamParticipantRef(searchParams),
+    [searchParams, data?.participantQueryParam, data]
+  );
+
   useEffect(() => {
     setAttemptToken(attemptFromUrl);
     setSessionPreparing(Boolean(surveyId && data) && !attemptFromUrl);
@@ -69,7 +88,31 @@ export function SurveyStartClient() {
   }, [attemptFromUrl, surveyId, data?.id]);
 
   useEffect(() => {
-    if (!data || attemptFromUrl || sessionInitRef.current) return;
+    if (!data) return;
+
+    const trackingRef =
+      externalParticipantRef ?? readTrackingRefFromBrowser(data.participantQueryParam);
+
+    if (attemptFromUrl) {
+      if (!trackingRef) return;
+      let cancelled = false;
+      (async () => {
+        try {
+          await postSharedPanelSurveyAttempt(data.id, {
+            attemptToken: attemptFromUrl,
+            externalParticipantRef: trackingRef,
+          });
+        } catch {
+          /* non-blocking — session may already have tracking id */
+        }
+        if (cancelled) return;
+      })();
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (sessionInitRef.current) return;
     sessionInitRef.current = true;
 
     let cancelled = false;
@@ -77,20 +120,29 @@ export function SurveyStartClient() {
       setSessionPreparing(true);
       setSecurityError(null);
       try {
-        const result = await postSharedPanelSurveyAttempt(data.id);
+        const ref =
+          trackingRef ?? readTrackingRefFromBrowser(data.participantQueryParam) ?? undefined;
+        const result = await postSharedPanelSurveyAttempt(data.id, {
+          externalParticipantRef: ref,
+        });
         if (cancelled) return;
 
         setAttemptToken(result.attemptToken);
+        const participantQueryParam = data.participantQueryParam ?? "toid";
+        const trackedRef = result.externalParticipantRef ?? ref;
         persistParticipantContext({
           surveyId: data.id,
-          participantId: result.attemptToken,
-          participantQueryParam: "im_attempt",
+          participantId: trackedRef ?? result.attemptToken,
+          participantQueryParam: trackedRef ? participantQueryParam : "im_attempt",
           outboundTrackingKey: data.trackingParameterName ?? "toid",
           capturedAt: new Date().toISOString(),
         });
 
         const url = new URL(window.location.href);
         url.searchParams.set("im_attempt", result.attemptToken);
+        if (trackedRef) {
+          url.searchParams.set(participantQueryParam, trackedRef);
+        }
         window.history.replaceState(null, "", url.toString());
       } catch (e) {
         if (cancelled) return;
@@ -105,18 +157,21 @@ export function SurveyStartClient() {
     return () => {
       cancelled = true;
     };
-  }, [data, attemptFromUrl]);
+  }, [data, attemptFromUrl, externalParticipantRef]);
 
   useEffect(() => {
     if (!data || !attemptToken) return;
+    const participantQueryParam = data.participantQueryParam ?? "toid";
+    const trackingRef =
+      externalParticipantRef ?? readTrackingRefFromBrowser(data.participantQueryParam);
     persistParticipantContext({
       surveyId: data.id,
-      participantId: attemptToken,
-      participantQueryParam: "im_attempt",
+      participantId: trackingRef ?? attemptToken,
+      participantQueryParam: trackingRef ? participantQueryParam : "im_attempt",
       outboundTrackingKey: data.trackingParameterName ?? "toid",
       capturedAt: new Date().toISOString(),
     });
-  }, [data, attemptToken]);
+  }, [data, attemptToken, externalParticipantRef]);
 
   const handleStart = async () => {
     if (!data?.externalSurveyUrl || starting || !attemptToken) return;

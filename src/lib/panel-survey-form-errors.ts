@@ -110,9 +110,10 @@ export function humanizePanelSurveyFieldPath(path: string): string {
 /** Scroll target for the first invalid field path. */
 export function panelSurveyFieldPathToSectionId(path: string): string {
   const root = path.split(".")[0] ?? "";
-  if (["surveyName", "surveyCode", "externalSurveyId", "surveyStatus"].includes(root)) {
+  if (["surveyName", "surveyCode", "surveyStatus"].includes(root)) {
     return PANEL_SURVEY_SECTION_IDS.basic;
   }
+  if (root === "externalSurveyId") return PANEL_SURVEY_SECTION_IDS.settings;
   if (root === "providerId") return PANEL_SURVEY_SECTION_IDS.provider;
   if (
     [
@@ -153,4 +154,19 @@ export function panelSurveyFieldPathToSectionId(path: string): string {
   }
   if (root === "notes") return PANEL_SURVEY_SECTION_IDS.notes;
   return PANEL_SURVEY_SECTION_IDS.basic;
+}
+
+const ADVANCED_SECTION_IDS = new Set<string>([
+  PANEL_SURVEY_SECTION_IDS.targeting,
+  PANEL_SURVEY_SECTION_IDS.metrics,
+  PANEL_SURVEY_SECTION_IDS.billing,
+  PANEL_SURVEY_SECTION_IDS.settings,
+  PANEL_SURVEY_SECTION_IDS.notes,
+]);
+
+/** Form tab containing the first invalid field path. */
+export function panelSurveyFieldPathToTab(path: string): "basic" | "advanced" {
+  if (path.split(".")[0] === "externalSurveyId") return "advanced";
+  const sectionId = panelSurveyFieldPathToSectionId(path);
+  return ADVANCED_SECTION_IDS.has(sectionId) ? "advanced" : "basic";
 }

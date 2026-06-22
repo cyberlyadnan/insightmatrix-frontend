@@ -56,8 +56,9 @@ export default function CreatePanelSurveyPage() {
         </Link>
         <h1 className="text-3xl font-black text-gray-900 tracking-tight">Create routing survey</h1>
         <p className="text-gray-500 font-medium mt-1">
-          Link an external supplier URL, targeting, and quota segments — no form builder required. A
-          shareable team link is generated automatically after creation.
+          Start with the Basic tab — only core routing fields are required. Use Advanced for
+          targeting, billing, and optional settings. A shareable team link is generated after
+          creation.
         </p>
       </div>
 

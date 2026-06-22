@@ -5,24 +5,33 @@ import { Check, Copy, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { PanelSurveyStatus } from "@/constants/panel-survey";
-import { buildPanelSurveyShareLink } from "@/lib/panel-survey-share-link";
+import {
+  buildPanelSurveyShareLink,
+  buildPanelSurveyShareLinkExample,
+} from "@/lib/panel-survey-share-link";
 
 type Props = {
   surveyId: string;
   surveyName: string;
   surveyStatus: PanelSurveyStatus;
+  participantQueryParam?: string;
   panelShareLink?: string;
+  panelShareLinkExample?: string;
 };
 
 export function PanelSurveyShareLinkCard({
   surveyId,
   surveyName,
   surveyStatus,
+  participantQueryParam = "toid",
   panelShareLink,
+  panelShareLinkExample,
 }: Props) {
   const [copied, setCopied] = useState(false);
 
-  const shareLink = panelShareLink ?? buildPanelSurveyShareLink(surveyId);
+  const shareLink =
+    panelShareLinkExample ?? buildPanelSurveyShareLinkExample(surveyId, participantQueryParam);
+  const bareLink = panelShareLink ?? buildPanelSurveyShareLink(surveyId);
 
   const copy = async () => {
     try {
@@ -45,8 +54,10 @@ export function PanelSurveyShareLinkCard({
           <div>
             <h3 className="text-lg font-black text-gray-900">Internal team survey link</h3>
             <p className="text-sm text-gray-500 mt-1">
-              Share this link with your internal team for <strong>{surveyName}</strong>. No login
-              required — a tracking session is created automatically when someone opens the link.
+              Share this link with your internal team for <strong>{surveyName}</strong>. Replace{" "}
+              <span className="font-mono">RESPONDENT_ID</span> with each person&apos;s id (
+              <span className="font-mono">{participantQueryParam}</span>, toid, pid, etc.) — same
+              pattern as vendor links. A tracking session is created when the link is opened.
             </p>
           </div>
 
@@ -59,6 +70,10 @@ export function PanelSurveyShareLinkCard({
 
           <p className="text-xs font-mono text-gray-600 break-all bg-white border border-gray-100 rounded-lg p-3">
             {shareLink}
+          </p>
+          <p className="text-xs text-gray-400">
+            Base landing URL (no respondent id):{" "}
+            <span className="font-mono text-gray-500">{bareLink}</span>
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -75,7 +90,7 @@ export function PanelSurveyShareLinkCard({
               {copied ? "Copied" : "Copy survey link"}
             </button>
             <a
-              href={shareLink}
+              href={bareLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 hover:bg-gray-50"

@@ -23,11 +23,14 @@ export type PanelShareStartResult = {
   attemptToken: string;
   surveyId: string;
   supplierProjectPid: string;
+  externalParticipantRef?: string;
+  participantQueryParam?: string;
   startPath: string;
 };
 
 export async function postSharedPanelSurveyAttempt(
-  surveyId: string
+  surveyId: string,
+  options?: { externalParticipantRef?: string; attemptToken?: string }
 ): Promise<PanelShareStartResult> {
   const res = await fetch(buildPublicApiUrl("/public/routing/panel-share-start"), {
     method: "POST",
@@ -35,7 +38,13 @@ export async function postSharedPanelSurveyAttempt(
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    body: JSON.stringify({ surveyId }),
+    body: JSON.stringify({
+      surveyId,
+      ...(options?.externalParticipantRef
+        ? { externalParticipantRef: options.externalParticipantRef }
+        : {}),
+      ...(options?.attemptToken ? { attemptToken: options.attemptToken } : {}),
+    }),
   });
 
   const text = await res.text();

@@ -64,6 +64,27 @@ export function extractParticipantIdFromSearchParams(
 }
 
 /**
+ * Reads the admin-assigned respondent id from a share link (before im_attempt exists).
+ * Ignores placeholder RESPONDENT_ID and the internal session key.
+ */
+export function readExternalTeamParticipantRef(
+  searchParams: URLSearchParams,
+  participantQueryParam?: string
+): string | null {
+  const primary = (participantQueryParam || "pid").trim() || "pid";
+  const keys = [primary, "toid", "pid", "gid", "uid", "subid", "rid", "participant_id"];
+  const seen = new Set<string>();
+  for (const k of keys) {
+    if (!k || seen.has(k) || k === "im_attempt") continue;
+    seen.add(k);
+    const v = searchParams.get(k)?.trim();
+    if (!v || v === "RESPONDENT_ID" || v.length < 1) continue;
+    return v;
+  }
+  return null;
+}
+
+/**
  * Appends the participant id to the supplier entry URL using their expected tracking key.
  */
 export function buildVendorEntryUrl(

@@ -4,6 +4,8 @@ export type SurveyRespondentProfile = {
   allocationId: string | null;
   vendorId: string | null;
   respondentOwnerType: string;
+  /** Vendor toid or internal share-link id (pid, gid, toid, etc.) */
+  trackingParticipantId: string;
   vendorRespondentToid: string;
   internalSessionToken: string;
   prescreenAnswers: Record<string, unknown> | null;

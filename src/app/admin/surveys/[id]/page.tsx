@@ -208,7 +208,9 @@ export default function PanelSurveyDetailPage() {
         surveyId={survey.id}
         surveyName={survey.surveyName}
         surveyStatus={survey.surveyStatus}
+        participantQueryParam={survey.participantQueryParam}
         panelShareLink={survey.panelShareLink}
+        panelShareLinkExample={survey.panelShareLinkExample}
       />
 
       <div className="flex flex-wrap gap-2 border-b border-gray-100 pb-1 overflow-x-auto">

@@ -41,6 +41,7 @@ import {
   PANEL_LANGUAGE_OPTIONS,
   PANEL_PROFESSION_OPTIONS,
 } from "@/constants/panel-targeting-options";
+import { QuotaPairFields } from "@/components/admin/quota-pair-fields";
 import { TargetingMultiSelect } from "@/components/admin/targeting-multi-select";
 import {
   flattenPanelSurveyFieldErrors,
@@ -50,10 +51,7 @@ import {
   panelSurveyFieldPathToTab,
 } from "@/lib/panel-survey-form-errors";
 import { cn } from "@/lib/utils";
-import {
-  extractSupplierProjectPidFromUrl,
-  applySupplierUrlHintsToForm,
-} from "@/lib/supplier-survey-url";
+import { applySupplierUrlHintsToForm, previewSupplierRedirectUrl } from "@/lib/supplier-survey-url";
 import type { SurveyCompany } from "@/services/survey-company";
 import {
   panelSurveyFormSchema,
@@ -209,8 +207,8 @@ function ProviderSearchSelect({
 const defaultQuotaRow = (): PanelSurveyFormValues["quotaGroups"][number] => ({
   groupName: "",
   groupDescription: "",
-  totalQuota: 0,
-  remainingQuota: 0,
+  totalQuota: "0",
+  remainingQuota: "0",
   status: "active",
 });
 
@@ -266,6 +264,16 @@ export function PanelSurveyForm({
   useFormHydrateFromDefaults(form, defaultValues, { mode, entityId });
 
   const [activeTab, setActiveTab] = useState<"basic" | "advanced">("basic");
+  const watchedSurveyUrl = form.watch("externalSurveyUrl");
+  const watchedTrackingParam = form.watch("trackingParameterName");
+  const redirectPreview = useMemo(
+    () =>
+      previewSupplierRedirectUrl(
+        String(watchedSurveyUrl ?? ""),
+        String(watchedTrackingParam ?? "toid")
+      ),
+    [watchedSurveyUrl, watchedTrackingParam]
+  );
 
   const handleInvalid = (errors: FieldErrors<PanelSurveyFormValues>) => {
     const flat = flattenPanelSurveyFieldErrors(errors);
@@ -436,18 +444,16 @@ export function PanelSurveyForm({
                             (name) =>
                               String(form.getValues(name as keyof PanelSurveyFormValues) ?? "")
                           );
-                          const extracted = extractSupplierProjectPidFromUrl(e.target.value);
-                          if (extracted) {
-                            form.setValue("supplierProjectPid", extracted);
-                          }
                         }}
                       />
                     </FormControl>
                     <p className="text-xs text-gray-500">
-                      Paste the full entry URL from the supplier portal (e.g. Epitome{" "}
-                      <span className="font-mono">surveyInitiate.php?gid=…&amp;pid=</span>). If the
-                      URL has an empty <span className="font-mono">pid=</span>, enter the callback
-                      project id manually below (e.g. <span className="font-mono">ERS41608</span>).
+                      Paste the supplier entry URL. We fix common typos (
+                      <span className="font-mono">gid-…</span> →{" "}
+                      <span className="font-mono">gid=…</span>) and auto-detect the respondent
+                      parameter. Examples: Friendly <span className="font-mono">PID=XXXXX</span>,
+                      Enevna <span className="font-mono">toid=</span>, Epitome{" "}
+                      <span className="font-mono">pid=</span>.
                     </p>
                     <FormMessage />
                   </FormItem>
@@ -492,10 +498,14 @@ export function PanelSurveyForm({
                     </FormControl>
                     <p className="text-xs text-gray-500">
                       Query key we set on the <strong>supplier</strong> URL with the platform token
-                      (<span className="font-mono">IMX…</span>). For Epitome links with{" "}
-                      <span className="font-mono">pid=</span> at the end, use{" "}
-                      <span className="font-mono">pid</span>.
+                      (<span className="font-mono">IMX…</span>). Auto-filled when you paste the link
+                      — override if your supplier specifies another key.
                     </p>
+                    {redirectPreview ? (
+                      <p className="text-xs text-gray-500 mt-2 rounded-lg bg-slate-50 border border-gray-100 p-3 font-mono break-all">
+                        Redirect preview: {redirectPreview}
+                      </p>
+                    ) : null}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -530,50 +540,20 @@ export function PanelSurveyForm({
           </SectionCard>
 
           <SectionCard title="Quota configuration" id={PANEL_SURVEY_SECTION_IDS.quotas}>
-            <div className="grid gap-6 md:grid-cols-2 mb-8">
-              <FormField
+            <div className="grid gap-6 md:grid-cols-2 mb-2">
+              <QuotaPairFields
                 control={form.control}
-                name="totalQuota"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-bold text-gray-700">Total quota</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="rounded-xl h-11 border-gray-200"
-                        type="number"
-                        inputMode="numeric"
-                        min={0}
-                        step={1}
-                        placeholder="0"
-                        {...intInputBind(field, 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="remainingQuota"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-bold text-gray-700">Remaining quota</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="rounded-xl h-11 border-gray-200"
-                        type="number"
-                        inputMode="numeric"
-                        min={0}
-                        step={1}
-                        placeholder="0"
-                        {...intInputBind(field, 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                setValue={form.setValue}
+                getValues={form.getValues}
+                totalName="totalQuota"
+                remainingName="remainingQuota"
+                syncResetKey={`${mode}-${entityId ?? "new"}`}
               />
             </div>
+            <p className="text-xs text-gray-500 mb-8">
+              Remaining quota matches total by default. Edit remaining separately anytime to set a
+              different value.
+            </p>
 
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-black uppercase tracking-widest text-gray-400">
@@ -643,48 +623,19 @@ export function PanelSurveyForm({
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name={`quotaGroups.${index}.totalQuota`}
-                        render={({ field: f }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-bold">Total quota</FormLabel>
-                            <FormControl>
-                              <Input
-                                className="rounded-xl border-gray-200"
-                                type="number"
-                                inputMode="numeric"
-                                min={0}
-                                step={1}
-                                placeholder="0"
-                                {...intInputBind(f, 0)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`quotaGroups.${index}.remainingQuota`}
-                        render={({ field: f }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-bold">Remaining</FormLabel>
-                            <FormControl>
-                              <Input
-                                className="rounded-xl border-gray-200"
-                                type="number"
-                                inputMode="numeric"
-                                min={0}
-                                step={1}
-                                placeholder="0"
-                                {...intInputBind(f, 0)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid gap-4 md:grid-cols-2 md:col-span-2">
+                        <QuotaPairFields
+                          control={form.control}
+                          setValue={form.setValue}
+                          getValues={form.getValues}
+                          totalName={`quotaGroups.${index}.totalQuota`}
+                          remainingName={`quotaGroups.${index}.remainingQuota`}
+                          totalLabel="Total quota"
+                          remainingLabel="Remaining"
+                          syncResetKey={`${mode}-${entityId ?? "new"}-group-${index}`}
+                          compact
+                        />
+                      </div>
                       <FormField
                         control={form.control}
                         name={`quotaGroups.${index}.status`}

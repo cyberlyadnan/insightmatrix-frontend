@@ -7,12 +7,14 @@ import {
 } from "@/constants/panel-survey";
 import type { PanelSurvey } from "@/services/panel-survey";
 
-/** Non-negative integers from `<input type="number">` (RHF often stores strings until submit). */
-const zCoercedNonNegInt = z.coerce
-  .number()
-  .refine((n) => Number.isFinite(n) && !Number.isNaN(n), { message: "Enter a valid whole number" })
-  .transform((n) => Math.trunc(n))
-  .refine((n) => n >= 0, { message: "Must be 0 or greater" });
+/** Whole-number quota fields stored as digit strings while editing */
+const zQuotaDigitsString = z.string().refine(
+  (s) => {
+    const t = s.trim();
+    return t === "" || /^\d+$/.test(t);
+  },
+  { message: "Only whole numbers are allowed" }
+);
 
 /** Any finite integer (e.g. survey priority). */
 const zCoercedInt = z.coerce
@@ -29,8 +31,8 @@ const zCoercedMaxAttempts = z.coerce
 const quotaRowSchema = z.object({
   groupName: z.string().min(1, "Group name required").max(200),
   groupDescription: z.string().max(2000),
-  totalQuota: zCoercedNonNegInt,
-  remainingQuota: zCoercedNonNegInt,
+  totalQuota: zQuotaDigitsString,
+  remainingQuota: zQuotaDigitsString,
   status: z.enum(PANEL_QUOTA_GROUP_STATUSES),
 });
 
@@ -70,8 +72,8 @@ const panelSurveyFormSchemaBase = z.object({
   estimatedLOI: z.string(),
   payoutToUser: z.string(),
   revenuePerComplete: z.string(),
-  totalQuota: zCoercedNonNegInt,
-  remainingQuota: zCoercedNonNegInt,
+  totalQuota: zQuotaDigitsString,
+  remainingQuota: zQuotaDigitsString,
   quotaGroups: z.array(quotaRowSchema),
   surveyPriority: zCoercedInt,
   maxMemberAttempts: zCoercedMaxAttempts,
@@ -136,8 +138,8 @@ export const emptyPanelSurveyFormValues: PanelSurveyFormValues = {
   estimatedLOI: "",
   payoutToUser: "",
   revenuePerComplete: "",
-  totalQuota: 0,
-  remainingQuota: 0,
+  totalQuota: "0",
+  remainingQuota: "0",
   quotaGroups: [],
   surveyPriority: 0,
   maxMemberAttempts: 2,
@@ -178,14 +180,14 @@ export function panelSurveyToFormValues(s: PanelSurvey): PanelSurveyFormValues {
       s.revenuePerComplete != null && !Number.isNaN(s.revenuePerComplete)
         ? String(s.revenuePerComplete)
         : "",
-    totalQuota: s.totalQuota ?? 0,
-    remainingQuota: s.remainingQuota ?? 0,
+    totalQuota: String(s.totalQuota ?? 0),
+    remainingQuota: String(s.remainingQuota ?? 0),
     quotaGroups:
       s.dynamicQuotaGroups?.map((g) => ({
         groupName: g.groupName,
         groupDescription: g.groupDescription ?? "",
-        totalQuota: g.totalQuota,
-        remainingQuota: g.remainingQuota,
+        totalQuota: String(g.totalQuota ?? 0),
+        remainingQuota: String(g.remainingQuota ?? 0),
         status: g.status,
       })) ?? [],
     surveyPriority: s.surveyPriority ?? 0,
@@ -218,6 +220,12 @@ function asFiniteInt(value: unknown, fallback: number): number {
     if (Number.isFinite(n)) return n;
   }
   return fallback;
+}
+
+function parseQuotaInt(value: string): number {
+  const t = value.trim();
+  if (!t) return 0;
+  return Number.parseInt(t, 10);
 }
 
 /** Maps validated form values to API payload */
@@ -258,13 +266,13 @@ export function panelSurveyFormToPayload(values: PanelSurveyFormValues) {
     estimatedLOI: parseOptFloat(values.estimatedLOI),
     payoutToUser: parseOptFloat(values.payoutToUser),
     revenuePerComplete: parseOptFloat(values.revenuePerComplete),
-    totalQuota: asFiniteInt(values.totalQuota, 0),
-    remainingQuota: asFiniteInt(values.remainingQuota, 0),
+    totalQuota: parseQuotaInt(values.totalQuota),
+    remainingQuota: parseQuotaInt(values.remainingQuota),
     dynamicQuotaGroups: values.quotaGroups.map((g) => ({
       groupName: g.groupName.trim(),
       groupDescription: g.groupDescription.trim(),
-      totalQuota: asFiniteInt(g.totalQuota, 0),
-      remainingQuota: asFiniteInt(g.remainingQuota, 0),
+      totalQuota: parseQuotaInt(g.totalQuota),
+      remainingQuota: parseQuotaInt(g.remainingQuota),
       status: g.status,
     })),
     surveyPriority: asFiniteInt(values.surveyPriority, 0),

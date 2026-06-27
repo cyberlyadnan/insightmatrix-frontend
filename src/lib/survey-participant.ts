@@ -1,7 +1,9 @@
 /**
- * Participant id flow: panel sends ?pid=… (or survey-configured key) to our landing page;
+ * Participant id flow: panel sends ?toid=… (or survey-configured key) to our landing page;
  * we persist it and append it to the supplier URL under trackingParameterName for completes/callbacks.
  */
+
+import { normalizeMalformedSupplierUrl } from "./supplier-survey-url";
 
 export const PARTICIPANT_STORAGE_PREFIX = "insightmatrix.surveyParticipant";
 
@@ -93,7 +95,14 @@ export function buildVendorEntryUrl(
   participantId: string
 ): string {
   const key = (trackingParameterName || "toid").trim();
-  const url = new URL(externalSurveyUrl);
-  url.searchParams.set(key, participantId);
+  const url = new URL(normalizeMalformedSupplierUrl(externalSurveyUrl));
+  let targetKey = key;
+  for (const k of url.searchParams.keys()) {
+    if (k.toLowerCase() === key.toLowerCase()) {
+      targetKey = k;
+      break;
+    }
+  }
+  url.searchParams.set(targetKey, participantId);
   return url.toString();
 }

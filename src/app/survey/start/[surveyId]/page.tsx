@@ -1,7 +1,24 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { Loader2 } from "lucide-react";
 
+import { ROUTES } from "@/constants/routes";
+import { gatewayPathWithSearch, routingGatewayMetadata } from "@/lib/routing-link-metadata";
+
 import { SurveyStartClient } from "./survey-start-client";
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ surveyId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const { surveyId } = await params;
+  const sp = await searchParams;
+  const path = gatewayPathWithSearch(ROUTES.surveyStart(surveyId), sp);
+  return routingGatewayMetadata(path);
+}
 
 function SurveyStartFallback() {
   return (

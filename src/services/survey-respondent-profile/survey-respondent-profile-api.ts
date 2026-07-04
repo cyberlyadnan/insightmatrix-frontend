@@ -35,7 +35,7 @@ export async function getRespondentAnalyticsSummary(params?: Record<string, unkn
 }
 
 export async function exportSurveyRespondents(body: {
-  format: "csv" | "xlsx";
+  format: "csv" | "xlsx" | "pdf";
   vendorId?: string;
   panelSurveyId?: string;
   allocationId?: string;

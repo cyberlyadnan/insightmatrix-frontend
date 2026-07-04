@@ -50,6 +50,8 @@ import {
   panelSurveyFieldPathToSectionId,
   panelSurveyFieldPathToTab,
 } from "@/lib/panel-survey-form-errors";
+import { applyPanelSurveyConflictToForm } from "@/lib/panel-survey-conflict-errors";
+import { parseApiError } from "@/services/api/errors";
 import { cn } from "@/lib/utils";
 import { applySupplierUrlHintsToForm, previewSupplierRedirectUrl } from "@/lib/supplier-survey-url";
 import type { SurveyCompany } from "@/services/survey-company";
@@ -219,6 +221,7 @@ type PanelSurveyFormProps = {
   providers: Pick<SurveyCompany, "id" | "companyName" | "companyCode">[];
   onSubmit: (values: PanelSurveyFormValues) => void | Promise<void>;
   isSubmitting: boolean;
+  submitError?: unknown;
 };
 
 function SectionCard({
@@ -250,6 +253,7 @@ export function PanelSurveyForm({
   providers,
   onSubmit,
   isSubmitting,
+  submitError,
 }: PanelSurveyFormProps) {
   const form = useForm<PanelSurveyFormValues>({
     resolver: zodResolver(panelSurveyFormSchema) as Resolver<PanelSurveyFormValues>,
@@ -264,6 +268,19 @@ export function PanelSurveyForm({
   useFormHydrateFromDefaults(form, defaultValues, { mode, entityId });
 
   const [activeTab, setActiveTab] = useState<"basic" | "advanced">("basic");
+
+  useEffect(() => {
+    if (!submitError) return;
+    const handled = applyPanelSurveyConflictToForm(submitError, form.setError);
+    if (!handled) return;
+    const msg = parseApiError(submitError, "");
+    if (msg.includes("External survey ID")) {
+      setActiveTab("advanced");
+    } else {
+      setActiveTab("basic");
+    }
+  }, [submitError, form]);
+
   const watchedSurveyUrl = form.watch("externalSurveyUrl");
   const watchedTrackingParam = form.watch("trackingParameterName");
   const redirectPreview = useMemo(
@@ -352,6 +369,7 @@ export function PanelSurveyForm({
                         {...field}
                       />
                     </FormControl>
+                    <p className="text-xs text-gray-500">Must be unique across all surveys.</p>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -1015,6 +1033,9 @@ export function PanelSurveyForm({
                         {...field}
                       />
                     </FormControl>
+                    <p className="text-xs text-gray-500">
+                      From supplier portal (optional). Must be unique when provided.
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}

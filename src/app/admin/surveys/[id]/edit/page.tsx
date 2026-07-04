@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 import { PanelSurveyForm } from "@/components/admin/panel-survey-form";
 import { ROUTES } from "@/constants/routes";
+import { panelSurveyConflictToastMessage } from "@/lib/panel-survey-conflict-errors";
 import { parseApiError } from "@/services/api/errors";
 import { getPanelSurvey, updatePanelSurvey } from "@/services/panel-survey";
 import { listSurveyCompanies } from "@/services/survey-company";
@@ -23,6 +25,7 @@ export default function EditPanelSurveyPage() {
   const id = typeof params.id === "string" ? params.id : "";
   const router = useRouter();
   const qc = useQueryClient();
+  const [submitError, setSubmitError] = useState<unknown>(null);
 
   const {
     data: survey,
@@ -48,13 +51,19 @@ export default function EditPanelSurveyPage() {
   const mutation = useMutation({
     mutationFn: (payload: Parameters<typeof updatePanelSurvey>[1]) =>
       updatePanelSurvey(id, payload),
+    onMutate: () => setSubmitError(null),
     onSuccess: async () => {
       toast.success("Survey updated");
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
       await qc.invalidateQueries({ queryKey: queryKeys.companyPayments.all });
       router.push(ROUTES.admin.surveys);
     },
-    onError: (e) => toast.error(parseApiError(e, "Could not update survey")),
+    onError: (e) => {
+      setSubmitError(e);
+      toast.error(
+        panelSurveyConflictToastMessage(e) ?? parseApiError(e, "Could not update survey")
+      );
+    },
   });
 
   if (!id) {
@@ -111,6 +120,7 @@ export default function EditPanelSurveyPage() {
         entityId={id}
         defaultValues={defaults}
         providers={providers}
+        submitError={submitError}
         onSubmit={handleSubmit}
         isSubmitting={mutation.isPending}
       />

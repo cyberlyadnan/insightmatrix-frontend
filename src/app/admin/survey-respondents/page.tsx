@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -13,14 +13,20 @@ import { queryKeys } from "@/services/queries";
 
 export default function SurveyRespondentsPage() {
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [status, setStatus] = useState("");
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(search), 300);
+    return () => window.clearTimeout(timer);
+  }, [search]);
+
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.surveyRespondentProfiles.list({ search, status }),
+    queryKey: queryKeys.surveyRespondentProfiles.list({ search: debouncedSearch, status }),
     queryFn: () =>
       listSurveyRespondentProfiles({
         pageSize: 50,
-        search: search || undefined,
+        search: debouncedSearch || undefined,
         surveyStatus: status || undefined,
       }),
   });
@@ -45,7 +51,7 @@ export default function SurveyRespondentsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="search"
-              placeholder="Tracking id, platform token…"
+              placeholder="Survey name, code, project ID, tracking id, token…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-11 w-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/20"

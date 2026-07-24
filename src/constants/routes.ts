@@ -46,6 +46,7 @@ export const ROUTES = {
     respondentExports: "/admin/respondent-exports",
     respondentAnalytics: "/admin/respondent-analytics",
     securityLogs: "/admin/security-logs",
+    queries: "/admin/queries",
   },
   vendor: {
     login: "/vendor/login",

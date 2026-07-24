@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { parseApiError } from "@/services/api/errors";
@@ -19,6 +20,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/crm/page-help";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
+import { ROUTES } from "@/constants/routes";
 import { listPanelSurveys } from "@/services/panel-survey/panel-survey-api";
 import { listVendors } from "@/services/vendor/vendor-api";
 import { listSurveyCompanies } from "@/services/survey-company";
@@ -106,36 +108,42 @@ export default function AdminOverview() {
       value: activeSurveysData?.meta?.total ?? 0,
       icon: ClipboardList,
       iconClass: "text-brand-primary",
+      href: ROUTES.admin.surveys,
     },
     {
       label: "Active Vendors",
       value: activeVendorsData?.meta?.total ?? 0,
       icon: Store,
       iconClass: "text-emerald-600",
+      href: ROUTES.admin.vendors,
     },
     {
       label: "Total Survey Providers",
       value: providersData?.meta?.total ?? 0,
       icon: Building2,
       iconClass: "text-violet-500",
+      href: ROUTES.admin.companies,
     },
     {
       label: "Today's Respondents",
       value: todayRespondentsData?.meta?.total ?? 0,
       icon: Users,
       iconClass: "text-sky-600",
+      href: ROUTES.admin.surveyRespondents,
     },
     {
       label: "Total Completes",
       value: respondentSummary?.completes ?? 0,
       icon: CheckCircle2,
       iconClass: "text-teal-600",
+      href: ROUTES.admin.respondentAnalytics,
     },
     {
       label: "Pending Queries",
       value: pendingQueriesData?.meta?.total ?? 0,
       icon: MessageCircle,
       iconClass: "text-amber-500",
+      href: ROUTES.admin.queries,
     },
   ] as const;
 
@@ -149,9 +157,10 @@ export default function AdminOverview() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {stats.map((stat) => (
-          <div
+          <Link
             key={stat.label}
-            className="h-full min-h-[148px] p-6 rounded-[2rem] bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all group flex flex-col"
+            href={stat.href}
+            className="h-full min-h-[148px] p-6 rounded-[2rem] bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 hover:border-brand-primary/20 transition-all group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
           >
             <div className="flex justify-between items-start mb-6">
               <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -166,7 +175,7 @@ export default function AdminOverview() {
                 {cardsLoading ? "—" : stat.value}
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

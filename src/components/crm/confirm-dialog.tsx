@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Modal } from "@/components/shared/Modal";
@@ -15,7 +16,7 @@ type ConfirmDialogProps = {
   onConfirm: () => void;
   /** Destructive styling for delete actions (default true). */
   destructive?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import type { CreateVendorAllocationPayload } from "@/services/vendor-allocation/vendor-allocation-api";

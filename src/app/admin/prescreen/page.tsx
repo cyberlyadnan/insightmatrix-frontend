@@ -6,9 +6,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Copy, Eye, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Modal } from "@/components/shared/Modal";
-import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { PageHeader } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import {
   deletePrescreen,
@@ -44,7 +46,7 @@ export default function AdminPrescreenListPage() {
   const deleteMutation = useMutation({
     mutationFn: deletePrescreen,
     onSuccess: async () => {
-      toast.success("Prescreen deleted");
+      crmToast.deleted();
       setDeleteTarget(null);
       await refresh();
     },
@@ -88,14 +90,11 @@ export default function AdminPrescreenListPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900">Prescreening</h1>
-          <p className="text-sm text-gray-500 font-medium">
-            Create and manage dynamic prescreen questionnaires.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <PageHeader
+        title="Prescreening"
+        description="Create and manage dynamic prescreen questionnaires."
+        help={ADMIN_PAGE_HELP.prescreen}
+        actions={
           <Link
             href={ROUTES.admin.prescreenCreate}
             className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black"
@@ -103,8 +102,8 @@ export default function AdminPrescreenListPage() {
             <Plus className="w-4 h-4" />
             Create Prescreen
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       <div className="bg-white border border-gray-100 rounded-3xl p-5">
         <div className="flex flex-col md:flex-row gap-3 md:items-center mb-4">
@@ -240,36 +239,22 @@ export default function AdminPrescreenListPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete prescreen?"
         description={
           deleteTarget
             ? `Remove “${deleteTarget.title}” (${deleteTarget.slug}). Submissions may remain in the database for auditing.`
-            : undefined
+            : "This action cannot be undone."
         }
-        footer={
-          <div className="flex justify-end gap-2 w-full">
-            <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={deleteMutation.isPending || !deleteTarget}
-              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-            >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </Button>
-          </div>
-        }
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
       >
         <p className="text-sm text-gray-600">
           Members may be blocked from surveys if this was the active required panel prescreen.
           Publish another required prescreen afterward if needed.
         </p>
-      </Modal>
+      </ConfirmDialog>
     </div>
   );
 }

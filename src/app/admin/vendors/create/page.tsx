@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 import { VendorForm, emptyVendorFormValues } from "@/components/admin/vendor-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { createVendor, type CreateVendorPayload } from "@/services/vendor";
 import { queryKeys } from "@/services/queries";
@@ -31,13 +33,18 @@ function toPayload(values: VendorFormValues): CreateVendorPayload {
 export default function CreateVendorPage() {
   const router = useRouter();
   const qc = useQueryClient();
+  const continueRef = useRef(false);
 
   const mutation = useMutation({
     mutationFn: (payload: CreateVendorPayload) => createVendor(payload),
     onSuccess: async (vendor) => {
-      toast.success("Vendor created");
+      crmToast.saved();
       await qc.invalidateQueries({ queryKey: queryKeys.vendors.all });
-      router.push(ROUTES.admin.vendor(vendor.id));
+      if (continueRef.current) {
+        router.push(ROUTES.admin.vendorEdit(vendor.id));
+      } else {
+        router.push(ROUTES.admin.vendor(vendor.id));
+      }
     },
     onError: (error) => toast.error(parseApiError(error, "Could not create vendor")),
   });
@@ -61,7 +68,10 @@ export default function CreateVendorPage() {
       <VendorForm
         mode="create"
         defaultValues={emptyVendorFormValues}
-        onSubmit={(values) => mutation.mutate(toPayload(values))}
+        onSubmit={(values, { continueEditing }) => {
+          continueRef.current = continueEditing;
+          mutation.mutate(toPayload(values));
+        }}
         isSubmitting={mutation.isPending}
       />
     </div>

@@ -6,6 +6,8 @@ import { BookOpen, Loader2, Search, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
+import { PageHelp } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PANEL_BOOK_ORG_LABELS } from "@/constants/panel-book";
@@ -67,12 +69,15 @@ export default function AdminPanelBookPage() {
 
   return (
     <div className="space-y-10 text-gray-900">
-      <div>
-        <h1 className="text-3xl font-black tracking-tight text-gray-900">Panel Book</h1>
-        <p className="mt-1 max-w-2xl text-sm font-medium text-gray-600">
-          Upload the PDF visitors receive after submitting the public Panel Book form. Review
-          download requests and organization details below.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-gray-900">Panel Book</h1>
+          <p className="mt-1 max-w-2xl text-sm font-medium text-gray-600">
+            Upload the PDF visitors receive after submitting the public Panel Book form. Review
+            download requests and organization details below.
+          </p>
+        </div>
+        <PageHelp content={ADMIN_PAGE_HELP.panelBook} />
       </div>
 
       <div className="rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm md:p-8">

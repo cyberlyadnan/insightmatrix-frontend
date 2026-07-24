@@ -10,8 +10,10 @@ import { toast } from "sonner";
 
 import { AllocationQuotaBar } from "@/components/admin/vendor-allocations/allocation-quota-bar";
 import { AllocationStatusBadge } from "@/components/admin/vendor-allocations/allocation-status-badge";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { CopyRoutingLinkButton } from "@/components/vendor/copy-routing-link-button";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import {
   closeVendorAllocation,
@@ -39,6 +41,7 @@ export default function VendorAllocationDetailPage() {
   const qc = useQueryClient();
   const id = typeof params.id === "string" ? params.id : "";
   const [quotaEdit, setQuotaEdit] = useState<number | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const {
     data: allocation,
@@ -92,7 +95,8 @@ export default function VendorAllocationDetailPage() {
   const deleteMut = useMutation({
     mutationFn: () => deleteVendorAllocation(id),
     onSuccess: () => {
-      toast.success("Removed");
+      crmToast.deleted();
+      setDeleteOpen(false);
       router.push(ROUTES.admin.vendorAllocations);
     },
     onError: (e) => toast.error(parseApiError(e)),
@@ -178,9 +182,7 @@ export default function VendorAllocationDetailPage() {
         )}
         <button
           type="button"
-          onClick={() => {
-            if (confirm("Remove allocation? Only allowed with zero sessions.")) deleteMut.mutate();
-          }}
+          onClick={() => setDeleteOpen(true)}
           className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700"
         >
           <Trash2 className="h-4 w-4" />
@@ -282,6 +284,14 @@ export default function VendorAllocationDetailPage() {
           ) : null}
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        description="Remove allocation? Only allowed with zero sessions. This action cannot be undone."
+        loading={deleteMut.isPending}
+        onConfirm={() => deleteMut.mutate()}
+      />
     </div>
   );
 }

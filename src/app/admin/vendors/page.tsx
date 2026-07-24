@@ -8,10 +8,15 @@ import { Eye, Pencil, Plus, Search, Store, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { PageHeader } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { deleteVendor, listVendors, patchVendorStatus, type VendorStatus } from "@/services/vendor";
 import { queryKeys } from "@/services/queries";
+import type { Vendor } from "@/types/vendor";
 
 const primaryActionClass =
   "h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0 transition-colors";
@@ -43,6 +48,7 @@ export default function AdminVendorsPage() {
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [status, setStatus] = useState<VendorStatus | "">("");
+  const [deleteTarget, setDeleteTarget] = useState<Vendor | null>(null);
 
   const filters = useMemo(
     () => ({ search: deferredSearch, status, page: 1, pageSize: 50 }),
@@ -59,7 +65,7 @@ export default function AdminVendorsPage() {
       patchVendorStatus(id, s),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: queryKeys.vendors.all });
-      toast.success("Status updated");
+      crmToast.updated();
     },
     onError: (e) => toast.error(parseApiError(e, "Could not update status")),
   });
@@ -68,7 +74,8 @@ export default function AdminVendorsPage() {
     mutationFn: deleteVendor,
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: queryKeys.vendors.all });
-      toast.success("Vendor deleted");
+      setDeleteTarget(null);
+      crmToast.deleted();
     },
     onError: (e) => toast.error(parseApiError(e, "Could not delete vendor")),
   });
@@ -77,19 +84,17 @@ export default function AdminVendorsPage() {
 
   return (
     <div className="space-y-8 text-gray-900">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Vendors</h1>
-          <p className="text-sm text-gray-500 font-medium mt-1 max-w-xl">
-            Manage B2B subpanel partners. Internal codes (VND-*) are not supplier{" "}
-            <code className="text-xs font-mono bg-gray-100 px-1 rounded">vid</code> values.
-          </p>
-        </div>
-        <Link href={ROUTES.admin.vendorsCreate} className={primaryActionClass}>
-          <Plus className="w-4 h-4 shrink-0" />
-          Add vendor
-        </Link>
-      </div>
+      <PageHeader
+        title="Vendors"
+        description="Manage B2B subpanel partners. Internal codes (VND-*) are not supplier vid values."
+        help={ADMIN_PAGE_HELP.vendors}
+        actions={
+          <Link href={ROUTES.admin.vendorsCreate} className={primaryActionClass}>
+            <Plus className="w-4 h-4 shrink-0" />
+            Add vendor
+          </Link>
+        }
+      />
 
       <div className="rounded-[2rem] border border-gray-100 bg-white p-5 md:p-6 shadow-sm">
         <div className="flex flex-col xl:flex-row gap-3 xl:items-center mb-6">
@@ -199,11 +204,7 @@ export default function AdminVendorsPage() {
                         <button
                           type="button"
                           className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-100 text-rose-600 hover:bg-rose-50"
-                          onClick={() => {
-                            if (confirm("Delete this vendor permanently?")) {
-                              deleteMutation.mutate(v.id);
-                            }
-                          }}
+                          onClick={() => setDeleteTarget(v)}
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -217,6 +218,18 @@ export default function AdminVendorsPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        description={
+          deleteTarget
+            ? `Remove “${deleteTarget.companyName}” (${deleteTarget.vendorCode}). This action cannot be undone.`
+            : "This action cannot be undone."
+        }
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+      />
     </div>
   );
 }

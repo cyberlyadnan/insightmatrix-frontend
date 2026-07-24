@@ -1,7 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import type { CreateVendorAllocationPayload } from "@/services/vendor-allocation/vendor-allocation-api";
+import { FormActionBar, getFormSubmitIntent } from "@/components/crm/form-action-bar";
+import { ROUTES } from "@/constants/routes";
 
 export type VendorAllocationFormValues = {
   panelSurveyId: string;
@@ -23,9 +25,9 @@ type Props = {
   initialValues?: Partial<VendorAllocationFormValues>;
   surveyLocked?: boolean;
   maxQuota?: number;
-  submitLabel?: string;
   isSubmitting?: boolean;
-  onSubmit: (payload: CreateVendorAllocationPayload) => void;
+  cancelHref?: string;
+  onSubmit: (payload: CreateVendorAllocationPayload, options: { continueEditing: boolean }) => void;
 };
 
 const defaultValues: VendorAllocationFormValues = {
@@ -45,8 +47,8 @@ export function VendorAllocationForm({
   initialValues,
   surveyLocked = false,
   maxQuota,
-  submitLabel = "Create allocation",
   isSubmitting = false,
+  cancelHref = ROUTES.admin.vendorAllocations,
   onSubmit,
 }: Props) {
   const [values, setValues] = useState<VendorAllocationFormValues>({
@@ -57,18 +59,22 @@ export function VendorAllocationForm({
   const selectedSurvey = surveys.find((s) => s.id === values.panelSurveyId);
   const quotaCap = maxQuota ?? selectedSurvey?.remainingQuota ?? 999999;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit({
-      panelSurveyId: values.panelSurveyId,
-      vendorId: values.vendorId,
-      allocatedQuota: Math.min(values.allocatedQuota, quotaCap),
-      vendorCpi: values.vendorCpi || undefined,
-      clientCpi: values.clientCpi || undefined,
-      startDate: values.startDate || null,
-      endDate: values.endDate || null,
-      notes: values.notes.trim() || undefined,
-    });
+    const continueEditing = getFormSubmitIntent(e) === "continue";
+    onSubmit(
+      {
+        panelSurveyId: values.panelSurveyId,
+        vendorId: values.vendorId,
+        allocatedQuota: Math.min(values.allocatedQuota, quotaCap),
+        vendorCpi: values.vendorCpi || undefined,
+        clientCpi: values.clientCpi || undefined,
+        startDate: values.startDate || null,
+        endDate: values.endDate || null,
+        notes: values.notes.trim() || undefined,
+      },
+      { continueEditing }
+    );
   };
 
   const fieldClass =
@@ -203,13 +209,7 @@ export function VendorAllocationForm({
         Vendors receive only the generated routing link — never the raw supplier survey URL.
       </p>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full h-12 rounded-xl bg-gray-900 text-white font-bold hover:bg-black disabled:opacity-50"
-      >
-        {isSubmitting ? "Saving…" : submitLabel}
-      </button>
+      <FormActionBar isSubmitting={isSubmitting} cancelHref={cancelHref} sticky={false} />
     </form>
   );
 }

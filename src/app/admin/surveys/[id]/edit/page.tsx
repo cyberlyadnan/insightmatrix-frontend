@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 import { PanelSurveyForm } from "@/components/admin/panel-survey-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { panelSurveyConflictToastMessage } from "@/lib/panel-survey-conflict-errors";
 import { parseApiError } from "@/services/api/errors";
 import { getPanelSurvey, updatePanelSurvey } from "@/services/panel-survey";
@@ -26,6 +27,7 @@ export default function EditPanelSurveyPage() {
   const router = useRouter();
   const qc = useQueryClient();
   const [submitError, setSubmitError] = useState<unknown>(null);
+  const continueRef = useRef(false);
 
   const {
     data: survey,
@@ -53,10 +55,13 @@ export default function EditPanelSurveyPage() {
       updatePanelSurvey(id, payload),
     onMutate: () => setSubmitError(null),
     onSuccess: async () => {
-      toast.success("Survey updated");
+      crmToast.updated();
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
       await qc.invalidateQueries({ queryKey: queryKeys.companyPayments.all });
-      router.push(ROUTES.admin.surveys);
+      await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.detail(id) });
+      if (!continueRef.current) {
+        router.push(ROUTES.admin.survey(id));
+      }
     },
     onError: (e) => {
       setSubmitError(e);
@@ -95,7 +100,11 @@ export default function EditPanelSurveyPage() {
 
   const defaults = panelSurveyToFormValues(survey);
 
-  const handleSubmit = (values: PanelSurveyFormValues) => {
+  const handleSubmit = (
+    values: PanelSurveyFormValues,
+    { continueEditing }: { continueEditing: boolean }
+  ) => {
+    continueRef.current = continueEditing;
     const payload = panelSurveyFormToPayload(values);
     delete (payload as { surveyCode?: string }).surveyCode;
     mutation.mutate(payload);
@@ -121,6 +130,7 @@ export default function EditPanelSurveyPage() {
         defaultValues={defaults}
         providers={providers}
         submitError={submitError}
+        cancelHref={ROUTES.admin.survey(id)}
         onSubmit={handleSubmit}
         isSubmitting={mutation.isPending}
       />

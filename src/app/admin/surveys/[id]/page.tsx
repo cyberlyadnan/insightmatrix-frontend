@@ -23,7 +23,8 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-import { Modal } from "@/components/shared/Modal";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { crmToast } from "@/lib/crm-toast";
 import {
   PANEL_QUOTA_GROUP_STATUS_LABELS,
   PANEL_GENDER_LABELS,
@@ -105,7 +106,7 @@ export default function PanelSurveyDetailPage() {
   const deleteMutation = useMutation({
     mutationFn: () => deletePanelSurvey(id),
     onSuccess: async () => {
-      toast.success("Survey deleted");
+      crmToast.deleted();
       setDeleteOpen(false);
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
       router.push(ROUTES.admin.surveys);
@@ -556,33 +557,15 @@ export default function PanelSurveyDetailPage() {
         </div>
       )}
 
-      <Modal
+      <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete survey?"
-        description={`Remove “${survey.surveyName}” permanently.`}
-        footer={
-          <div className="flex gap-2 justify-end w-full">
-            <button
-              type="button"
-              className="h-10 px-4 rounded-xl border border-gray-200 font-bold"
-              onClick={() => setDeleteOpen(false)}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={deleteMutation.isPending}
-              className="h-10 px-4 rounded-xl bg-rose-600 text-white font-bold disabled:opacity-60"
-              onClick={() => deleteMutation.mutate()}
-            >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </button>
-          </div>
-        }
+        description={`Remove “${survey.surveyName}” permanently. This action cannot be undone.`}
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteMutation.mutate()}
       >
         <p className="text-sm text-gray-600">This cannot be undone from the UI.</p>
-      </Modal>
+      </ConfirmDialog>
     </div>
   );
 }

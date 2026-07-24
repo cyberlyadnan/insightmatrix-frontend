@@ -16,8 +16,10 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Modal } from "@/components/shared/Modal";
-import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { PageHeader } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import {
   deleteContactQuery,
@@ -124,7 +126,7 @@ export default function AdminQueries() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteContactQuery(id),
     onSuccess: async () => {
-      toast.success("Query deleted");
+      crmToast.deleted();
       setDeleteTarget(null);
       setSelectedId(null);
       await refresh();
@@ -144,31 +146,29 @@ export default function AdminQueries() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="flex flex-col gap-4 mb-6 shrink-0">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight mb-2">
-              Inbound Queries
-            </h1>
-            <p className="text-gray-500 font-medium text-sm">
-              Review and respond to research requests and contact submissions.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {(["inbox", "starred", "archived"] as const).map((item) => (
-              <button
-                key={item}
-                onClick={() => setTab(item)}
-                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                  tab === item
-                    ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-                    : "bg-gray-50 text-gray-400 border-gray-100"
-                }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
+        <PageHeader
+          title="Queries"
+          description="Review and respond to research requests and contact submissions."
+          help={ADMIN_PAGE_HELP.queries}
+          actions={
+            <div className="flex gap-2">
+              {(["inbox", "starred", "archived"] as const).map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setTab(item)}
+                  className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
+                    tab === item
+                      ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                      : "bg-gray-50 text-gray-400 border-gray-100"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          }
+        />
         <div className="grid md:grid-cols-3 gap-3">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
@@ -457,33 +457,17 @@ export default function AdminQueries() {
         </div>
       </div>
 
-      <Modal
+      <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete this query?"
         description={
           deleteTarget
-            ? `Permanently remove the message from ${deleteTarget.email} (${deleteTarget.subject}).`
-            : undefined
+            ? `Permanently remove the message from ${deleteTarget.email} (${deleteTarget.subject}). This action cannot be undone.`
+            : "This action cannot be undone."
         }
-        footer={
-          <div className="flex justify-end gap-2 w-full">
-            <Button type="button" variant="outline" onClick={() => setDeleteTarget(null)}>
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={deleteMutation.isPending || !deleteTarget}
-              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-            >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </Button>
-          </div>
-        }
-      >
-        <p className="text-sm text-gray-600">This action cannot be undone.</p>
-      </Modal>
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+      />
     </div>
   );
 }

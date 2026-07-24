@@ -18,10 +18,13 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-import { Modal } from "@/components/shared/Modal";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { PageHeader } from "@/components/crm/page-help";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
 import { SURVEY_PROVIDER_LABELS } from "@/constants/survey-company";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import {
   deleteSurveyCompany,
@@ -140,7 +143,7 @@ export default function AdminSurveyCompaniesPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteSurveyCompany(id),
     onSuccess: async () => {
-      toast.success("Company deleted");
+      crmToast.deleted();
       setDeleteTarget(null);
       await refresh();
     },
@@ -161,21 +164,20 @@ export default function AdminSurveyCompaniesPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Survey providers</h1>
-          <p className="text-sm text-gray-500 font-medium mt-1">
-            Manage external survey companies and routers that supply your panel with inventory.
-          </p>
-        </div>
-        <Link
-          href={ROUTES.admin.companiesCreate}
-          className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Add company
-        </Link>
-      </div>
+      <PageHeader
+        title="Survey Providers"
+        description="Manage external survey companies and routers that supply your panel with inventory."
+        help={ADMIN_PAGE_HELP.companies}
+        actions={
+          <Link
+            href={ROUTES.admin.companiesCreate}
+            className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Add company
+          </Link>
+        }
+      />
 
       <div className="rounded-[2rem] border border-gray-100 bg-white p-5 md:p-6 shadow-sm">
         <div className="flex flex-col xl:flex-row gap-3 xl:items-center mb-6">
@@ -452,40 +454,22 @@ export default function AdminSurveyCompaniesPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete company?"
         description={
           deleteTarget
-            ? `Remove "${deleteTarget.companyName}" (${deleteTarget.companyCode}) from the directory.`
-            : undefined
+            ? `Remove "${deleteTarget.companyName}" (${deleteTarget.companyCode}) from the directory. This action cannot be undone.`
+            : "This action cannot be undone."
         }
-        footer={
-          <div className="flex gap-2 justify-end w-full">
-            <button
-              type="button"
-              className="h-10 px-4 rounded-xl border border-gray-200 font-bold text-gray-700 hover:bg-gray-50"
-              onClick={() => setDeleteTarget(null)}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={deleteMutation.isPending || !deleteTarget}
-              className="h-10 px-4 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 disabled:opacity-60"
-              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-            >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </button>
-          </div>
-        }
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
       >
         <p className="text-sm text-gray-600">
           Future survey flows may reference providers by ID. Only delete if you are sure this
           provider is obsolete.
         </p>
-      </Modal>
+      </ConfirmDialog>
     </div>
   );
 }

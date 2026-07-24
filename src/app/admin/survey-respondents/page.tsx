@@ -6,6 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Search, Database } from "lucide-react";
 
+import { PageHelp } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
 import { listSurveyRespondentProfiles } from "@/services/survey-respondent-profile/survey-respondent-profile-api";
 import { resolveTrackingParticipantId } from "@/lib/survey-respondent-tracking";
@@ -35,14 +37,17 @@ export default function SurveyRespondentsPage() {
 
   return (
     <div className="space-y-8 max-w-7xl">
-      <div>
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-          <Database className="h-7 w-7 text-brand-primary" />
-          Respondent data warehouse
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Universal prescreen answers, tokens, and lifecycle for panel and vendor traffic.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+            <Database className="h-7 w-7 text-brand-primary" />
+            Survey Respondents
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Universal prescreen answers, tokens, and lifecycle for panel and vendor traffic.
+          </p>
+        </div>
+        <PageHelp content={ADMIN_PAGE_HELP.surveyRespondents} />
       </div>
 
       <div className="rounded-[2rem] border border-gray-100 bg-white p-4 md:p-5 shadow-sm">

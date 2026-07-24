@@ -2,18 +2,23 @@
 
 import { Bell, Shield } from "lucide-react";
 import { SurveyRoutingCallbacksSection } from "@/components/admin/SurveyRoutingCallbacksSection";
+import { PageHelp } from "@/components/crm/page-help";
 import { DashboardSection } from "@/components/dashboard/DashboardSection";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { Button } from "@/components/ui/button";
 
 export default function AdminSettingsPage() {
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-black text-gray-900">Workspace Settings</h1>
-        <p className="mt-2 text-gray-600">
-          Configure CMS preferences, routing URLs, and notifications. Further controls connect as the
-          API layer grows.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900">Settings</h1>
+          <p className="mt-2 text-gray-600">
+            Configure CMS preferences, routing URLs, and notifications. Further controls connect as
+            the API layer grows.
+          </p>
+        </div>
+        <PageHelp content={ADMIN_PAGE_HELP.settings} />
       </div>
 
       <SurveyRoutingCallbacksSection />

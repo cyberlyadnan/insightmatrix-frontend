@@ -8,6 +8,8 @@ import { format } from "date-fns";
 import { Check, Copy, Eye, Link2, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
 
+import { PageHelp } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { AllocationQuotaBar } from "@/components/admin/vendor-allocations/allocation-quota-bar";
 import { AllocationStatusBadge } from "@/components/admin/vendor-allocations/allocation-status-badge";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -83,15 +85,18 @@ export default function AdminVendorAllocationsPage() {
           <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">
             Survey distribution
           </p>
-          <h1 className="text-2xl font-black tracking-tight">Vendor allocations</h1>
+          <h1 className="text-2xl font-black tracking-tight">Vendor Allocations</h1>
           <p className="text-sm text-gray-500 mt-1 max-w-xl">
             Assign panel surveys to vendor partners, distribute quota, and manage routing links.
           </p>
         </div>
-        <Link href={ROUTES.admin.vendorAllocationsCreate} className={primaryBtn}>
-          <Plus className="h-4 w-4" />
-          New allocation
-        </Link>
+        <div className="flex items-center gap-2">
+          <PageHelp content={ADMIN_PAGE_HELP.vendorAllocations} />
+          <Link href={ROUTES.admin.vendorAllocationsCreate} className={primaryBtn}>
+            <Plus className="h-4 w-4" />
+            New allocation
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col xl:flex-row gap-3">

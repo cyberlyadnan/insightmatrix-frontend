@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 
+import { PageHelp } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import {
   PanelSurveySearchSelect,
   type PanelSurveyPickerItem,
@@ -85,14 +87,17 @@ export default function RespondentExportsPage() {
 
   return (
     <div className="space-y-8 max-w-3xl">
-      <div>
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-          <Download className="h-7 w-7 text-brand-primary" />
-          Export center
-        </h1>
-        <p className="text-sm text-gray-500 mt-2">
-          CSV is streamed for large exports. XLSX and PDF are capped at 10,000 rows.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+            <Download className="h-7 w-7 text-brand-primary" />
+            Export Center
+          </h1>
+          <p className="text-sm text-gray-500 mt-2">
+            CSV is streamed for large exports. XLSX and PDF are capped at 10,000 rows.
+          </p>
+        </div>
+        <PageHelp content={ADMIN_PAGE_HELP.respondentExports} />
       </div>
 
       <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 space-y-5 shadow-sm">

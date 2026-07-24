@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import {
   surveyCompanyToFormValues,
 } from "@/components/admin/survey-company-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import {
   getSurveyCompany,
@@ -38,6 +40,7 @@ export default function EditSurveyCompanyPage() {
   const id = typeof params.id === "string" ? params.id : "";
   const router = useRouter();
   const qc = useQueryClient();
+  const continueRef = useRef(false);
 
   const {
     data: company,
@@ -52,9 +55,12 @@ export default function EditSurveyCompanyPage() {
   const mutation = useMutation({
     mutationFn: (payload: Partial<SurveyCompanyPayload>) => updateSurveyCompany(id, payload),
     onSuccess: async () => {
-      toast.success("Company updated");
+      crmToast.updated();
       await qc.invalidateQueries({ queryKey: queryKeys.surveyCompanies.all });
-      router.push(ROUTES.admin.companies);
+      await qc.invalidateQueries({ queryKey: queryKeys.surveyCompanies.detail(id) });
+      if (!continueRef.current) {
+        router.push(ROUTES.admin.company(id));
+      }
     },
     onError: (error) => toast.error(parseApiError(error, "Could not update company")),
   });
@@ -105,7 +111,11 @@ export default function EditSurveyCompanyPage() {
         mode="edit"
         entityId={id}
         defaultValues={surveyCompanyToFormValues(company)}
-        onSubmit={(values) => mutation.mutate(toUpdatePayload(values))}
+        cancelHref={ROUTES.admin.company(id)}
+        onSubmit={(values, { continueEditing }) => {
+          continueRef.current = continueEditing;
+          mutation.mutate(toUpdatePayload(values));
+        }}
         isSubmitting={mutation.isPending}
       />
     </div>

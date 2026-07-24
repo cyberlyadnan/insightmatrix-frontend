@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import {
   emptySurveyCompanyFormValues,
 } from "@/components/admin/survey-company-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { createSurveyCompany, type SurveyCompanyPayload } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
@@ -33,13 +35,18 @@ function toPayload(values: SurveyCompanyFormValues): SurveyCompanyPayload {
 export default function CreateSurveyCompanyPage() {
   const router = useRouter();
   const qc = useQueryClient();
+  const continueRef = useRef(false);
 
   const mutation = useMutation({
     mutationFn: (payload: SurveyCompanyPayload) => createSurveyCompany(payload),
-    onSuccess: async () => {
-      toast.success("Company created");
+    onSuccess: async (company) => {
+      crmToast.saved();
       await qc.invalidateQueries({ queryKey: queryKeys.surveyCompanies.all });
-      router.push(ROUTES.admin.companies);
+      if (continueRef.current) {
+        router.push(ROUTES.admin.companyEdit(company.id));
+      } else {
+        router.push(ROUTES.admin.company(company.id));
+      }
     },
     onError: (error) => toast.error(parseApiError(error, "Could not create company")),
   });
@@ -63,7 +70,10 @@ export default function CreateSurveyCompanyPage() {
       <SurveyCompanyForm
         mode="create"
         defaultValues={emptySurveyCompanyFormValues}
-        onSubmit={(values) => mutation.mutate(toPayload(values))}
+        onSubmit={(values, { continueEditing }) => {
+          continueRef.current = continueEditing;
+          mutation.mutate(toPayload(values));
+        }}
         isSubmitting={mutation.isPending}
       />
     </div>

@@ -22,11 +22,14 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-import { Modal } from "@/components/shared/Modal";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { PageHeader } from "@/components/crm/page-help";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { PANEL_SURVEY_STATUS_LABELS, type PanelSurveyStatus } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
 import { buildPanelSurveyShareLinkExample } from "@/lib/panel-survey-share-link";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import {
   deletePanelSurvey,
@@ -180,7 +183,7 @@ export default function AdminPanelSurveysPage() {
   const deleteMutation = useMutation({
     mutationFn: deletePanelSurvey,
     onSuccess: async () => {
-      toast.success("Survey deleted");
+      crmToast.deleted();
       setDeleteTarget(null);
       await refresh();
     },
@@ -191,14 +194,11 @@ export default function AdminPanelSurveysPage() {
 
   return (
     <div className="space-y-8 text-gray-900">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Surveys</h1>
-          <p className="text-sm text-gray-500 font-medium mt-1">
-            Configure external routing surveys, quotas, and targeting for your panel.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 shrink-0">
+      <PageHeader
+        title="Surveys"
+        description="Configure external routing surveys, quotas, and targeting for your panel."
+        help={ADMIN_PAGE_HELP.surveys}
+        actions={
           <Link
             href={ROUTES.admin.surveysCreate}
             className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
@@ -206,8 +206,8 @@ export default function AdminPanelSurveysPage() {
             <Plus className="w-4 h-4" />
             Create survey
           </Link>
-        </div>
-      </div>
+        }
+      />
 
       <div className="rounded-[2rem] border border-gray-200 bg-white p-5 md:p-6 shadow-sm text-gray-900">
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-6 mb-6">
@@ -578,40 +578,22 @@ export default function AdminPanelSurveysPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDialog
         open={Boolean(deleteTarget)}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete survey?"
         description={
           deleteTarget
-            ? `Remove “${deleteTarget.surveyName}” (${deleteTarget.surveyCode}).`
-            : undefined
+            ? `Remove “${deleteTarget.surveyName}” (${deleteTarget.surveyCode}). This action cannot be undone.`
+            : "This action cannot be undone."
         }
-        footer={
-          <div className="flex gap-2 justify-end w-full">
-            <button
-              type="button"
-              className="h-10 px-4 rounded-xl border border-gray-200 font-bold text-gray-700 hover:bg-gray-50"
-              onClick={() => setDeleteTarget(null)}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={deleteMutation.isPending || !deleteTarget}
-              className="h-10 px-4 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 disabled:opacity-60"
-              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
-            >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </button>
-          </div>
-        }
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
       >
         <p className="text-sm text-gray-600">
           Distribution and tracking features will reference this configuration later. Only delete if
           the study is obsolete.
         </p>
-      </Modal>
+      </ConfirmDialog>
     </div>
   );
 }

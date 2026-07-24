@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 import { PanelSurveyForm } from "@/components/admin/panel-survey-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { panelSurveyConflictToastMessage } from "@/lib/panel-survey-conflict-errors";
 import { parseApiError } from "@/services/api/errors";
 import { createPanelSurvey } from "@/services/panel-survey";
@@ -24,8 +25,9 @@ export default function CreatePanelSurveyPage() {
   const router = useRouter();
   const qc = useQueryClient();
   const [submitError, setSubmitError] = useState<unknown>(null);
+  const continueRef = useRef(false);
 
-  const { data: companiesData } = useQuery({
+  const { data: companiesData, isLoading: providersLoading } = useQuery({
     queryKey: queryKeys.surveyCompanies.list({ page: 1, pageSize: 500 }),
     queryFn: () => listSurveyCompanies({ page: 1, pageSize: 500 }),
   });
@@ -40,10 +42,14 @@ export default function CreatePanelSurveyPage() {
     mutationFn: createPanelSurvey,
     onMutate: () => setSubmitError(null),
     onSuccess: async (survey) => {
-      toast.success("Survey created — copy the share link for your team");
+      crmToast.saved();
       await qc.invalidateQueries({ queryKey: queryKeys.panelSurveys.all });
       await qc.invalidateQueries({ queryKey: queryKeys.companyPayments.all });
-      router.push(ROUTES.admin.survey(survey.id));
+      if (continueRef.current) {
+        router.push(ROUTES.admin.surveyEdit(survey.id));
+      } else {
+        router.push(ROUTES.admin.survey(survey.id));
+      }
     },
     onError: (e) => {
       setSubmitError(e);
@@ -71,16 +77,21 @@ export default function CreatePanelSurveyPage() {
         </p>
       </div>
 
-      <PanelSurveyForm
-        mode="create"
-        defaultValues={emptyPanelSurveyFormValues}
-        providers={providers}
-        submitError={submitError}
-        onSubmit={(values: PanelSurveyFormValues) =>
-          mutation.mutate(panelSurveyFormToPayload(values))
-        }
-        isSubmitting={mutation.isPending}
-      />
+      {providersLoading ? (
+        <p className="text-sm text-gray-500 py-12 text-center">Loading form…</p>
+      ) : (
+        <PanelSurveyForm
+          mode="create"
+          defaultValues={emptyPanelSurveyFormValues}
+          providers={providers}
+          submitError={submitError}
+          onSubmit={(values: PanelSurveyFormValues, { continueEditing }) => {
+            continueRef.current = continueEditing;
+            mutation.mutate(panelSurveyFormToPayload(values));
+          }}
+          isSubmitting={mutation.isPending}
+        />
+      )}
     </div>
   );
 }

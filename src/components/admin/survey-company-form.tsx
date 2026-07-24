@@ -2,9 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { FormActionBar, getFormSubmitIntent } from "@/components/crm/form-action-bar";
 import {
   Form,
   FormControl,
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ROUTES } from "@/constants/routes";
 import {
   SURVEY_PROVIDER_LABELS,
   SURVEY_PROVIDER_TYPES,
@@ -54,9 +54,12 @@ type SurveyCompanyFormProps = {
   mode: "create" | "edit";
   entityId?: string;
   defaultValues: SurveyCompanyFormValues;
-  onSubmit: (values: SurveyCompanyFormValues) => void | Promise<void>;
+  onSubmit: (
+    values: SurveyCompanyFormValues,
+    options: { continueEditing: boolean }
+  ) => void | Promise<void>;
   isSubmitting: boolean;
-  submitLabel?: string;
+  cancelHref?: string;
 };
 
 export function SurveyCompanyForm({
@@ -65,7 +68,7 @@ export function SurveyCompanyForm({
   defaultValues,
   onSubmit,
   isSubmitting,
-  submitLabel,
+  cancelHref = ROUTES.admin.companies,
 }: SurveyCompanyFormProps) {
   const form = useForm<SurveyCompanyFormValues>({
     resolver: zodResolver(surveyCompanyFormSchema),
@@ -76,7 +79,13 @@ export function SurveyCompanyForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={(e) => {
+          const continueEditing = getFormSubmitIntent(e) === "continue";
+          void form.handleSubmit((values) => onSubmit(values, { continueEditing }))(e);
+        }}
+        className="space-y-8"
+      >
         <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
           <h2 className="text-lg font-black text-gray-900 mb-6 pb-4 border-b border-gray-100">
             Basic information
@@ -267,22 +276,7 @@ export function SurveyCompanyForm({
           />
         </div>
 
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-xl bg-gray-900 text-white hover:bg-black h-11 px-8 font-bold"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin mr-2 h-4 w-4" />
-                Saving…
-              </>
-            ) : (
-              (submitLabel ?? (mode === "create" ? "Create company" : "Save changes"))
-            )}
-          </Button>
-        </div>
+        <FormActionBar isSubmitting={isSubmitting} cancelHref={cancelHref} />
       </form>
     </Form>
   );

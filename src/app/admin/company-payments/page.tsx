@@ -5,6 +5,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Plus, Receipt, Download } from "lucide-react";
 import { toast } from "sonner";
 
+import { PageHelp } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { Modal } from "@/components/shared/Modal";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Button } from "@/components/ui/button";
@@ -386,21 +388,24 @@ export default function AdminCompanyPaymentsPage() {
     <div className="space-y-8 text-gray-900">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Company payments</h1>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Company Payments</h1>
           <p className="text-sm text-gray-600 font-medium mt-1 max-w-2xl">
             Track supplier fees (money companies pay InsightMatrix). Member rewards stay in points.
             Creating a panel survey auto-generates a pending invoice line. Download PDFs to share
             with finance contacts.
           </p>
         </div>
-        <Button
-          type="button"
-          onClick={() => handleCreateModalChange(true)}
-          className="h-11 px-5 rounded-xl bg-gray-900 text-white font-bold hover:bg-black shrink-0"
-        >
-          <Plus className="w-4 h-4 mr-2 inline" />
-          New payment entry
-        </Button>
+        <div className="flex items-center gap-2">
+          <PageHelp content={ADMIN_PAGE_HELP.companyPayments} />
+          <Button
+            type="button"
+            onClick={() => handleCreateModalChange(true)}
+            className="h-11 px-5 rounded-xl bg-gray-900 text-white font-bold hover:bg-black shrink-0"
+          >
+            <Plus className="w-4 h-4 mr-2 inline" />
+            New payment entry
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-[2rem] border border-gray-200 bg-white p-5 md:p-6 shadow-sm">

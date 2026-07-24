@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 import { VendorAllocationForm } from "@/components/admin/vendor-allocations/vendor-allocation-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { createVendorAllocation } from "@/services/vendor-allocation/vendor-allocation-api";
 import { listVendors } from "@/services/vendor/vendor-api";
@@ -18,6 +20,7 @@ export default function CreateVendorAllocationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedSurveyId = searchParams.get("surveyId") ?? "";
+  const continueRef = useRef(false);
 
   const { data: surveysData, isLoading: surveysLoading } = useQuery({
     queryKey: queryKeys.panelSurveys.list({ pageSize: 100 }),
@@ -32,8 +35,12 @@ export default function CreateVendorAllocationPage() {
   const createMut = useMutation({
     mutationFn: createVendorAllocation,
     onSuccess: (allocation) => {
-      toast.success("Allocation created");
-      router.push(ROUTES.admin.vendorAllocation(allocation.id));
+      crmToast.saved();
+      if (continueRef.current) {
+        router.push(ROUTES.admin.vendorAllocation(allocation.id));
+      } else {
+        router.push(ROUTES.admin.vendorAllocations);
+      }
     },
     onError: (e) => toast.error(parseApiError(e)),
   });
@@ -83,7 +90,10 @@ export default function CreateVendorAllocationPage() {
             surveyLocked={Boolean(preselectedSurveyId)}
             initialValues={{ panelSurveyId: preselectedSurveyId }}
             isSubmitting={createMut.isPending}
-            onSubmit={(payload) => createMut.mutate(payload)}
+            onSubmit={(payload, { continueEditing }) => {
+              continueRef.current = continueEditing;
+              createMut.mutate(payload);
+            }}
           />
         )}
       </div>

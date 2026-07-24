@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Shield } from "lucide-react";
 
+import { PageHelp } from "@/components/crm/page-help";
+import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { getSecurityAnalytics, listSecurityLogs } from "@/services/security-logs/security-logs-api";
 
 export default function AdminSecurityLogsPage() {
@@ -29,14 +31,17 @@ export default function AdminSecurityLogsPage() {
 
   return (
     <div className="space-y-8 max-w-7xl">
-      <div>
-        <h1 className="text-3xl font-black tracking-tight text-gray-900 flex items-center gap-2">
-          <Shield className="h-7 w-7 text-brand-primary" />
-          Security audit
-        </h1>
-        <p className="text-sm text-gray-500 mt-2">
-          Blocked traffic, captcha failures, geo mismatches, and bot signals.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-gray-900 flex items-center gap-2">
+            <Shield className="h-7 w-7 text-brand-primary" />
+            Security Logs
+          </h1>
+          <p className="text-sm text-gray-500 mt-2">
+            Blocked traffic, captcha failures, geo mismatches, and bot signals.
+          </p>
+        </div>
+        <PageHelp content={ADMIN_PAGE_HELP.securityLogs} />
       </div>
 
       {stats && (

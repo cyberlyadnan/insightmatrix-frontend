@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { FormActionBar, getFormSubmitIntent } from "@/components/crm/form-action-bar";
 import {
   Form,
   FormControl,
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VendorCallbackFields } from "@/components/admin/vendor-callback-fields";
+import { ROUTES } from "@/constants/routes";
 import { useFormHydrateFromDefaults } from "@/hooks/use-form-hydrate-from-defaults";
 import type { Vendor } from "@/types/vendor";
 import { normalizeVendorCallbackUrls } from "@/utils/vendor-callback";
@@ -43,9 +44,12 @@ type VendorFormProps = {
   entityId?: string;
   defaultValues: VendorFormValues;
   vendorCode?: string;
-  onSubmit: (values: VendorFormValues) => void | Promise<void>;
+  onSubmit: (
+    values: VendorFormValues,
+    options: { continueEditing: boolean }
+  ) => void | Promise<void>;
   isSubmitting: boolean;
-  submitLabel?: string;
+  cancelHref?: string;
 };
 
 export function VendorForm({
@@ -55,7 +59,7 @@ export function VendorForm({
   vendorCode,
   onSubmit,
   isSubmitting,
-  submitLabel,
+  cancelHref = ROUTES.admin.vendors,
 }: VendorFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<VendorFormValues>({
@@ -67,7 +71,13 @@ export function VendorForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={(e) => {
+          const continueEditing = getFormSubmitIntent(e) === "continue";
+          void form.handleSubmit((values) => onSubmit(values, { continueEditing }))(e);
+        }}
+        className="space-y-8"
+      >
         <div className="rounded-[2rem] border border-gray-100 bg-white p-6 md:p-8 shadow-sm">
           <h2 className="text-lg font-black text-gray-900 mb-2 pb-4 border-b border-gray-100">
             Account & company
@@ -274,22 +284,7 @@ export function VendorForm({
           </div>
         </div>
 
-        <div className="sticky bottom-0 z-20 -mx-1 mt-8 flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-50/95 px-1 py-4 backdrop-blur-sm sm:flex-row sm:justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="h-11 px-8 rounded-xl bg-gray-900 text-white hover:bg-black font-bold shadow-sm"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving…
-              </>
-            ) : (
-              (submitLabel ?? (mode === "create" ? "Create vendor" : "Save changes"))
-            )}
-          </Button>
-        </div>
+        <FormActionBar isSubmitting={isSubmitting} cancelHref={cancelHref} />
       </form>
     </Form>
   );

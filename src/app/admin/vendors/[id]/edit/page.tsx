@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 
 import { VendorForm, vendorToFormValues } from "@/components/admin/vendor-form";
 import { ROUTES } from "@/constants/routes";
+import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { getVendor, updateVendor, type UpdateVendorPayload } from "@/services/vendor";
 import { queryKeys } from "@/services/queries";
@@ -35,6 +37,7 @@ export default function EditVendorPage() {
   const id = typeof params.id === "string" ? params.id : "";
   const router = useRouter();
   const qc = useQueryClient();
+  const continueRef = useRef(false);
 
   const {
     data: vendor,
@@ -49,9 +52,12 @@ export default function EditVendorPage() {
   const mutation = useMutation({
     mutationFn: (payload: UpdateVendorPayload) => updateVendor(id, payload),
     onSuccess: async () => {
-      toast.success("Vendor updated");
+      crmToast.updated();
       await qc.invalidateQueries({ queryKey: queryKeys.vendors.all });
-      router.push(ROUTES.admin.vendor(id));
+      await qc.invalidateQueries({ queryKey: queryKeys.vendors.detail(id) });
+      if (!continueRef.current) {
+        router.push(ROUTES.admin.vendor(id));
+      }
     },
     onError: (error) => toast.error(parseApiError(error, "Could not update vendor")),
   });
@@ -103,7 +109,11 @@ export default function EditVendorPage() {
         entityId={id}
         vendorCode={vendor.vendorCode}
         defaultValues={vendorToFormValues(vendor)}
-        onSubmit={(values) => mutation.mutate(toUpdatePayload(values))}
+        cancelHref={ROUTES.admin.vendor(id)}
+        onSubmit={(values, { continueEditing }) => {
+          continueRef.current = continueEditing;
+          mutation.mutate(toUpdatePayload(values));
+        }}
         isSubmitting={mutation.isPending}
       />
     </div>

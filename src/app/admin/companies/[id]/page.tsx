@@ -18,7 +18,8 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-import { Modal } from "@/components/shared/Modal";
+import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { crmToast } from "@/lib/crm-toast";
 import { ROUTES } from "@/constants/routes";
 import { SURVEY_PROVIDER_LABELS } from "@/constants/survey-company";
 import { parseApiError } from "@/services/api/errors";
@@ -75,7 +76,7 @@ export default function SurveyCompanyDetailPage() {
   const deleteMutation = useMutation({
     mutationFn: () => deleteSurveyCompany(id),
     onSuccess: async () => {
-      toast.success("Company deleted");
+      crmToast.deleted();
       setDeleteOpen(false);
       await qc.invalidateQueries({ queryKey: queryKeys.surveyCompanies.all });
       router.push(ROUTES.admin.companies);
@@ -266,36 +267,18 @@ export default function SurveyCompanyDetailPage() {
         )}
       </div>
 
-      <Modal
+      <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete company?"
-        description={`This removes "${company.companyName}" from the directory. Surveys will not reference this record until you recreate it.`}
-        footer={
-          <div className="flex gap-2 justify-end w-full">
-            <button
-              type="button"
-              className="h-10 px-4 rounded-xl border border-gray-200 font-bold text-gray-700 hover:bg-gray-50"
-              onClick={() => setDeleteOpen(false)}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              disabled={deleteMutation.isPending}
-              className="h-10 px-4 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 disabled:opacity-60"
-              onClick={() => deleteMutation.mutate()}
-            >
-              {deleteMutation.isPending ? "Deleting…" : "Delete"}
-            </button>
-          </div>
-        }
+        description={`This removes "${company.companyName}" from the directory. This action cannot be undone.`}
+        loading={deleteMutation.isPending}
+        onConfirm={() => deleteMutation.mutate()}
       >
         <p className="text-sm text-gray-600">
           This action cannot be undone from the admin UI. Ensure no active integrations depend on
           this provider code.
         </p>
-      </Modal>
+      </ConfirmDialog>
     </div>
   );
 }

@@ -11,10 +11,11 @@ import {
   type Resolver,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { FormActionBar, getFormSubmitIntent } from "@/components/crm/form-action-bar";
+import { ROUTES } from "@/constants/routes";
 import {
   Form,
   FormControl,
@@ -219,9 +220,13 @@ type PanelSurveyFormProps = {
   entityId?: string;
   defaultValues: PanelSurveyFormValues;
   providers: Pick<SurveyCompany, "id" | "companyName" | "companyCode">[];
-  onSubmit: (values: PanelSurveyFormValues) => void | Promise<void>;
+  onSubmit: (
+    values: PanelSurveyFormValues,
+    options: { continueEditing: boolean }
+  ) => void | Promise<void>;
   isSubmitting: boolean;
   submitError?: unknown;
+  cancelHref?: string;
 };
 
 function SectionCard({
@@ -254,6 +259,7 @@ export function PanelSurveyForm({
   onSubmit,
   isSubmitting,
   submitError,
+  cancelHref = ROUTES.admin.surveys,
 }: PanelSurveyFormProps) {
   const form = useForm<PanelSurveyFormValues>({
     resolver: zodResolver(panelSurveyFormSchema) as Resolver<PanelSurveyFormValues>,
@@ -320,7 +326,16 @@ export function PanelSurveyForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, handleInvalid)} className="space-y-8">
+      <form
+        onSubmit={(e) => {
+          const continueEditing = getFormSubmitIntent(e) === "continue";
+          void form.handleSubmit(
+            (values) => onSubmit(values, { continueEditing }),
+            handleInvalid
+          )(e);
+        }}
+        className="space-y-8"
+      >
         <div className="flex flex-wrap gap-2 border-b border-gray-100 pb-1">
           <button
             type="button"
@@ -1148,24 +1163,7 @@ export function PanelSurveyForm({
           </SectionCard>
         </div>
 
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="rounded-xl bg-gray-900 text-white hover:bg-black h-11 px-10 font-bold"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin mr-2 h-4 w-4 inline" />
-                Saving…
-              </>
-            ) : mode === "create" ? (
-              "Create survey"
-            ) : (
-              "Save changes"
-            )}
-          </Button>
-        </div>
+        <FormActionBar isSubmitting={isSubmitting} cancelHref={cancelHref} />
       </form>
     </Form>
   );

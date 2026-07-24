@@ -7,12 +7,13 @@ import { PageHelp } from "@/components/crm/page-help";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { getRespondentAnalyticsSummary } from "@/services/survey-respondent-profile/survey-respondent-profile-api";
 import { queryKeys } from "@/services/queries";
+import { formatNumber, formatPercent } from "@/utils/format";
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-[1.5rem] border border-gray-100 bg-white p-5 shadow-sm">
       <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</p>
-      <p className="text-2xl font-black mt-1">{value}</p>
+      <p className="text-2xl font-black mt-1 tabular-nums">{value}</p>
     </div>
   );
 }
@@ -22,6 +23,10 @@ export default function RespondentAnalyticsPage() {
     queryKey: queryKeys.surveyRespondentProfiles.analytics({}),
     queryFn: () => getRespondentAnalyticsSummary({}),
   });
+
+  const fraudRate =
+    data?.fraudRate ??
+    (data && data.total > 0 ? Math.round((data.qualityRejects / data.total) * 1000) / 10 : 0);
 
   return (
     <div className="space-y-8 max-w-5xl">
@@ -44,14 +49,15 @@ export default function RespondentAnalyticsPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label="Total respondents" value={data.total} />
-          <Stat label="Completes" value={data.completes} />
-          <Stat label="Terminates" value={data.terminates} />
-          <Stat label="Conversion %" value={`${data.conversionRate}%`} />
-          <Stat label="Quota full" value={data.quotaFull} />
-          <Stat label="Quality rejects" value={data.qualityRejects} />
-          <Stat label="Redirected" value={data.redirected} />
-          <Stat label="Prescreen pending" value={data.prescreenPending} />
+          <Stat label="Total respondents" value={formatNumber(data.total)} />
+          <Stat label="Completes" value={formatNumber(data.completes)} />
+          <Stat label="Terminates" value={formatNumber(data.terminates)} />
+          <Stat label="Conversion %" value={formatPercent(data.conversionRate)} />
+          <Stat label="Quota full" value={formatNumber(data.quotaFull)} />
+          <Stat label="Quality rejects" value={formatNumber(data.qualityRejects)} />
+          <Stat label="Fraud Rate" value={formatPercent(fraudRate)} />
+          <Stat label="Redirected" value={formatNumber(data.redirected)} />
+          <Stat label="Prescreen pending" value={formatNumber(data.prescreenPending)} />
         </div>
       )}
     </div>

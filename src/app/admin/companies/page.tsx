@@ -12,13 +12,18 @@ import {
   Pencil,
   Plus,
   Power,
-  Search,
   Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import {
+  AdminPagination,
+  AdminTableSkeleton,
+  AdminTableToolbar,
+  adminFilterSelectClass,
+} from "@/components/crm/admin-table";
 import { PageHeader } from "@/components/crm/page-help";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
@@ -34,6 +39,7 @@ import {
   type SurveyCompanyStatus,
 } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
+import { downloadCsv } from "@/utils/download-csv";
 
 type SortField = "companyName" | "companyCode" | "createdAt" | "providerType" | "status";
 
@@ -162,6 +168,20 @@ export default function AdminSurveyCompaniesPage() {
 
   const totalPages = meta?.totalPages ?? 1;
 
+  const handleExport = () => {
+    downloadCsv(
+      `survey-providers-${Date.now()}.csv`,
+      ["Company", "Code", "Type", "Status", "Created"],
+      items.map((row) => [
+        row.companyName,
+        row.companyCode,
+        SURVEY_PROVIDER_LABELS[row.providerType] ?? row.providerType,
+        row.status,
+        row.createdAt ? format(new Date(row.createdAt), "yyyy-MM-dd") : "",
+      ])
+    );
+  };
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -180,59 +200,34 @@ export default function AdminSurveyCompaniesPage() {
       />
 
       <div className="rounded-[2rem] border border-gray-100 bg-white p-5 md:p-6 shadow-sm">
-        <div className="flex flex-col xl:flex-row gap-3 xl:items-center mb-6">
-          <div className="relative flex-1 min-w-0">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              value={search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Search name or code…"
-              className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400"
-              aria-label="Search companies"
-            />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+        <AdminTableToolbar
+          search={search}
+          onSearchChange={handleSearchChange}
+          searchPlaceholder="Search name or code…"
+          onExport={handleExport}
+          exportDisabled={items.length === 0}
+          filters={
             <select
               value={statusFilter}
               onChange={(e) => handleStatusFilterChange(e.target.value as "" | SurveyCompanyStatus)}
-              className="h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white min-w-[160px]"
+              className={adminFilterSelectClass}
             >
               <option value="">All statuses</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className="h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
-            >
-              <option value={10}>10 / page</option>
-              <option value={20}>20 / page</option>
-              <option value={50}>50 / page</option>
-            </select>
-          </div>
-        </div>
+          }
+        />
 
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />
-            ))}
-          </div>
+          <AdminTableSkeleton rows={8} />
         ) : items.length === 0 ? (
-          <EmptyState
-            icon={Building2}
-            title="No companies yet"
-            description="Add survey providers such as sample exchanges or routers to organize incoming inventory."
-          >
+          <EmptyState icon={Building2}>
             <Link
               href={ROUTES.admin.companiesCreate}
               className="inline-flex h-11 px-5 rounded-xl bg-gray-900 text-white items-center justify-center font-bold hover:bg-black"
             >
-              Add company
+              Create New
             </Link>
           </EmptyState>
         ) : (
@@ -418,37 +413,19 @@ export default function AdminSurveyCompaniesPage() {
               ))}
             </div>
 
-            {meta && totalPages > 1 ? (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-gray-100">
-                <p className="text-sm text-gray-500">
-                  Page {meta.page} of {totalPages}
-                  <span className="text-gray-400">
-                    {" "}
-                    ({meta.total} {meta.total === 1 ? "company" : "companies"})
-                  </span>
-                  {isFetching ? (
-                    <span className="ml-2 text-xs font-bold text-brand-primary">Updating…</span>
-                  ) : null}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-bold text-gray-800 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="button"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className="h-10 px-4 rounded-xl border border-gray-200 text-sm font-bold text-gray-800 hover:bg-gray-50 disabled:opacity-40"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              total={meta?.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(n) => {
+                setPageSize(n);
+                setPage(1);
+              }}
+            />
+            {isFetching ? (
+              <p className="text-xs font-bold text-brand-primary mt-2">Updating…</p>
             ) : null}
           </>
         )}

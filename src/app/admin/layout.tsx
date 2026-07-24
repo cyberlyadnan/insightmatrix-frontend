@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AdminRoleGate } from "@/components/auth/admin-role-gate";
 import { ImxLogo } from "@/components/brand";
+import { UniversalSearch } from "@/components/crm/universal-search";
 import { useLogout } from "@/hooks/use-logout";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store";
@@ -14,7 +15,6 @@ import {
   Settings,
   LogOut,
   Bell,
-  Search,
   Menu,
   X,
   User,
@@ -188,17 +188,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </button>
 
               <ImxLogo href="/admin" size="sm" surface="light" />
-              <div className="relative max-w-md w-full hidden md:block">
-                <Search
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Universal Search..."
-                  className="w-full pl-12 pr-6 py-2.5 bg-gray-50 border-none rounded-xl text-sm text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-brand-primary/20 outline-none transition-all"
-                />
-              </div>
+              <UniversalSearch className="hidden md:block" />
             </div>
 
             <div className="flex items-center gap-4">

@@ -52,6 +52,10 @@ export type PanelSurvey = {
   companyBillingTaxPercent: number;
   totalQuota: number;
   remainingQuota: number;
+  /** Present on list responses — count of vendor allocations for this survey. */
+  vendorCount?: number;
+  /** Present on list responses — sum of allocation completedCount. */
+  liveCompletes?: number;
   dynamicQuotaGroups: PanelSurveyQuotaGroup[];
   surveyPriority: number;
   maxMemberAttempts: number;

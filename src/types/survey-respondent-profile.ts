@@ -25,6 +25,8 @@ export type RespondentAnalyticsSummary = {
   terminates: number;
   quotaFull: number;
   qualityRejects: number;
+  /** Quality rejects as % of total respondents. */
+  fraudRate?: number;
   redirected: number;
   prescreenPending: number;
   conversionRate: number;

@@ -3,11 +3,17 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Copy, Eye, Plus, Search, Trash2 } from "lucide-react";
+import { Copy, Eye, Plus, ListChecks, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import {
+  AdminTableSkeleton,
+  AdminTableToolbar,
+  adminFilterSelectClass,
+} from "@/components/crm/admin-table";
 import { PageHeader } from "@/components/crm/page-help";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
 import { crmToast } from "@/lib/crm-toast";
@@ -22,6 +28,8 @@ import {
 } from "@/services/prescreen";
 import { queryKeys } from "@/services/queries";
 import type { PrescreenForm } from "@/types/prescreen";
+import { downloadCsv } from "@/utils/download-csv";
+import { formatNumber } from "@/utils/format";
 
 export default function AdminPrescreenListPage() {
   const qc = useQueryClient();
@@ -38,6 +46,22 @@ export default function AdminPrescreenListPage() {
     queryKey: queryKeys.prescreens.list(filters),
     queryFn: () => listPrescreens(filters),
   });
+
+  const items = data?.items ?? [];
+
+  const handleExport = () => {
+    downloadCsv(
+      `prescreens-${Date.now()}.csv`,
+      ["Title", "Slug", "Status", "Questions", "Submissions"],
+      items.map((item) => [
+        item.title,
+        item.slug,
+        item.status,
+        item.questions?.length ?? 0,
+        item.submissionCount ?? 0,
+      ])
+    );
+  };
 
   const refresh = async () => {
     await qc.invalidateQueries({ queryKey: queryKeys.prescreens.all });
@@ -106,41 +130,37 @@ export default function AdminPrescreenListPage() {
       />
 
       <div className="bg-white border border-gray-100 rounded-3xl p-5">
-        <div className="flex flex-col md:flex-row gap-3 md:items-center mb-4">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search prescreens..."
-              className="w-full h-10 pl-9 pr-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400"
-            />
-          </div>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="h-10 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
-          >
-            <option value="">All status</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
-          </select>
-        </div>
+        <AdminTableToolbar
+          search={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search prescreens…"
+          onExport={handleExport}
+          exportDisabled={items.length === 0}
+          filters={
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className={adminFilterSelectClass}
+            >
+              <option value="">All status</option>
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived</option>
+            </select>
+          }
+        />
 
         {isLoading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />
-            ))}
-          </div>
-        ) : !data?.items?.length ? (
-          <div className="text-center py-16">
-            <p className="font-black text-gray-800">No prescreens found</p>
-            <p className="text-sm text-gray-500 mt-1">
-              Create one to start building targeting forms.
-            </p>
-          </div>
+          <AdminTableSkeleton rows={6} />
+        ) : !items.length ? (
+          <EmptyState icon={ListChecks}>
+            <Link
+              href={ROUTES.admin.prescreenCreate}
+              className="inline-flex h-11 px-5 rounded-xl bg-gray-900 text-white items-center justify-center font-bold hover:bg-black"
+            >
+              Create New
+            </Link>
+          </EmptyState>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -154,8 +174,8 @@ export default function AdminPrescreenListPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {data.items.map((item) => (
-                  <tr key={item.id}>
+                {items.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50/80">
                     <td className="py-4">
                       <p className="font-bold text-gray-900">{item.title}</p>
                       <p className="text-xs text-gray-500">
@@ -176,9 +196,11 @@ export default function AdminPrescreenListPage() {
                         {item.status}
                       </span>
                     </td>
-                    <td className="py-4 text-sm text-gray-600">{item.questions.length}</td>
+                    <td className="py-4 text-sm text-gray-600">
+                      {formatNumber(item.questions.length)}
+                    </td>
                     <td className="py-4 text-sm text-gray-900 font-bold text-right tabular-nums">
-                      {item.submissionCount ?? 0}
+                      {formatNumber(item.submissionCount ?? 0)}
                     </td>
                     <td className="py-4">
                       <div className="flex justify-end gap-2">

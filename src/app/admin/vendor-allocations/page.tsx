@@ -5,9 +5,18 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Check, Copy, Eye, Link2, Plus, Search } from "lucide-react";
+import { Check, Copy, Eye, Link2, Plus, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  AdminPagination,
+  AdminTableSkeleton,
+  AdminTableToolbar,
+  adminFilterSelectClass,
+  adminTableHeadClass,
+  adminTableRowClass,
+  adminTableWrapClass,
+} from "@/components/crm/admin-table";
 import { PageHelp } from "@/components/crm/page-help";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { AllocationQuotaBar } from "@/components/admin/vendor-allocations/allocation-quota-bar";
@@ -22,6 +31,8 @@ import { listVendorAllocations } from "@/services/vendor-allocation/vendor-alloc
 import { listVendors } from "@/services/vendor/vendor-api";
 import { listPanelSurveys } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
+import { downloadCsv } from "@/utils/download-csv";
+import { formatCurrency, formatNumber, formatPercent } from "@/utils/format";
 
 const primaryBtn =
   "h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0";
@@ -36,6 +47,8 @@ export default function AdminVendorAllocationsPage() {
   const [surveyId, setSurveyId] = useState(() => surveyFromUrl);
   const [vendorId, setVendorId] = useState("");
   const [copiedAllocationId, setCopiedAllocationId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(50);
 
   const copyRoutingLink = async (routingLink: string, allocationId: string) => {
     const link = `${routingLink}?toid=RESPONDENT_ID`;
@@ -55,10 +68,10 @@ export default function AdminVendorAllocationsPage() {
       status: status || undefined,
       panelSurveyId: surveyId || undefined,
       vendorId: vendorId || undefined,
-      page: 1,
-      pageSize: 50,
+      page,
+      pageSize,
     }),
-    [deferredSearch, status, surveyId, vendorId]
+    [deferredSearch, status, surveyId, vendorId, page, pageSize]
   );
 
   const { data, isLoading } = useQuery({
@@ -77,6 +90,44 @@ export default function AdminVendorAllocationsPage() {
   });
 
   const items = data?.items ?? [];
+  const meta = data?.meta;
+  const totalPages = meta?.totalPages ?? 1;
+
+  const handleExport = () => {
+    downloadCsv(
+      `vendor-allocations-${Date.now()}.csv`,
+      [
+        "Code",
+        "Survey",
+        "Vendor",
+        "Status",
+        "Completes",
+        "Allocated",
+        "Vendor CPI",
+        "Client CPI",
+        "Revenue",
+        "Cost",
+        "Conversion %",
+      ],
+      items.map((row) => {
+        const revenue = (row.completedCount ?? 0) * (row.clientCpi ?? 0);
+        const cost = (row.completedCount ?? 0) * (row.vendorCpi ?? 0);
+        return [
+          row.allocationCode,
+          row.panelSurvey?.surveyName ?? "",
+          row.vendor?.companyName ?? "",
+          row.status,
+          row.completedCount,
+          row.allocatedQuota,
+          row.vendorCpi ?? 0,
+          row.clientCpi ?? 0,
+          revenue,
+          cost,
+          row.conversionRate,
+        ];
+      })
+    );
+  };
 
   return (
     <div className="space-y-8 text-gray-900">
@@ -99,161 +150,209 @@ export default function AdminVendorAllocationsPage() {
         </div>
       </div>
 
-      <div className="flex flex-col xl:flex-row gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="search"
-            placeholder="Search by code or notes…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 bg-white"
-          />
-        </div>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as VendorAllocationStatus | "")}
-          className="h-11 rounded-xl border border-gray-200 px-3 bg-white text-sm font-medium min-w-[140px]"
-        >
-          <option value="">All statuses</option>
-          {VENDOR_ALLOCATION_STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={surveyId}
-          onChange={(e) => setSurveyId(e.target.value)}
-          className="h-11 rounded-xl border border-gray-200 px-3 bg-white text-sm font-medium min-w-[180px]"
-        >
-          <option value="">All surveys</option>
-          {(surveysData?.items ?? []).map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.surveyCode} — {s.surveyName}
-            </option>
-          ))}
-        </select>
-        <select
-          value={vendorId}
-          onChange={(e) => setVendorId(e.target.value)}
-          className="h-11 rounded-xl border border-gray-200 px-3 bg-white text-sm font-medium min-w-[160px]"
-        >
-          <option value="">All vendors</option>
-          {(vendorsData?.items ?? []).map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.vendorCode}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className={adminTableWrapClass}>
+        <AdminTableToolbar
+          search={search}
+          onSearchChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+          searchPlaceholder="Search by code or notes…"
+          onExport={handleExport}
+          exportDisabled={items.length === 0}
+          filters={
+            <>
+              <select
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as VendorAllocationStatus | "");
+                  setPage(1);
+                }}
+                className={adminFilterSelectClass}
+              >
+                <option value="">All statuses</option>
+                {VENDOR_ALLOCATION_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={surveyId}
+                onChange={(e) => {
+                  setSurveyId(e.target.value);
+                  setPage(1);
+                }}
+                className={`${adminFilterSelectClass} min-w-[180px]`}
+              >
+                <option value="">All surveys</option>
+                {(surveysData?.items ?? []).map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.surveyCode} — {s.surveyName}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={vendorId}
+                onChange={(e) => {
+                  setVendorId(e.target.value);
+                  setPage(1);
+                }}
+                className={adminFilterSelectClass}
+              >
+                <option value="">All vendors</option>
+                {(vendorsData?.items ?? []).map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.vendorCode}
+                  </option>
+                ))}
+              </select>
+            </>
+          }
+        />
 
-      {isLoading ? (
-        <p className="text-sm text-gray-500 py-12 text-center">Loading allocations…</p>
-      ) : items.length === 0 ? (
-        <EmptyState
-          title="No allocations yet"
-          description="Assign a survey to a vendor partner to generate routing links and track performance."
-        >
-          <Link href={ROUTES.admin.vendorAllocationsCreate} className={primaryBtn}>
-            <Plus className="h-4 w-4" />
-            Create allocation
-          </Link>
-        </EmptyState>
-      ) : (
-        <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 text-left text-[10px] font-black uppercase tracking-widest text-gray-500">
-                <th className="px-4 py-3">Ref</th>
-                <th className="px-4 py-3">Survey</th>
-                <th className="px-4 py-3">Vendor</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Progress</th>
-                <th className="px-4 py-3">Metrics</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((row) => (
-                <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/60">
-                  <td className="px-4 py-4 font-mono text-xs font-bold" title={row.routingSlug}>
-                    {row.allocationCode}
-                  </td>
-                  <td className="px-4 py-4">
-                    <p className="font-semibold text-gray-900 line-clamp-1">
-                      {row.panelSurvey?.surveyName ?? "—"}
-                    </p>
-                    <p className="text-xs text-gray-500">{row.panelSurvey?.surveyCode}</p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <p className="font-semibold">{row.vendor?.companyName ?? "—"}</p>
-                    <p className="text-xs text-gray-500 font-mono">{row.vendor?.vendorCode}</p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <AllocationStatusBadge status={row.status} />
-                  </td>
-                  <td className="px-4 py-4">
-                    <AllocationQuotaBar
-                      completed={row.completedCount}
-                      allocated={row.allocatedQuota}
-                    />
-                    <p className="text-[10px] text-gray-400 mt-1">
-                      {row.liveRemainingQuota} remaining
-                    </p>
-                  </td>
-                  <td className="px-4 py-4 text-xs text-gray-600">
-                    <p>
-                      CR {row.conversionRate}% · IR {row.incidenceRate}%
-                    </p>
-                    <p>
-                      S {row.startedCount} · C {row.completedCount} · T {row.terminateCount}
-                    </p>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex justify-end gap-1">
-                      <Link
-                        href={ROUTES.admin.vendorAllocation(row.id)}
-                        className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                        title="View details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => copyRoutingLink(row.routingLink, row.id)}
-                        className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                        title="Copy vendor routing link"
-                        aria-label="Copy vendor routing link"
-                      >
-                        {copiedAllocationId === row.id ? (
-                          <Check className="h-4 w-4 text-emerald-600" />
-                        ) : (
-                          <Copy className="h-4 w-4" />
-                        )}
-                      </button>
-                      <a
-                        href={row.routingLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-lg hover:bg-brand-subtle text-brand-primary"
-                        title="Open routing link"
-                      >
-                        <Link2 className="h-4 w-4" />
-                      </a>
-                    </div>
-                    {row.updatedAt ? (
-                      <p className="text-[10px] text-gray-400 text-right mt-1">
-                        {format(new Date(row.updatedAt), "MMM d, yyyy")}
-                      </p>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+        {isLoading ? (
+          <AdminTableSkeleton rows={6} />
+        ) : items.length === 0 ? (
+          <EmptyState icon={Share2}>
+            <Link href={ROUTES.admin.vendorAllocationsCreate} className={primaryBtn}>
+              <Plus className="h-4 w-4" />
+              Create New
+            </Link>
+          </EmptyState>
+        ) : (
+          <>
+            <div className="overflow-x-auto -mx-2">
+              <table className="w-full min-w-[1100px] text-sm">
+                <thead>
+                  <tr className={adminTableHeadClass}>
+                    <th className="px-4 py-3">Ref</th>
+                    <th className="px-4 py-3">Survey</th>
+                    <th className="px-4 py-3">Vendor</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Progress</th>
+                    <th className="px-4 py-3">CPI</th>
+                    <th className="px-4 py-3">Revenue</th>
+                    <th className="px-4 py-3">Cost</th>
+                    <th className="px-4 py-3">Metrics</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((row) => {
+                    const revenue = (row.completedCount ?? 0) * (row.clientCpi ?? 0);
+                    const cost = (row.completedCount ?? 0) * (row.vendorCpi ?? 0);
+                    return (
+                      <tr key={row.id} className={adminTableRowClass}>
+                        <td
+                          className="px-4 py-4 font-mono text-xs font-bold"
+                          title={row.routingSlug}
+                        >
+                          {row.allocationCode}
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="font-semibold text-gray-900 line-clamp-1">
+                            {row.panelSurvey?.surveyName ?? "—"}
+                          </p>
+                          <p className="text-xs text-gray-500">{row.panelSurvey?.surveyCode}</p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="font-semibold">{row.vendor?.companyName ?? "—"}</p>
+                          <p className="text-xs text-gray-500 font-mono">
+                            {row.vendor?.vendorCode}
+                          </p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <AllocationStatusBadge status={row.status} />
+                        </td>
+                        <td className="px-4 py-4">
+                          <AllocationQuotaBar
+                            completed={row.completedCount}
+                            allocated={row.allocatedQuota}
+                          />
+                          <p className="text-[10px] text-gray-400 mt-1">
+                            {formatNumber(row.liveRemainingQuota)} remaining
+                          </p>
+                        </td>
+                        <td className="px-4 py-4 text-xs text-gray-700 whitespace-nowrap">
+                          <p>V {formatCurrency(row.vendorCpi ?? 0)}</p>
+                          <p>C {formatCurrency(row.clientCpi ?? 0)}</p>
+                        </td>
+                        <td className="px-4 py-4 text-sm font-semibold tabular-nums text-emerald-700">
+                          {formatCurrency(revenue)}
+                        </td>
+                        <td className="px-4 py-4 text-sm font-semibold tabular-nums text-gray-800">
+                          {formatCurrency(cost)}
+                        </td>
+                        <td className="px-4 py-4 text-xs text-gray-600">
+                          <p>
+                            CR {formatPercent(row.conversionRate)} · IR{" "}
+                            {formatPercent(row.incidenceRate)}
+                          </p>
+                          <p>
+                            S {formatNumber(row.startedCount)} · C{" "}
+                            {formatNumber(row.completedCount)} · T{" "}
+                            {formatNumber(row.terminateCount)}
+                          </p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="flex justify-end gap-1">
+                            <Link
+                              href={ROUTES.admin.vendorAllocation(row.id)}
+                              className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                              title="View details"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={() => copyRoutingLink(row.routingLink, row.id)}
+                              className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                              title="Copy vendor routing link"
+                              aria-label="Copy vendor routing link"
+                            >
+                              {copiedAllocationId === row.id ? (
+                                <Check className="h-4 w-4 text-emerald-600" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
+                            </button>
+                            <a
+                              href={row.routingLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg hover:bg-brand-subtle text-brand-primary"
+                              title="Open routing link"
+                            >
+                              <Link2 className="h-4 w-4" />
+                            </a>
+                          </div>
+                          {row.updatedAt ? (
+                            <p className="text-[10px] text-gray-400 text-right mt-1">
+                              {format(new Date(row.updatedAt), "MMM d, yyyy")}
+                            </p>
+                          ) : null}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              total={meta?.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(n) => {
+                setPageSize(n);
+                setPage(1);
+              }}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

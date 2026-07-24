@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Loader2, Plus, Receipt, Download } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { Modal } from "@/components/shared/Modal";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
 import {
   createCompanySurveyPayment,
@@ -24,6 +26,7 @@ import { listPanelSurveys, type PanelSurvey } from "@/services/panel-survey";
 import { listSurveyCompanies, type SurveyCompany } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatPercent } from "@/utils/format";
 
 function companyLabel(c: CompanySurveyPaymentRow["surveyCompanyId"]): string {
   if (c && typeof c === "object" && "companyName" in c) return String(c.companyName ?? "—");
@@ -432,11 +435,14 @@ export default function AdminCompanyPaymentsPage() {
             <Loader2 className="w-10 h-10 animate-spin text-brand-primary" />
           </div>
         ) : items.length === 0 ? (
-          <EmptyState
-            icon={Receipt}
-            title="No payment records"
-            description="Create a panel survey with a company billing amount, or add a manual entry."
-          />
+          <EmptyState icon={Receipt}>
+            <Link
+              href={ROUTES.admin.surveysCreate}
+              className="inline-flex h-11 px-5 rounded-xl bg-gray-900 text-white items-center justify-center font-bold hover:bg-black"
+            >
+              Create New
+            </Link>
+          </EmptyState>
         ) : (
           <>
             <div className="hidden xl:block overflow-x-auto -mx-2">
@@ -468,11 +474,13 @@ export default function AdminCompanyPaymentsPage() {
                         {row.source === "manual" ? "Manual" : "Auto"}
                       </td>
                       <td className="py-3 px-2 text-right tabular-nums">
-                        {row.currency} {row.subtotalAmount.toFixed(2)}
+                        {formatCurrency(row.subtotalAmount, row.currency || "INR")}
                       </td>
-                      <td className="py-3 px-2 text-right tabular-nums">{row.taxPercent}%</td>
+                      <td className="py-3 px-2 text-right tabular-nums">
+                        {formatPercent(row.taxPercent)}
+                      </td>
                       <td className="py-3 px-2 text-right font-bold tabular-nums">
-                        {row.currency} {row.totalAmount.toFixed(2)}
+                        {formatCurrency(row.totalAmount, row.currency || "INR")}
                       </td>
                       <td className="py-3 px-2">
                         <select
@@ -543,7 +551,7 @@ export default function AdminCompanyPaymentsPage() {
                   <p className="text-sm font-bold">{companyLabel(row.surveyCompanyId)}</p>
                   <p className="text-xs text-gray-600 truncate">{surveyLabel(row.panelSurveyId)}</p>
                   <p className="text-sm font-black">
-                    {row.currency} {row.totalAmount.toFixed(2)}{" "}
+                    {formatCurrency(row.totalAmount, row.currency || "INR")}{" "}
                     <span className="text-gray-500 font-bold text-xs">(incl. tax)</span>
                   </p>
                   <div className="flex gap-2 pt-2">

@@ -16,13 +16,19 @@ import {
   Pause,
   Play,
   Plus,
-  Search,
   Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import {
+  AdminPagination,
+  AdminProgressBar,
+  AdminTableSkeleton,
+  AdminTableToolbar,
+  adminFilterSelectClass,
+} from "@/components/crm/admin-table";
 import { PageHeader } from "@/components/crm/page-help";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
@@ -39,6 +45,15 @@ import {
 } from "@/services/panel-survey";
 import { listSurveyCompanies } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
+import { downloadCsv } from "@/utils/download-csv";
+import { formatNumber, formatPercent } from "@/utils/format";
+
+function surveyProgressPercent(row: PanelSurvey): number {
+  const total = row.totalQuota ?? 0;
+  if (total <= 0) return 0;
+  const completes = row.liveCompletes ?? Math.max(0, total - (row.remainingQuota ?? 0));
+  return Math.min(100, (completes / total) * 100);
+}
 
 type SortField =
   | "surveyName"
@@ -192,6 +207,38 @@ export default function AdminPanelSurveysPage() {
 
   const totalPages = meta?.totalPages ?? 1;
 
+  const handleExport = () => {
+    downloadCsv(
+      `surveys-${Date.now()}.csv`,
+      [
+        "Survey",
+        "Code",
+        "Country",
+        "Vendor Count",
+        "Live Completes",
+        "Progress %",
+        "IR %",
+        "LOI",
+        "Remaining Quota",
+        "Status",
+        "Created",
+      ],
+      items.map((row) => [
+        row.surveyName,
+        row.surveyCode,
+        (row.targetCountries ?? []).join("; "),
+        row.vendorCount ?? 0,
+        row.liveCompletes ?? 0,
+        surveyProgressPercent(row).toFixed(1),
+        row.incidenceRate ?? "",
+        row.estimatedLOI ?? "",
+        row.remainingQuota ?? 0,
+        row.surveyStatus,
+        row.createdAt ? format(new Date(row.createdAt), "yyyy-MM-dd") : "",
+      ])
+    );
+  };
+
   return (
     <div className="space-y-8 text-gray-900">
       <PageHeader
@@ -210,95 +257,75 @@ export default function AdminPanelSurveysPage() {
       />
 
       <div className="rounded-[2rem] border border-gray-200 bg-white p-5 md:p-6 shadow-sm text-gray-900">
-        <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-6 mb-6">
-          <div className="relative xl:col-span-2">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-              placeholder="Search name, code, external ID…"
-              className="w-full h-11 pl-10 pr-3 rounded-xl border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400"
-            />
-          </div>
-          <select
-            value={providerId}
-            onChange={(e) => {
-              setProviderId(e.target.value);
-              setPage(1);
-            }}
-            className="h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
-          >
-            <option value="">All providers</option>
-            {providers.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.companyName}
-              </option>
-            ))}
-          </select>
-          <input
-            value={country}
-            onChange={(e) => {
-              setCountry(e.target.value);
-              setPage(1);
-            }}
-            placeholder="Country (e.g. MX)"
-            className="h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 placeholder:text-gray-400 uppercase"
-          />
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as "" | PanelSurveyStatus);
-              setPage(1);
-            }}
-            className="h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
-          >
-            <option value="">All statuses</option>
-            {(Object.keys(PANEL_SURVEY_STATUS_LABELS) as PanelSurveyStatus[]).map((s) => (
-              <option key={s} value={s}>
-                {PANEL_SURVEY_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPage(1);
-            }}
-            className="h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
-          >
-            <option value={10}>10 / page</option>
-            <option value={20}>20 / page</option>
-            <option value={50}>50 / page</option>
-          </select>
-        </div>
+        <AdminTableToolbar
+          search={search}
+          onSearchChange={(v) => {
+            setSearch(v);
+            setPage(1);
+          }}
+          searchPlaceholder="Search name, code, external ID…"
+          onExport={handleExport}
+          exportDisabled={items.length === 0}
+          filters={
+            <>
+              <select
+                value={providerId}
+                onChange={(e) => {
+                  setProviderId(e.target.value);
+                  setPage(1);
+                }}
+                className={adminFilterSelectClass}
+              >
+                <option value="">All providers</option>
+                {providers.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.companyName}
+                  </option>
+                ))}
+              </select>
+              <input
+                value={country}
+                onChange={(e) => {
+                  setCountry(e.target.value);
+                  setPage(1);
+                }}
+                placeholder="Country (e.g. MX)"
+                className={`${adminFilterSelectClass} uppercase placeholder:normal-case`}
+              />
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value as "" | PanelSurveyStatus);
+                  setPage(1);
+                }}
+                className={adminFilterSelectClass}
+              >
+                <option value="">All statuses</option>
+                {(Object.keys(PANEL_SURVEY_STATUS_LABELS) as PanelSurveyStatus[]).map((s) => (
+                  <option key={s} value={s}>
+                    {PANEL_SURVEY_STATUS_LABELS[s]}
+                  </option>
+                ))}
+              </select>
+            </>
+          }
+        />
 
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-14 bg-gray-100 rounded-xl animate-pulse" />
-            ))}
-          </div>
+          <AdminTableSkeleton rows={8} />
         ) : items.length === 0 ? (
-          <EmptyState
-            icon={ClipboardList}
-            title="No surveys yet"
-            description="Create a routing survey linked to a provider with external URL and quota segments."
-          >
+          <EmptyState icon={ClipboardList}>
             <Link
               href={ROUTES.admin.surveysCreate}
               className="inline-flex h-11 px-5 rounded-xl bg-gray-900 text-white items-center justify-center font-bold hover:bg-black"
             >
-              Create survey
+              Create New
             </Link>
           </EmptyState>
         ) : (
           <>
             <div className="hidden xl:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[900px] text-left text-sm text-gray-900">
+              <table className="w-full min-w-[1100px] text-left text-sm text-gray-900">
                 <thead>
                   <tr className="border-b border-gray-200 text-[10px] text-gray-600">
                     <th className="pb-3 pl-2 pr-2">
@@ -311,7 +338,16 @@ export default function AdminPanelSurveysPage() {
                       />
                     </th>
                     <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
-                      Countries
+                      Country
+                    </th>
+                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
+                      Vendors
+                    </th>
+                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
+                      Live Completes
+                    </th>
+                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
+                      Progress
                     </th>
                     <th className="pb-3 px-2">
                       <SortButton
@@ -372,14 +408,23 @@ export default function AdminPanelSurveysPage() {
                       <td className="py-3 px-2 text-xs text-gray-600 max-w-[140px] truncate">
                         {(row.targetCountries ?? []).join(", ") || "—"}
                       </td>
+                      <td className="py-3 px-2 font-mono text-xs tabular-nums text-gray-900">
+                        {formatNumber(row.vendorCount ?? 0)}
+                      </td>
+                      <td className="py-3 px-2 font-mono text-xs tabular-nums text-gray-900">
+                        {formatNumber(row.liveCompletes ?? 0)}
+                      </td>
+                      <td className="py-3 px-2">
+                        <AdminProgressBar percent={surveyProgressPercent(row)} />
+                      </td>
                       <td className="py-3 px-2 text-gray-700">
-                        {row.incidenceRate != null ? `${row.incidenceRate}%` : "—"}
+                        {row.incidenceRate != null ? formatPercent(row.incidenceRate) : "—"}
                       </td>
                       <td className="py-3 px-2 text-gray-700">
                         {row.estimatedLOI != null ? `${row.estimatedLOI}m` : "—"}
                       </td>
                       <td className="py-3 px-2 font-mono text-xs text-gray-900 tabular-nums">
-                        {row.remainingQuota ?? 0}
+                        {formatNumber(row.remainingQuota ?? 0)}
                       </td>
                       <td className="py-3 px-2">
                         <StatusBadge status={row.surveyStatus} />
@@ -477,9 +522,20 @@ export default function AdminPanelSurveysPage() {
                     <StatusBadge status={row.surveyStatus} />
                   </div>
                   <p className="text-xs text-gray-600 truncate">
-                    <span className="font-black text-gray-400 uppercase mr-2">Countries</span>
+                    <span className="font-black text-gray-400 uppercase mr-2">Country</span>
                     {(row.targetCountries ?? []).join(", ") || "—"}
                   </p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                    <p>
+                      <span className="font-black text-gray-400 uppercase mr-1">Vendors</span>
+                      {formatNumber(row.vendorCount ?? 0)}
+                    </p>
+                    <p>
+                      <span className="font-black text-gray-400 uppercase mr-1">Completes</span>
+                      {formatNumber(row.liveCompletes ?? 0)}
+                    </p>
+                  </div>
+                  <AdminProgressBar percent={surveyProgressPercent(row)} />
                   <div className="flex flex-wrap gap-2 pt-1">
                     <Link
                       href={ROUTES.admin.survey(row.id)}
@@ -542,37 +598,19 @@ export default function AdminPanelSurveysPage() {
               ))}
             </div>
 
-            {meta && totalPages > 1 ? (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-gray-100">
-                <p className="text-sm text-gray-500">
-                  Page {meta.page} of {totalPages}
-                  <span className="text-gray-400">
-                    {" "}
-                    ({meta.total} {meta.total === 1 ? "survey" : "surveys"})
-                  </span>
-                  {isFetching ? (
-                    <span className="ml-2 text-xs font-bold text-brand-primary">Updating…</span>
-                  ) : null}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="h-10 px-4 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-900 disabled:opacity-40"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="button"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className="h-10 px-4 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-900 disabled:opacity-40"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+            <AdminPagination
+              page={page}
+              totalPages={totalPages}
+              total={meta?.total}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(n) => {
+                setPageSize(n);
+                setPage(1);
+              }}
+            />
+            {isFetching ? (
+              <p className="text-xs font-bold text-brand-primary mt-2">Updating…</p>
             ) : null}
           </>
         )}

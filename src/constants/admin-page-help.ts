@@ -47,9 +47,10 @@ export const ADMIN_PAGE_HELP = {
   },
   respondentExports: {
     title: "Export Center",
-    about: "Export respondent data for reporting and partner delivery.",
-    actions: "Choose survey, status, date range, and download CSV, XLSX, or PDF.",
-    tips: "Prefer CSV for large datasets. XLSX and PDF are capped at 10,000 rows.",
+    about: "Export filtered respondent records for reporting and partner delivery.",
+    actions:
+      "Set format, status, survey, vendor, and date range, then download CSV, Excel, or PDF.",
+    tips: "Status filters apply to all formats. Empty results show an error instead of an empty file. Prefer CSV for very large datasets.",
   },
   securityLogs: {
     title: "Security Logs",

@@ -399,7 +399,8 @@ export function SurveyStartClient() {
         <button
           type="button"
           onClick={handleStart}
-          disabled={!data.externalSurveyUrl || starting || !attemptToken}
+          disabled={true}
+          // disabled={!data.externalSurveyUrl || starting || !attemptToken}
           className="w-full h-14 rounded-2xl bg-brand-primary text-white font-black text-sm uppercase tracking-widest shadow-lg shadow-brand-primary/25 hover:opacity-95 disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 transition-opacity"
         >
           {starting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Rocket className="w-5 h-5" />}

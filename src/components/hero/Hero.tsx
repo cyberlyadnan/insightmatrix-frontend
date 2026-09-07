@@ -1,147 +1,115 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Star } from "lucide-react";
-import { HOME_CONTENT } from "@/constants/site-content";
+import { ArrowRight, CheckCircle2, MessageSquare, ShieldCheck } from "lucide-react";
+import { HOME_PAGE_DATA } from "@/constants/site-content";
 
 export default function Hero() {
-  const { hero } = HOME_CONTENT;
+  const { hero } = HOME_PAGE_DATA;
 
   return (
-    <div className="relative bg-gradient-to-r from-brand-accent1 via-brand-primary to-brand-accent2 overflow-hidden">
+    <div className="relative bg-gradient-to-r from-brand-accent1 via-brand-primary to-brand-accent2 overflow-hidden text-white">
       {/* Abstract Background Shapes to add texture */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-white/10 blur-3xl mix-blend-overlay"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-accent1/20 blur-3xl mix-blend-overlay"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-white/10 blur-3xl mix-blend-overlay" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-accent1/20 blur-3xl mix-blend-overlay" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.08)_0%,transparent_70%)]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="pt-40 pb-16 md:pt-20 md:pb-24 lg:pt-28 lg:pb-32 flex flex-col lg:flex-row items-center gap-16">
+        <div className="pt-36 pb-20 md:pt-40 md:pb-28 lg:pt-44 lg:pb-32 flex flex-col lg:flex-row items-center gap-16">
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left">
-            {/* <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-white/10 backdrop-blur-md border border-white/20 shadow-sm text-white mb-8 mt-4 lg:mt-0">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-green-400 mr-2 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
-              Join 2M+ Creators & Brands
-            </div> */}
+            {/* Small Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs md:text-sm font-bold bg-white/10 backdrop-blur-md border border-white/20 shadow-md text-white mb-6">
+              <span>{hero.badge}</span>
+            </div>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
-              {hero.headline}
+            {/* Main Heading (H1) */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1] mb-6 drop-shadow-sm">
+              {hero.h1}
             </h1>
 
+            {/* Sub Heading */}
             <p className="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium drop-shadow-sm">
-              {hero.description}
+              {hero.subHeading}
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-6">
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
               <Link
-                href={hero.ctaPrimary.href}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-brand-primary bg-white hover:bg-gray-50 shadow-xl shadow-black/10 transition-all hover:-translate-y-0.5"
+                href={hero.primaryCta.href}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-black rounded-full text-brand-primary bg-white hover:bg-gray-50 shadow-xl shadow-black/10 transition-all hover:-translate-y-0.5 hover:shadow-2xl active:scale-95"
               >
-                {hero.ctaPrimary.label}
+                {hero.primaryCta.label}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <Link
-                href={hero.ctaSecondary.href}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-full text-white bg-transparent border border-white/30 hover:bg-white/10 transition-all"
+                href={hero.secondaryCta.href}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-black rounded-full text-white bg-white/10 border border-white/30 hover:bg-white/20 backdrop-blur-md transition-all active:scale-95"
               >
-                {hero.ctaSecondary.label}
+                <MessageSquare className="mr-2 w-4 h-4" />
+                {hero.secondaryCta.label}
               </Link>
             </div>
 
-            <p className="text-sm text-white/80 font-medium mb-12 max-w-xl mx-auto lg:mx-0">
-              {hero.trustLine}
-            </p>
-
-            <div className="flex items-center justify-center lg:justify-start gap-8">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <img
-                    key={i}
-                    className="w-10 h-10 rounded-full border-2 border-[rgba(215,76,134,1)] object-cover"
-                    src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                    alt="User avatar"
-                  />
-                ))}
-              </div>
-              <div className="text-left">
-                <div className="flex items-center text-yellow-300 mb-0.5 drop-shadow-sm">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-current" />
-                  ))}
-                </div>
-                <p className="text-sm font-semibold text-white/90 drop-shadow-sm">
-                  Rated 4.9/5 by our community
-                </p>
-              </div>
+            {/* Trust badge */}
+            <div className="inline-flex items-center gap-3 py-2 px-4 rounded-xl bg-black/15 backdrop-blur-md border border-white/10 text-white/90 text-xs font-semibold">
+              <ShieldCheck className="w-4 h-4 text-green-300" />
+              <span>Rigorous Quality Controls & Worldwide Fieldwork Coverage</span>
             </div>
           </div>
 
-          {/* Right Visuals - Social Media Collab Vibe */}
-          <div className="flex-1 relative w-full w-max-md lg:w-auto">
-            <div className="relative w-full aspect-[4/3] lg:aspect-square flex items-center justify-center">
-              {/* Main Floating Card */}
-              <div className="absolute w-full max-w-[340px] bg-white rounded-3xl shadow-2xl shadow-black/20 border border-white/40 p-6 z-20 transition-transform hover:scale-105 duration-300 backdrop-blur-md">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src="https://i.pravatar.cc/100?img=5"
-                      alt="Brand"
-                      className="w-12 h-12 rounded-xl object-cover"
-                    />
-                    <div>
-                      <h4 className="font-bold text-gray-900 leading-tight">NextGen Tech UX</h4>
-                      <p className="text-xs font-bold text-brand-primary bg-brand-subtle inline-block px-2 py-0.5 rounded-full mt-1">
-                        Collab Request
-                      </p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-bold text-gray-900 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                    $50
+          {/* Right Side Statistics & Highlights */}
+          <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
+            <div className="relative bg-white/10 backdrop-blur-xl rounded-[2.5rem] border border-white/25 p-8 lg:p-10 shadow-2xl shadow-black/20">
+              <div className="flex items-center justify-between pb-6 border-b border-white/15 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-black uppercase tracking-widest text-white/90">
+                    Live Fieldwork Operations
                   </span>
                 </div>
-                <p className="text-gray-600 text-sm mb-6 leading-relaxed font-medium">
-                  We are looking for product enthusiasts to test our new interface and provide
-                  detailed feedback.
-                </p>
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3].map((i) => (
-                      <img
-                        key={i}
-                        src={`https://i.pravatar.cc/100?img=${i + 20}`}
-                        className="w-8 h-8 rounded-full border-2 border-white"
-                        alt="avatar"
-                      />
-                    ))}
-                    <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600">
-                      +12
+                <span className="text-xs font-bold text-white/70 bg-white/10 px-3 py-1 rounded-full">
+                  Global Panel
+                </span>
+              </div>
+
+              {/* Statistics Checklist */}
+              <div className="space-y-4 mb-8">
+                {hero.stats.map((stat, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md hover:bg-white/15 transition-all"
+                  >
+                    <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-300" />
                     </div>
+                    <span className="text-sm md:text-base font-bold text-white tracking-wide">
+                      {stat}
+                    </span>
                   </div>
-                  <button className="text-sm font-bold text-white bg-brand-primary px-5 py-2.5 rounded-full hover:bg-brand-hover transition shadow-md shadow-brand-primary/30">
-                    Accept
-                  </button>
-                </div>
+                ))}
               </div>
 
-              {/* Smaller floating elements */}
-              <div className="absolute top-[5%] md:top-[10%] right-[3%] lg:-right-[5%] bg-white p-3 rounded-2xl shadow-xl shadow-black/10 border border-white/50 flex items-center gap-3 z-30 animate-[bounce_6s_infinite]">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xl font-bold">
-                  <ShieldCheck className="w-5 h-5" />
+              {/* Metric Highlights Grid */}
+              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/15 text-center">
+                <div className="p-3 rounded-2xl bg-black/10">
+                  <div className="text-xl md:text-2xl font-black text-white">80+</div>
+                  <div className="text-[10px] font-bold text-white/75 uppercase tracking-wider mt-1">
+                    Markets
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-bold">Verified</p>
-                  <p className="text-sm font-black text-gray-900">100% Secure</p>
+                <div className="p-3 rounded-2xl bg-black/10">
+                  <div className="text-xl md:text-2xl font-black text-white">99.8%</div>
+                  <div className="text-[10px] font-bold text-white/75 uppercase tracking-wider mt-1">
+                    Quality Score
+                  </div>
                 </div>
-              </div>
-
-              <div className="absolute bottom-[5%] md:bottom-[10%] left-[3%] lg:-left-[10%] bg-white p-4 rounded-2xl shadow-xl shadow-black/10 border border-white/50 z-30 animate-[bounce_5s_infinite_100ms]">
-                <div className="flex items-center gap-3">
-                  <img
-                    src="https://i.pravatar.cc/100?img=3"
-                    alt="avatar"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                  <div>
-                    <p className="text-sm font-black text-gray-900">Sarah J.</p>
-                    <p className="text-xs font-bold text-green-600">Earned $120 today</p>
+                <div className="p-3 rounded-2xl bg-black/10">
+                  <div className="text-xl md:text-2xl font-black text-white">24/7</div>
+                  <div className="text-[10px] font-bold text-white/75 uppercase tracking-wider mt-1">
+                    Field PM
                   </div>
                 </div>
               </div>

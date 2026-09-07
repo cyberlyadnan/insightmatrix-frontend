@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Facebook, Twitter, Linkedin, Instagram, ArrowRight, Globe, Mail } from "lucide-react";
+import { Linkedin, Instagram, ArrowRight, Globe, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ImxLogo } from "@/components/brand";
-import { isAuthRoute, ROUTES } from "@/constants";
+import { isAuthRoute } from "@/constants";
 import { FOOTER_CONTENT, SITE_CONTACT } from "@/constants/site-content";
 
 export default function Footer() {
@@ -32,211 +32,150 @@ export default function Footer() {
   return (
     <footer className="bg-gray-950 text-gray-400 border-t border-white/5 pt-20 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/5">
+        {/* Top Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
+          {/* Brand Column */}
           <div className="lg:col-span-4">
             <ImxLogo href="/" size="lg" surface="dark" />
-            <p className="mt-6 text-base leading-relaxed max-w-sm">{FOOTER_CONTENT.description}</p>
-            <div className="mt-8 flex items-center gap-4">
-              {[
-                { icon: Facebook, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Instagram, href: "#" },
-                { icon: Linkedin, href: "#" },
-              ].map((social, i) => (
-                <Link
-                  key={i}
-                  href={social.href}
-                  className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all duration-300"
-                >
-                  <social.icon size={18} />
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="lg:col-span-3 lg:col-start-6">
-            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-6">
-              Stay Updated
-            </h3>
-            <p className="text-sm mb-6 leading-relaxed">
-              Get the latest market insights and platform updates delivered to your inbox.
+            <p className="mt-4 text-xs font-black uppercase tracking-widest text-brand-primary">
+              {FOOTER_CONTENT.tagline}
             </p>
-            <div className="relative">
-              <input
-                type="email"
-                placeholder="Email address"
-                className="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-brand-primary transition-colors pr-12"
-              />
-              <button
-                type="button"
-                className="absolute right-1 top-1 bottom-1 w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center hover:bg-brand-hover transition-colors"
+            <p className="mt-4 text-sm leading-relaxed text-gray-400 max-w-sm">
+              {FOOTER_CONTENT.intro}
+            </p>
+
+            {/* Social Links */}
+            <div className="mt-6 flex items-center gap-3">
+              <a
+                href={SITE_CONTACT.linkedInUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all"
+                title="InsightMatrix LinkedIn"
               >
-                <ArrowRight size={18} />
-              </button>
+                <Linkedin size={18} />
+              </a>
+              <a
+                href={SITE_CONTACT.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all"
+                title="InsightMatrix Instagram"
+              >
+                <Instagram size={18} />
+              </a>
+              <a
+                href={SITE_CONTACT.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all"
+                title="InsightMatrix Website"
+              >
+                <Globe size={18} />
+              </a>
             </div>
           </div>
 
-          <div className="lg:col-span-3 lg:col-start-10">
+          {/* Quick Links */}
+          <div className="lg:col-span-2 lg:col-start-5">
             <h3 className="text-white font-black uppercase tracking-widest text-xs mb-6">
-              Support
+              Quick Links
             </h3>
-            <div className="space-y-4">
+            <ul className="space-y-3 text-sm">
+              {FOOTER_CONTENT.quickLinks.map((link, i) => (
+                <li key={i}>
+                  <Link href={link.href} className="hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div className="lg:col-span-3">
+            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-6">
+              Research Services
+            </h3>
+            <ul className="space-y-3 text-sm">
+              {FOOTER_CONTENT.services.map((service, i) => (
+                <li key={i}>
+                  <Link href={service.href} className="hover:text-white transition-colors">
+                    {service.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact & Proposals */}
+          <div className="lg:col-span-3">
+            <h3 className="text-white font-black uppercase tracking-widest text-xs mb-6">
+              Contact & Inquiries
+            </h3>
+            <div className="space-y-4 text-sm">
               <a
                 href={`mailto:${SITE_CONTACT.email}`}
-                className="flex items-center gap-3 group text-sm"
+                className="flex items-center gap-3 group hover:text-white transition-colors"
               >
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
                   <Mail size={14} className="group-hover:text-brand-primary transition-colors" />
                 </div>
-                {SITE_CONTACT.email}
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-gray-500">General Info</div>
+                  <div>{SITE_CONTACT.email}</div>
+                </div>
               </a>
+
+              <a
+                href={`mailto:${SITE_CONTACT.salesEmail}`}
+                className="flex items-center gap-3 group hover:text-white transition-colors"
+              >
+                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
+                  <Mail size={14} className="group-hover:text-brand-primary transition-colors" />
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-gray-500">
+                    Sales & Proposals
+                  </div>
+                  <div>{SITE_CONTACT.salesEmail}</div>
+                </div>
+              </a>
+
               <div className="flex items-center gap-3 text-sm">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
                   <Globe size={14} />
                 </div>
-                Multi-language support 24/7
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-gray-500">Website</div>
+                  <div>www.insightmatrix.online</div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-primary hover:bg-brand-hover text-white text-xs font-black uppercase tracking-wider transition-all"
+                >
+                  Request a Quote <ArrowRight size={14} />
+                </Link>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 py-16">
-          <div>
-            <h4 className="text-white font-black text-sm mb-8">Solutions</h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Brand tracking
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Audience profiling
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Market intelligence
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Public opinion
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-black text-sm mb-8">Platform</h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Survey Panel
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Distribution
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Quality control
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  API for research
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-black text-sm mb-8">Company</h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link href="/about" className="hover:text-brand-primary transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={ROUTES.panelBook}
-                  className="hover:text-brand-primary transition-colors"
-                >
-                  Panel Book
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Case studies
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="hover:text-brand-primary transition-colors">
-                  Partnerships
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-brand-primary transition-colors">
-                  Careers
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-black text-sm mb-8">Legal</h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link href="/privacy" className="hover:text-brand-primary transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-brand-primary transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy#cookies"
-                  className="hover:text-brand-primary transition-colors"
-                >
-                  Cookie policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy#your-rights"
-                  className="hover:text-brand-primary transition-colors"
-                >
-                  Your privacy choices
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-6 text-[10px] uppercase font-black tracking-widest text-gray-600">
-            <p>&copy; {currentYear} InsightMatrix Global</p>
-            {/* <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5">
-              <span>🇬🇧</span> UK-EN
-            </div> */}
-          </div>
-
-          <div className="flex gap-8">
-            <Link
-              href="#"
-              className="text-[10px] uppercase font-black tracking-widest text-gray-500 hover:text-white transition-colors"
-            >
-              Cookie Settings
+        {/* Bottom Bar */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+          <div>© {currentYear} InsightMatrix Research. All rights reserved.</div>
+          <div className="flex items-center gap-6">
+            <Link href="/privacy" className="hover:text-gray-400 transition-colors">
+              Privacy Policy
             </Link>
-            <Link
-              href="#"
-              className="text-[10px] uppercase font-black tracking-widest text-gray-500 hover:text-white transition-colors"
-            >
-              Do Not Sell My Info
+            <Link href="/terms" className="hover:text-gray-400 transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/contact" className="hover:text-gray-400 transition-colors">
+              Global Support
             </Link>
           </div>
         </div>

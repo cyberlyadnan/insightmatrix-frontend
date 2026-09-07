@@ -28,11 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} min-h-screen flex flex-col antialiased bg-gray-50 text-gray-900`}
+        className={`${inter.className} min-h-screen flex flex-col antialiased bg-white text-gray-900`}
       >
         <AppProviders>
           <Navbar />
-          <main className="flex-grow flex flex-col">{children}</main>
+          <main className="flex-grow flex flex-col bg-white">{children}</main>
           <Footer />
         </AppProviders>
       </body>

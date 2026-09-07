@@ -1,389 +1,523 @@
-/** Marketing copy from client content brief — update here when copy changes */
+/**
+ * Exhaustive Site Content & Brand Foundation for InsightMatrix Research
+ * Aligned 100% with the client specifications.
+ */
+
+export const BRAND_FOUNDATION = {
+  brandName: "InsightMatrix Research",
+  tagline: "Better Insights. Smarter Decisions.",
+  statement:
+    "InsightMatrix Research is a global market research and data collection company delivering reliable, high-quality insights to businesses, agencies, consultancies, and organizations worldwide. We combine advanced research methodologies, experienced project management, and rigorous quality standards to help clients make informed business decisions with confidence.",
+  shortDescription:
+    "InsightMatrix Research specializes in end-to-end market research and global data collection solutions. We provide quantitative and qualitative research, B2B and B2C studies, healthcare research, online panel solutions, survey programming, and data processing services across international markets. Our mission is to deliver accurate, actionable insights through quality-driven research operations and exceptional client service.",
+  longDescription: [
+    "InsightMatrix Research is a trusted global market research and data collection partner committed to helping organizations understand markets, customers, and industries through high-quality research solutions.",
+    "We work with research agencies, consulting firms, healthcare organizations, technology companies, brands, and public sector institutions to deliver reliable insights that support strategic decision-making.",
+    "Our expertise spans quantitative research, qualitative research, online panel management, survey programming, CATI, healthcare studies, B2B research, consumer research, and advanced data processing.",
+    "With a strong focus on quality assurance, transparency, and operational excellence, InsightMatrix Research combines experienced project management with modern research technologies to deliver accurate, timely, and actionable data.",
+    "Whether supporting a small custom study or a large-scale multi-country research program, our team is dedicated to providing dependable research solutions tailored to every client's objectives.",
+  ],
+  mission:
+    "To empower organizations with reliable research, quality data, and actionable insights that enable smarter business decisions and long-term success.",
+  vision:
+    "To become one of the world's most trusted market research and data collection companies by delivering exceptional quality, innovation, and client-focused research solutions.",
+  coreValues: [
+    {
+      title: "Quality",
+      description:
+        "We maintain rigorous quality standards throughout every stage of the research process.",
+    },
+    {
+      title: "Integrity",
+      description: "We operate with honesty, transparency, and accountability.",
+    },
+    {
+      title: "Innovation",
+      description:
+        "We embrace technology and continuous improvement to enhance research excellence.",
+    },
+    {
+      title: "Client Success",
+      description: "Our clients' success is at the center of everything we do.",
+    },
+    {
+      title: "Collaboration",
+      description: "We build long-term partnerships through effective communication and teamwork.",
+    },
+    {
+      title: "Excellence",
+      description: "We strive for operational excellence in every project we deliver.",
+    },
+  ],
+  whyChooseUs: [
+    "Global research capabilities",
+    "Experienced project management",
+    "Dedicated client support",
+    "Flexible research solutions",
+    "Competitive pricing",
+    "Strict quality control",
+    "Fast project turnaround",
+    "Multi-country fieldwork",
+    "B2B and Healthcare expertise",
+    "End-to-end research services",
+  ],
+  brandPersonality: [
+    "Professional",
+    "Reliable",
+    "Innovative",
+    "Global",
+    "Data-driven",
+    "Transparent",
+    "Agile",
+    "Client-focused",
+    "Premium",
+    "Trustworthy",
+  ],
+  brandVoice: [
+    "Professional",
+    "Clear",
+    "Confident",
+    "Consultative",
+    "Trustworthy",
+    "Human",
+    "Knowledgeable",
+  ],
+  ctas: {
+    primary: "Request a Quote",
+    secondary: "Talk to Our Research Experts",
+    third: "Start Your Research Project",
+  },
+  keywords: [
+    "Market Research",
+    "Online Data Collection",
+    "Global Research",
+    "Healthcare Research",
+    "B2B Research",
+    "B2C Research",
+    "Survey Programming",
+    "CATI",
+    "Qualitative Research",
+    "Data Processing",
+    "Online Panels",
+    "Research Recruitment",
+    "Customer Insights",
+    "Consumer Insights",
+    "Business Intelligence",
+    "Market Intelligence",
+    "Global Panel Provider",
+  ],
+};
 
 export const SITE = {
-  companyName: "InsightMatrix",
+  companyName: "InsightMatrix Research",
   tagline: "Better Insights. Smarter Decisions.",
 } as const;
 
 export const SITE_CONTACT = {
   email: "info@insightmatrix.online",
+  salesEmail: "sales@insightmatrix.online",
+  website: "http://www.insightmatrix.online",
+  websiteUrl: "https://www.insightmatrix.online",
+  linkedInUrl: "https://www.linkedin.com/company/insightmatrixresearch",
+  instagramUrl:
+    "https://www.instagram.com/insightmatrix_research?igsh=OHp5dXdxbzdmcG13&utm_source=qr",
   phones: ["+91 8707017533", "+91 8299357161"],
   businessHours: "Monday – Saturday, 9:00 AM – 7:00 PM",
-  linkedInLabel: "InsightMatrix LinkedIn Page",
-  instagramLabel: "InsightMatrix Instagram",
-  websiteLabel: "InsightMatrix Official Website",
 } as const;
 
-export const HOME_CONTENT = {
-  hero: {
-    headline: "Better Insights. Smarter Decisions.",
-    description:
-      "InsightMatrix helps businesses make confident, data-driven decisions through reliable market research, healthcare insights, B2B audience solutions, and global research support.",
-    trustLine:
-      "Trusted research support for businesses, agencies, and organizations across global markets.",
-    ctaPrimary: { label: "Request A Proposal", href: "/contact" },
-    ctaSecondary: { label: "Contact Our Team", href: "/contact" },
-    supportParagraphs: [
-      "In today's rapidly evolving business environment, reliable insights are essential for strategic growth and informed decision-making.",
-      "InsightMatrix partners with businesses, healthcare organizations, research agencies, and brands to deliver high-quality research solutions designed to create meaningful business impact.",
-      "From audience targeting and data collection to insight generation and project execution, our approach focuses on accuracy, reliability, and long-term client value.",
-    ],
-  },
-  trustBar: [
-    "Verified Respondents",
-    "Global Research Support",
-    "Quality-Controlled Data",
-    "Reliable Project Execution",
-    "Fast Turnaround Time",
-    "Client-Focused Approach",
-  ],
-  aboutIntro: {
-    badge: "About InsightMatrix",
-    title: "Global market research & business intelligence",
-    description:
-      "InsightMatrix is a global market research and business intelligence company focused on helping organizations better understand markets, customers, industries, and business opportunities.",
-    body: "We support businesses, healthcare organizations, research agencies, and brands through customized research solutions designed to deliver meaningful insights and strategic clarity. At InsightMatrix, we believe research should create clarity, reduce uncertainty, and support long-term business growth.",
-  },
-  whyChoose: {
-    title: "Why Choose InsightMatrix",
-    subtitle:
-      "Our expertise combines quality-focused research methodologies, reliable audience access, and efficient project execution to help organizations make informed business decisions with confidence.",
-    items: [
-      {
-        title: "Quality-Focused Execution",
-        description:
-          "We prioritize data accuracy, audience validation, and research integrity throughout every project.",
-      },
-      {
-        title: "Global Research Support",
-        description:
-          "Capabilities designed to support local, regional, and international research studies.",
-      },
-      {
-        title: "Reliable Project Management",
-        description:
-          "Responsive communication and efficient coordination ensure smooth project delivery.",
-      },
-      {
-        title: "Industry Expertise",
-        description:
-          "Experience across healthcare, technology, consumer, finance, SaaS, retail, and emerging industries.",
-      },
-    ],
-    cta: { label: "Request A Proposal", href: "/contact" },
-  },
-  researchProcess: {
-    badge: "Our Research Process",
-    title: "How we deliver reliable outcomes",
-    subtitle:
-      "A structured approach from objectives through insights—built for accuracy, transparency, and business impact.",
-    steps: [
-      {
-        title: "Understanding Objectives",
-        description:
-          "We begin by understanding your business goals, audience requirements, and research challenges.",
-      },
-      {
-        title: "Research Design",
-        description:
-          "Our team develops the right methodology and targeting strategy for reliable outcomes.",
-      },
-      {
-        title: "Audience Recruitment & Data Collection",
-        description:
-          "We connect with qualified respondents through quality-focused recruitment and validation methods.",
-      },
-      {
-        title: "Quality Control & Monitoring",
-        description:
-          "Projects undergo continuous quality checks to maintain research integrity and data reliability.",
-      },
-      {
-        title: "Insights & Delivery",
-        description:
-          "Collected information is transformed into actionable intelligence that supports strategic decision-making.",
-      },
-    ],
-  },
-  whyChooseExtended: {
-    title: "Why Choose InsightMatrix",
-    intro:
-      "We bridge rigorous methodology with responsive partnership—so your teams can act on insights with confidence.",
-    items: [
-      {
-        title: "Flexible Solutions",
-        description:
-          "Customized research approaches tailored to each client's objectives and requirements.",
-      },
-      {
-        title: "Long-Term Partnership Approach",
-        description:
-          "We focus on transparency, collaboration, and building trusted client relationships.",
-      },
-      {
-        title: "Quality-Focused Execution",
-        description:
-          "We prioritize data accuracy, audience validation, and research integrity throughout every project.",
-      },
-      {
-        title: "Global Research Support",
-        description:
-          "Capabilities designed to support local, regional, and international research studies.",
-      },
-    ],
-    highlight: {
-      title: "Research built around accuracy & reliability",
-      description:
-        "Organizations today operate in highly competitive and rapidly changing markets where reliable information is critical for success. InsightMatrix delivers research solutions designed to help businesses understand customer behavior, evaluate market opportunities, identify industry trends, and strengthen strategic planning.",
-      industries: ["Healthcare", "Technology & SaaS", "Consumer Goods", "Financial Services"],
-      cta: { label: "Contact Our Team", href: "/contact" },
-    },
-  },
-  testimonials: {
-    title: "What Clients Value About Us",
-    subtitle:
-      "Professional communication, reliable execution, and research quality our partners count on.",
-    items: [
-      "Professional communication, reliable execution, and strong respondent quality throughout the project.",
-      "InsightMatrix demonstrated flexibility, responsiveness, and a clear understanding of our research requirements.",
-      "Their commitment to quality and timely delivery helped support important business decisions.",
-    ],
-  },
-  atAGlance: {
-    title: "InsightMatrix At A Glance",
-    items: [
-      "Global Research Support",
-      "Multi-Industry Expertise",
-      "Reliable Audience Access",
-      "Quality-Focused Operations",
-      "Fast Project Execution",
-      "Client-Centric Approach",
-    ],
-  },
-  finalCta: {
-    title: "Ready To Make Smarter Business Decisions?",
-    description:
-      "Partner with InsightMatrix for reliable market research, global audience access, and actionable business intelligence tailored to your goals.",
-    ctaPrimary: { label: "Start Your Project", href: "/contact" },
-    ctaSecondary: { label: "Contact Our Team", href: "/contact" },
-  },
-} as const;
-
-export const ABOUT_CONTENT = {
-  header: {
-    badge: "About InsightMatrix",
-    title: "About InsightMatrix",
-    description:
-      "InsightMatrix is a global market research and business intelligence company focused on helping organizations better understand markets, customers, industries, and business opportunities.",
-    buttonText: "Contact Our Team",
-    buttonHref: "/contact",
-  },
-  mission:
-    "To deliver reliable research, meaningful insights, and quality-driven intelligence that help businesses make smarter strategic decisions.",
-  vision:
-    "To become a trusted global research partner recognized for reliability, operational excellence, and actionable business insights.",
-  companyOverview: {
-    title: "Research Built Around Accuracy & Reliability",
-    paragraphs: [
-      "Organizations today operate in highly competitive and rapidly changing markets where reliable information is critical for success.",
-      "InsightMatrix delivers research solutions designed to help businesses understand customer behavior, evaluate market opportunities, identify industry trends, and strengthen strategic planning.",
-      "From healthcare research to B2B intelligence and consumer insights, we focus on delivering dependable research support that creates measurable value for our clients.",
-    ],
-    closing:
-      "Our expertise combines quality-focused research methodologies, reliable audience access, and efficient project execution to help organizations make informed business decisions with confidence.",
-  },
-  coreValues: {
-    title: "Our Core Values",
-    items: [
-      {
-        title: "Integrity",
-        description:
-          "We believe transparency and honesty are essential to successful client partnerships.",
-      },
-      {
-        title: "Quality",
-        description: "We maintain strict standards across every stage of the research process.",
-      },
-      {
-        title: "Reliability",
-        description:
-          "Clients trust us for consistent execution, responsiveness, and dependable support.",
-      },
-      {
-        title: "Collaboration",
-        description: "Strong communication and partnership create stronger research outcomes.",
-      },
-      {
-        title: "Innovation",
-        description:
-          "We continuously improve methodologies and research approaches to meet evolving market needs.",
-      },
-    ],
-  },
-  quality: {
-    title: "Commitment To Research Quality",
-    paragraphs: [
-      "At InsightMatrix, quality is integrated into every stage of the research process.",
-      "We apply strong quality-control measures, respondent verification practices, and validation techniques to ensure accurate and reliable data.",
-      "Our commitment to research excellence helps clients reduce uncertainty and make strategic decisions supported by trustworthy insights.",
-    ],
-  },
-  global: {
-    title: "Global Research Capabilities",
-    paragraphs: [
-      "InsightMatrix supports research initiatives across international markets with scalable audience access and flexible research solutions.",
-      "Whether the requirement is local targeting or multi-country studies, we help organizations conduct research with confidence while maintaining consistency in quality and execution.",
-      "Our capabilities allow clients to better understand changing market dynamics, customer expectations, and emerging business opportunities.",
-    ],
-  },
-  clientApproach: {
-    title: "A Partnership Built On Trust",
-    paragraphs: [
-      "We believe successful research outcomes come from strong collaboration.",
-      "Our team works closely with clients throughout every stage of the project to ensure transparency, responsiveness, and alignment with business objectives.",
-      "By combining strategic thinking with reliable execution, we help organizations turn information into meaningful business decisions.",
-    ],
-  },
-  whyTrust: {
-    title: "Why Clients Trust InsightMatrix",
-    items: [
-      "Verified Respondents",
-      "Quality-Controlled Data",
-      "Reliable Communication",
-      "Fast Turnaround Time",
-      "Flexible Research Solutions",
-      "Industry-Focused Expertise",
-      "Global Audience Access",
-      "Professional Project Management",
-    ],
-  },
-  industries: {
-    title: "Industries We Serve",
-    items: [
-      "Healthcare & Pharmaceuticals",
-      "Technology & SaaS",
-      "Consumer Goods",
-      "Financial Services",
-      "Retail & E-Commerce",
-      "Automotive",
-      "Telecommunications",
-      "Manufacturing",
-      "Education",
-      "Professional Services",
-      "Media & Advertising",
-      "Startups & Emerging Businesses",
-    ],
-  },
-} as const;
-
-export const SERVICES_CONTENT = {
-  header: {
-    badge: "Our Research Solutions",
-    title: "Our Research Solutions",
-    description:
-      "Comprehensive research services—from quantitative and qualitative studies to healthcare, B2B, and global audience access—designed for accuracy and business impact.",
-    buttonText: "Request A Proposal",
-    buttonHref: "/contact",
-  },
-  services: [
-    {
-      title: "Quantitative Research",
-      slug: "quantitative-research",
-      description:
-        "Structured survey-based research designed to generate measurable insights through large-scale data collection and advanced analysis.",
-    },
-    {
-      title: "Qualitative Research",
-      slug: "qualitative-research",
-      description:
-        "In-depth research approaches focused on understanding attitudes, behaviors, motivations, and customer experiences.",
-    },
-    {
-      title: "B2B Research",
-      slug: "b2b-research",
-      description:
-        "Access verified professionals, business decision-makers, and industry experts across multiple sectors and international markets.",
-    },
-    {
-      title: "Healthcare Research",
-      slug: "healthcare-research",
-      description:
-        "Specialized healthcare audience solutions including physicians, specialists, healthcare professionals, caregivers, and patients.",
-    },
-    {
-      title: "Consumer Insights",
-      slug: "consumer-insights",
-      description:
-        "Understand customer expectations, buying behavior, and market trends through targeted consumer research.",
-    },
-    {
-      title: "Global Audience Access",
-      slug: "global-audience-access",
-      description:
-        "Reliable B2B and B2C audience solutions across multiple countries, industries, and demographic segments.",
-    },
-    {
-      title: "Online Data Collection",
-      slug: "online-data-collection",
-      description:
-        "Efficient online survey execution supported by quality-control and respondent validation processes.",
-    },
-    {
-      title: "Custom Research Solutions",
-      slug: "custom-research-solutions",
-      description:
-        "Tailored methodologies developed around specific business objectives and research requirements.",
-    },
-  ],
-  cta: {
-    title: "Ready to start your research project?",
-    description:
-      "Partner with InsightMatrix for reliable execution, global audience access, and insights tailored to your business goals.",
-    button: "Contact Our Team",
-    href: "/contact",
-  },
-} as const;
+export const SEO_CONTENT = {
+  defaultTitle: "Global Market Research & Data Collection Company | InsightMatrix Research",
+  defaultDescription:
+    "InsightMatrix Research is a global market research and data collection company providing B2B, B2C, Healthcare, Qualitative, Quantitative, Online Panel, CATI, Survey Programming, and Data Processing solutions worldwide.",
+};
 
 export const CONTACT_CONTENT = {
   header: {
-    badge: "Contact Us",
-    title: "Contact Us",
+    badge: "Get in Touch",
+    title: "Let's build better research together",
     description:
-      "We would be happy to discuss your research requirements and explore how InsightMatrix can support your business objectives.",
+      "Have a question about our panel, need a feasibility estimate, or ready to launch a multi-market research project? Reach out to our global research team.",
   },
-  formIntro:
-    "Share your research needs and our team will respond as soon as possible during business hours.",
-} as const;
+  cta: {
+    buttonText: "Submit Inquiry",
+  },
+};
+
+export const LEGAL_SHORT = {
+  privacyIntro:
+    "InsightMatrix Research is committed to protecting the privacy, confidentiality, and security of our clients, survey participants, and website visitors.",
+  termsIntro:
+    "These Terms of Service govern your access to and use of InsightMatrix Research services, platform, and online panel solutions.",
+};
+
+export const HOME_PAGE_DATA = {
+  seo: {
+    title: "Global Market Research & Data Collection Company | InsightMatrix Research",
+    metaDescription:
+      "InsightMatrix Research is a global market research and data collection company providing B2B, B2C, Healthcare, Qualitative, Quantitative, Online Panel, CATI, Survey Programming, and Data Processing solutions worldwide.",
+    url: "/",
+  },
+  hero: {
+    badge: "🌍 Trusted Global Market Research Partner",
+    h1: "Global Market Research & Data Collection Solutions",
+    subHeading:
+      "Helping businesses make smarter decisions through reliable data, high-quality research, and global fieldwork across B2B, B2C, and Healthcare markets.",
+    primaryCta: { label: "Request a Quote", href: "/contact" },
+    secondaryCta: { label: "Talk to Our Experts", href: "/contact" },
+    stats: [
+      "Global Coverage",
+      "Multi-Industry Expertise",
+      "Quality-Driven Research",
+      "Dedicated Project Management",
+    ],
+  },
+  trustSection: {
+    heading: "Trusted Research Partner for Global Businesses",
+    text: "From startups to multinational organizations, InsightMatrix Research delivers reliable market research and data collection solutions that help businesses understand markets, customers, products, and opportunities with confidence.",
+  },
+  whyInsightMatrix: {
+    heading: "Why Choose InsightMatrix Research?",
+    sub: "Reliable research begins with the right partner. At InsightMatrix Research, we combine experienced project management, advanced methodologies, and rigorous quality control to deliver insights that organizations can trust.",
+    cards: [
+      {
+        id: "pm",
+        title: "Experienced Project Management",
+        description:
+          "Dedicated professionals managing every project from feasibility to final delivery.",
+      },
+      {
+        id: "global",
+        title: "Global Research Coverage",
+        description:
+          "Supporting research projects across North America, Europe, APAC, Middle East, LATAM, and Africa.",
+      },
+      {
+        id: "quality",
+        title: "Quality First Approach",
+        description:
+          "Every response undergoes strict quality validation using industry best practices.",
+      },
+      {
+        id: "turnaround",
+        title: "Fast Turnaround",
+        description: "Efficient execution without compromising data quality.",
+      },
+      {
+        id: "solutions",
+        title: "Flexible Research Solutions",
+        description: "Customized methodologies designed around your business objectives.",
+      },
+      {
+        id: "communication",
+        title: "Transparent Communication",
+        description: "Clear updates, responsive support, and complete project visibility.",
+      },
+    ],
+  },
+  services: {
+    heading: "Comprehensive Research Solutions",
+    sub: "InsightMatrix Research offers end-to-end market research and data collection services designed to support strategic decision-making across industries.",
+    items: [
+      {
+        title: "Quantitative Research",
+        slug: "quantitative-market-research",
+        description: "Large-scale surveys delivering statistically reliable insights.",
+      },
+      {
+        title: "Qualitative Research",
+        slug: "qualitative-research",
+        description:
+          "Understand customer motivations through IDIs, FGDs, online communities, and in-depth interviews.",
+      },
+      {
+        title: "B2B Research",
+        slug: "b2b-research",
+        description: "Access decision-makers across industries worldwide.",
+      },
+      {
+        title: "B2C Research",
+        slug: "b2c-market-research",
+        description: "Connect with consumers across multiple demographics and markets.",
+      },
+      {
+        title: "Healthcare Research",
+        slug: "healthcare-market-research",
+        description:
+          "Research solutions for physicians, specialists, nurses, pharmacists, patients, caregivers, and healthcare professionals.",
+      },
+      {
+        title: "Online Panel Solutions",
+        slug: "respondent-recruitment",
+        description: "Reliable respondent recruitment supported by comprehensive quality controls.",
+      },
+      {
+        title: "Survey Programming",
+        slug: "survey-programming-hosting",
+        description: "Professional survey scripting, testing, and hosting.",
+      },
+      {
+        title: "CATI",
+        slug: "cati-computer-assisted-telephone-interviewing",
+        description: "Telephone interviewing managed by trained research professionals.",
+      },
+      {
+        title: "Data Processing",
+        slug: "translation-localization-services",
+        description: "Data cleaning, coding, tabulation, and reporting support.",
+      },
+    ],
+  },
+  researchProcess: {
+    heading: "Our Research Process",
+    steps: [
+      {
+        step: "Step 1",
+        title: "Project Consultation",
+        description: "Understand objectives, target audience, and methodology.",
+      },
+      {
+        step: "Step 2",
+        title: "Research Design",
+        description: "Develop sampling strategy, questionnaire, and execution plan.",
+      },
+      {
+        step: "Step 3",
+        title: "Fieldwork",
+        description: "Launch surveys and monitor live data collection.",
+      },
+      {
+        step: "Step 4",
+        title: "Quality Assurance",
+        description: "Validate responses using multiple quality control procedures.",
+      },
+      {
+        step: "Step 5",
+        title: "Delivery",
+        description: "Provide clean, reliable, and actionable research data.",
+      },
+    ],
+  },
+  industries: [
+    "Healthcare",
+    "Technology",
+    "Financial Services",
+    "Retail",
+    "Consumer Goods",
+    "Automotive",
+    "Manufacturing",
+    "Education",
+    "Telecommunications",
+    "Travel & Hospitality",
+    "Media",
+    "Government",
+    "Energy",
+    "Pharmaceuticals",
+    "Insurance",
+    "Real Estate",
+    "E-commerce",
+    "Public Sector",
+  ],
+  globalCoverage: {
+    heading: "Global Research Coverage",
+    text: "We support research projects across multiple international markets through trusted partnerships and experienced project management.",
+    regions: ["North America", "Europe", "Asia-Pacific", "Middle East", "Latin America", "Africa"],
+  },
+  qualitySection: {
+    heading: "Research Quality You Can Trust",
+    text: "Quality is integrated into every stage of our research process.",
+    controls: [
+      "Digital Fingerprinting",
+      "Geo Validation",
+      "Duplicate Detection",
+      "Speed Checks",
+      "Attention Checks",
+      "Open-End Review",
+      "Fraud Detection",
+      "Manual Quality Review",
+      "Real-Time Monitoring",
+    ],
+  },
+  ctaSection: {
+    heading: "Ready to Start Your Next Research Project?",
+    text: "Partner with InsightMatrix Research for reliable market research, high-quality data collection, and dedicated project management.",
+    buttonText: "Request a Quote",
+    buttonHref: "/contact",
+  },
+};
+
+export const ABOUT_PAGE_DATA = {
+  seo: {
+    title: "About InsightMatrix Research | Global Market Research & Data Collection Company",
+    metaDescription:
+      "Learn about InsightMatrix Research, a global market research and data collection company delivering B2B, B2C, Healthcare, Qualitative, Quantitative, and Online Panel solutions with a commitment to quality, innovation, and client success.",
+    url: "/about-us",
+  },
+  hero: {
+    h1: "About InsightMatrix Research",
+    subtitle:
+      "Delivering reliable research, quality data, and actionable insights that empower organizations to make informed business decisions.",
+  },
+  companyOverview: {
+    title: "Who We Are",
+    paragraphs: [
+      "InsightMatrix Research is a global market research and data collection company specializing in high-quality quantitative and qualitative research solutions. We partner with research agencies, consulting firms, brands, healthcare organizations, technology companies, and public sector institutions to deliver reliable insights that drive strategic decision-making.",
+      "Our expertise spans the entire research lifecycle—from project consultation and feasibility to respondent recruitment, fieldwork management, quality assurance, and data delivery. Whether supporting a single-country study or a complex multi-market project, our focus remains the same: delivering accurate data, exceptional service, and dependable execution.",
+    ],
+  },
+  mission: {
+    title: "Driving Better Decisions Through Reliable Research",
+    text: "Our mission is to empower organizations with reliable market intelligence, quality data collection, and research expertise that enables smarter business decisions. We are committed to delivering research that is accurate, transparent, and tailored to each client's unique objectives.",
+  },
+  vision: {
+    title: "Building a Trusted Global Research Partner",
+    text: "Our vision is to become one of the world's most trusted market research and data collection companies by combining innovative research methodologies, advanced technology, and exceptional client service. We strive to build long-term partnerships founded on trust, quality, and measurable results.",
+  },
+  values: [
+    {
+      title: "Quality First",
+      description:
+        "We believe quality is the foundation of every successful research project. Every response, every dataset, and every deliverable is carefully reviewed to maintain the highest standards.",
+    },
+    {
+      title: "Integrity",
+      description:
+        "We operate with honesty, transparency, and accountability in every client engagement and business relationship.",
+    },
+    {
+      title: "Client Success",
+      description:
+        "Our clients' success is our priority. We work as an extension of their research teams, providing dependable support from project kickoff to final delivery.",
+    },
+    {
+      title: "Innovation",
+      description:
+        "We embrace technology and modern research practices to improve efficiency, enhance data quality, and deliver better outcomes.",
+    },
+    {
+      title: "Collaboration",
+      description:
+        "We believe strong partnerships create stronger research. Open communication and teamwork are central to everything we do.",
+    },
+    {
+      title: "Excellence",
+      description:
+        "We continuously improve our processes, services, and capabilities to deliver research solutions that exceed expectations.",
+    },
+  ],
+  whatWeDo: [
+    "Online Data Collection (CAWI)",
+    "B2B Research",
+    "B2C Research",
+    "Healthcare Research",
+    "Qualitative Research (IDIs, FGDs, Online Communities)",
+    "CATI (Computer-Assisted Telephone Interviewing)",
+    "Survey Programming & Hosting",
+    "Respondent Recruitment",
+    "Translation & Localization",
+    "Data Processing & Cleaning",
+    "Coding & Tabulation",
+    "Research Operations Support",
+  ],
+  whyClientsChooseUs: [
+    "Global project execution capabilities",
+    "Dedicated project management",
+    "Flexible research methodologies",
+    "Multi-country fieldwork experience",
+    "Rigorous quality assurance",
+    "Transparent communication",
+    "Fast turnaround times",
+    "Tailored research solutions",
+    "Reliable vendor network",
+    "Client-focused approach",
+  ],
+  approach: {
+    title: "Every Project Begins With Understanding",
+    text: "We believe successful research starts with understanding our clients' objectives. Our team works closely with every client to design the right methodology, recruit the right audience, maintain strict quality standards, and deliver meaningful insights that support confident decision-making.",
+  },
+  researchProcess: [
+    {
+      number: "1",
+      title: "Consultation",
+      description: "Understanding project goals, target audience, and research objectives.",
+    },
+    {
+      number: "2",
+      title: "Research Design",
+      description: "Developing the methodology, sampling strategy, and execution plan.",
+    },
+    {
+      number: "3",
+      title: "Fieldwork",
+      description: "Managing respondent recruitment and live data collection.",
+    },
+    {
+      number: "4",
+      title: "Quality Assurance",
+      description: "Applying comprehensive quality control measures throughout the project.",
+    },
+    {
+      number: "5",
+      title: "Delivery",
+      description: "Providing clean, reliable, and actionable research data.",
+    },
+  ],
+  globalReach: [
+    "North America",
+    "Europe",
+    "Asia-Pacific",
+    "Middle East",
+    "Latin America",
+    "Africa",
+  ],
+  industries: [
+    "Healthcare",
+    "Technology",
+    "Financial Services",
+    "Retail & FMCG",
+    "Automotive",
+    "Manufacturing",
+    "Telecommunications",
+    "Education",
+    "Media & Entertainment",
+    "Travel & Hospitality",
+    "Government & Public Sector",
+    "Energy & Utilities",
+    "Pharmaceuticals",
+    "Insurance",
+    "E-commerce",
+  ],
+  finalCta: {
+    heading: "Let's Build Better Research Together",
+    text: "Whether you need reliable respondents, global fieldwork, healthcare expertise, or end-to-end research support, InsightMatrix Research is ready to help.",
+    buttonText: "Request a Quote",
+    buttonHref: "/contact",
+  },
+};
 
 export const FOOTER_CONTENT = {
-  description:
-    "InsightMatrix delivers reliable market research, healthcare insights, B2B audience solutions, and global research support designed to help businesses make informed decisions with confidence.",
+  intro:
+    "InsightMatrix Research is a global market research and data collection company delivering quantitative, qualitative, B2B, B2C, healthcare, and online panel solutions for organizations worldwide.",
+  tagline: "Better Insights. Smarter Decisions.",
   quickLinks: [
     { label: "Home", href: "/" },
     { label: "About Us", href: "/about" },
     { label: "Services", href: "/services" },
-    { label: "Industries", href: "/about#industries" },
-    { label: "Contact Us", href: "/contact" },
+    { label: "Research", href: "/research" },
+    { label: "Panel Book", href: "/panel-book" },
+    { label: "Contact", href: "/contact" },
     { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms & Conditions", href: "/terms" },
+    { label: "Terms of Service", href: "/terms" },
   ],
-} as const;
-
-export const SEO_CONTENT = {
-  defaultTitle: "InsightMatrix | Global Market Research & Business Intelligence Solutions",
-  defaultDescription:
-    "InsightMatrix provides healthcare research, B2B insights, consumer intelligence, and global market research solutions that help businesses make confident strategic decisions.",
-} as const;
-
-export const LEGAL_SHORT = {
-  privacyIntro:
-    "InsightMatrix values data privacy and is committed to protecting all client and respondent information through secure and responsible research practices.",
-  termsIntro:
-    "All services provided by InsightMatrix are subject to agreed project requirements, timelines, and research methodologies. Client confidentiality and professional standards remain a priority across all engagements.",
-} as const;
-
-export const NAV_LINKS = [
-  { name: "Services", href: "/services" },
-  { name: "About Us", href: "/about" },
-  { name: "Industries", href: "/about#industries" },
-] as const;
+  services: [
+    { label: "Online Data Collection", href: "/services/quantitative-market-research" },
+    { label: "B2B Research", href: "/services/b2b-research" },
+    { label: "B2C Research", href: "/services/b2c-market-research" },
+    { label: "Healthcare Research", href: "/services/healthcare-market-research" },
+    { label: "CATI", href: "/services/cati-computer-assisted-telephone-interviewing" },
+    { label: "Qualitative Research", href: "/services/qualitative-research" },
+    { label: "Survey Programming", href: "/services/survey-programming-hosting" },
+    { label: "Data Processing", href: "/services/translation-localization-services" },
+    { label: "Translation & Localization", href: "/services/translation-localization-services" },
+    { label: "Respondent Recruitment", href: "/services/respondent-recruitment" },
+  ],
+};

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="bg-[#fafafa] min-h-screen">
+    <div className="bg-white min-h-screen">
       <PageHeader
         badge={CONTACT_CONTENT.header.badge}
         title={CONTACT_CONTENT.header.title}

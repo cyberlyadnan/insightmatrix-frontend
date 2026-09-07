@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827;
 }
 
 @theme {
@@ -20,43 +20,36 @@
 
   /* UI Colors */
   --color-foreground: #111827;
-  --color-muted-foreground: #5f6b85;
+  --color-muted-foreground: #475569;
   --color-input: #d7e3f5;
   --color-ring: #0b4fd9;
-  --color-border: #dbe6f7;
+  --color-border: #e2e8f0;
   --color-primary: #0b4fd9;
   --color-primary-foreground: #ffffff;
   --color-secondary: #eef5ff;
   --color-secondary-foreground: #061f5c;
-  --color-muted: #f1f5f9;
+  --color-muted: #f8fafc;
   --color-background: #ffffff;
-  --color-surface: #f7faff;
+  --color-surface: #ffffff;
   --color-destructive: #dc2626;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: #ffffff;
+  color: #111827;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Vendor portal + light forms: readable placeholders (OS dark mode can wash these out) */
+/* Vendor portal + light forms: readable placeholders */
 .vendor-portal input[data-slot="input"]::placeholder,
 .vendor-portal textarea[data-slot="textarea"]::placeholder {
-  color: #9ca3af;
+  color: #94a3b8;
   opacity: 1;
 }
 
 input[data-slot="input"]::placeholder,
 textarea::placeholder {
-  color: #6b7280;
+  color: #64748b;
   opacity: 1;
 }
 
@@ -69,7 +62,6 @@ select {
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.2rem;
-  /* Body uses light foreground when prefers-color-scheme: dark; native selects must not inherit it on white backgrounds */
   color: #111827;
   color-scheme: light;
 }

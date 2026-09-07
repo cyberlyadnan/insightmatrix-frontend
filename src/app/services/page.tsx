@@ -1,211 +1,262 @@
-import { Metadata } from "next";
+"use client";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
-  ClipboardList,
-  TrendingUp,
-  Users,
-  Share2,
+  BarChart3,
+  Building2,
   CheckCircle2,
+  Code2,
+  Database,
   Globe,
-  Shield,
+  HeartPulse,
+  Landmark,
+  Layers,
+  Laptop,
+  MessageSquareQuote,
+  PhoneCall,
+  Search,
+  ShoppingBag,
+  Stethoscope,
+  Users,
   Zap,
-  Sparkles,
 } from "lucide-react";
-import PageHeader from "@/components/shared/PageHeader";
-import { GridVisual } from "@/components/shared/HeaderVisuals";
 
-export const metadata: Metadata = {
-  title: "Solutions | InsightMatrix",
-  description: "Explore our comprehensive suite of market research services and solutions.",
+import { SERVICES_CATALOG } from "@/constants/services";
+import type { ServiceListCategory } from "@/constants/service-types";
+import {
+  filterServices,
+  getServiceCategory,
+  getServicePreviewItems,
+} from "@/constants/services-utils";
+
+const iconMap: Record<string, typeof Layers> = {
+  "online-data-collection": Database,
+  "b2b-market-research": Building2,
+  "b2c-market-research": Users,
+  "healthcare-market-research": Stethoscope,
+  "qualitative-market-research": MessageSquareQuote,
+  "survey-programming": Code2,
+  "cati-services": PhoneCall,
+  "data-processing": Layers,
+  "online-panel-solutions": Users,
+  "respondent-recruitment": Users,
+  "quantitative-market-research": BarChart3,
+  "translation-localization": Globe,
+  "brand-tracking": Zap,
+  "product-testing": Layers,
+  "concept-testing": Zap,
+  "pricing-research": BarChart3,
+  "market-segmentation": Layers,
+  "usage-attitude-research": Users,
+  "employee-engagement-research": HeartPulse,
+  "public-opinion-research": Globe,
+  "omnibus-research": Database,
+  healthcare: Stethoscope,
+  "pharmaceutical-biotechnology": HeartPulse,
+  "technology-saas": Laptop,
+  "banking-financial-services-fintech": Landmark,
+  "retail-ecommerce": ShoppingBag,
 };
 
+const TABS: { id: ServiceListCategory; label: string }[] = [
+  { id: "all", label: "All Services" },
+  { id: "core", label: "Core Services" },
+  { id: "b2b-b2c", label: "B2B & B2C" },
+  { id: "healthcare", label: "Healthcare" },
+  { id: "methodologies", label: "Methodologies" },
+  { id: "operations", label: "Operations & Tech" },
+  { id: "industries", label: "Industries" },
+];
+
 export default function ServicesPage() {
-  const services = [
-    {
-      title: "Survey Participation",
-      slug: "survey-participation",
-      description:
-        "Join our global panel and earn rewards by sharing your authentic opinions on products, services, and trends.",
-      icon: ClipboardList,
-      features: [
-        "Verified Demographics",
-        "Guaranteed Compensation",
-        "Mobile-First Interface",
-        "Strict Privacy",
-      ],
-      color: "text-brand-primary",
-      bg: "bg-brand-subtle/50",
-      border: "group-hover:border-brand-light",
-    },
-    {
-      title: "Market Insight Data",
-      slug: "market-research-data-collection",
-      description:
-        "Access our vast, diverse panel to rapidly collect high-quality data for your corporate or independent research projects.",
-      icon: TrendingUp,
-      features: [
-        "Targeted Sampling",
-        "Real-Time Tracking",
-        "Fraud Prevention",
-        "Agile Methodology",
-      ],
-      color: "text-violet-600",
-      bg: "bg-violet-50/50",
-      border: "group-hover:border-violet-200",
-    },
-    {
-      title: "Panel Management",
-      slug: "survey-panel-management",
-      description:
-        "Leverage our robust technology infrastructure to build, manage, and engage your own custom research panel.",
-      icon: Users,
-      features: [
-        "Custom Branding",
-        "Panel Health Metrics",
-        "Automated Rewards",
-        "Compliance Security",
-      ],
-      color: "text-sky-600",
-      bg: "bg-sky-50/50",
-      border: "group-hover:border-sky-200",
-    },
-    {
-      title: "Distribution Network",
-      slug: "survey-distribution-network",
-      description:
-        "Extend your survey reach beyond traditional boundaries with our programmatic distribution network and API integrations.",
-      icon: Share2,
-      features: [
-        "API Connectivity",
-        "Global Publisher Network",
-        "Dynamic Allocation",
-        "Quality Assurance",
-      ],
-      color: "text-rose-600",
-      bg: "bg-rose-50/50",
-      border: "group-hover:border-rose-200",
-    },
-  ];
+  const [activeTab, setActiveTab] = useState<ServiceListCategory>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredServices = useMemo(
+    () => filterServices({ search: searchQuery, tab: activeTab }),
+    [searchQuery, activeTab]
+  );
 
   return (
     <div className="bg-white min-h-screen">
-      <PageHeader
-        badge="Market Research Services"
-        title="Solutions built on reality"
-        description="Comprehensive, industry-leading tools designed to streamline data collection and maximize participant engagement with unmatched precision."
-        buttonText="View All Solutions"
-        buttonHref="/register"
-        visual={<GridVisual />}
-      />
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 pb-32">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {services.map((service, idx) => {
-            const Icon = service.icon;
-            return (
-              <Link
-                key={idx}
-                href={`/services/${service.slug}`}
-                className={`group relative bg-white border border-gray-100 rounded-3xl p-8 lg:p-10 transition-all duration-300 hover:shadow-xl hover:shadow-gray-200/50 ${service.border} block`}
-              >
-                <div className="flex flex-col h-full">
-                  {/* Icon & Category */}
-                  <div className="flex items-center justify-between mb-8">
-                    <div
-                      className={`w-14 h-14 rounded-2xl ${service.bg} ${service.color} flex items-center justify-center transition-transform duration-500 group-hover:scale-110`}
-                    >
-                      <Icon className="w-7 h-7" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                      {service.slug.replace(/-/g, " ")}
-                    </span>
-                  </div>
-
-                  {/* Content */}
-                  <h3 className="text-2xl font-black text-gray-900 mb-4 tracking-tight group-hover:text-brand-primary transition-colors">
-                    {service.title}
-                  </h3>
-
-                  <p className="text-gray-500 leading-relaxed mb-8 flex-grow">
-                    {service.description}
-                  </p>
-
-                  {/* Feature List */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 mb-10 pt-8 border-t border-gray-50">
-                    {service.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-brand-primary/60" />
-                        <span className="text-sm font-semibold text-gray-600">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Footer Link */}
-                  <div className="mt-auto">
-                    <div className="inline-flex items-center gap-2 text-gray-900 font-black text-sm transition-all group-hover:gap-3 group-hover:text-brand-primary">
-                      Learn more{" "}
-                      <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Subtle Hover Decoration */}
-                <div
-                  className={`absolute top-0 right-0 w-32 h-32 ${service.bg} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}
-                />
-              </Link>
-            );
-          })}
+      <section className="relative pt-36 pb-20 lg:pt-44 lg:pb-28 bg-gradient-to-r from-brand-accent1 via-brand-primary to-brand-accent2 text-white overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] rounded-full bg-white/10 blur-3xl mix-blend-overlay" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-accent1/20 blur-3xl mix-blend-overlay" />
         </div>
 
-        {/* Simplified Status Bar */}
-        <div className="mt-20 flex flex-wrap justify-between items-center bg-gray-50 rounded-2xl p-6 border border-gray-100 gap-8">
-          {[
-            { label: "Global Reach", icon: Globe, value: "140+ countries" },
-            { label: "Real People", icon: Users, value: "Millions verified" },
-            { label: "Data Security", icon: Shield, value: "GDPR Compliant" },
-            { label: "Quality Control", icon: Sparkles, value: "AI Verified" },
-          ].map((stat, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                <stat.icon className="w-5 h-5 text-gray-400" />
-              </div>
-              <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-none mb-1">
-                  {stat.label}
-                </div>
-                <div className="text-xs font-bold text-gray-900 leading-none">{stat.value}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Classic Professional CTA */}
-        <div className="mt-24 bg-gray-900 rounded-[2.5rem] p-12 lg:p-16 text-center relative overflow-hidden">
-          {/* Decorative Background Glows */}
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-primary/10 blur-[100px]" />
-            <div className="absolute bottom-0 left-0 w-1/2 h-full bg-violet-600/10 blur-[100px]" />
-          </div>
-
-          <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-6 tracking-tight">
-              Need a custom panel solution?
-            </h2>
-            <p className="text-gray-400 text-lg font-medium leading-relaxed mb-10">
-              Our experts work with major brands to build high-engagement proprietary research
-              panels tailored to your specific audience requirements.
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center lg:text-left">
+          <div className="max-w-3xl">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest text-white mb-6">
+              Global Research Services
+            </span>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight mb-6 drop-shadow-sm">
+              Comprehensive Research & Data Collection Solutions
+            </h1>
+            <p className="text-lg sm:text-xl text-white/90 leading-relaxed font-medium mb-10 drop-shadow-sm">
+              End-to-end quantitative, qualitative, B2B, consumer, healthcare, and survey operations
+              delivered with rigorous quality standards worldwide.
             </p>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-10 py-4 text-base font-black rounded-full text-gray-900 bg-white hover:bg-gray-100 transition-all hover:scale-105 shadow-xl"
-            >
-              Get in touch with us <ArrowRight className="ml-2 w-5 h-5" />
-            </Link>
+            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+              <Link
+                href="/contact"
+                className="px-8 py-4 bg-white text-brand-primary font-black rounded-full hover:bg-gray-50 shadow-xl transition-all hover:scale-105 active:scale-95"
+              >
+                Request a Custom Proposal
+              </Link>
+              <a
+                href="#services-catalog"
+                className="px-8 py-4 bg-white/10 border border-white/30 text-white font-black rounded-full hover:bg-white/20 backdrop-blur-md transition-all active:scale-95"
+              >
+                Browse All Services ({SERVICES_CATALOG.length})
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section
+        id="services-catalog"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20"
+      >
+        <div className="bg-white rounded-[2rem] p-4 lg:p-6 shadow-xl border border-slate-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search services (e.g. B2B, Healthcare, CATI, Panel)..."
+              className="w-full pl-12 pr-6 py-4 bg-[#f8faff] border border-blue-100/60 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/30 transition-all"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all ${
+                  activeTab === tab.id
+                    ? "bg-brand-primary text-white shadow-md shadow-brand-primary/20"
+                    : "bg-[#f8faff] text-slate-600 hover:bg-slate-100 border border-slate-100"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="flex items-center justify-between mb-12">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+              Showing {filteredServices.length} Solutions
+            </h2>
+            <p className="text-sm font-medium text-slate-500 mt-1">
+              Select any capability to explore methodology, audiences, and delivery process.
+            </p>
+          </div>
+          <span className="text-xs font-black uppercase tracking-wider text-brand-primary bg-brand-subtle px-3 py-1.5 rounded-full border border-brand-light/30">
+            100% Quality Guaranteed
+          </span>
+        </div>
+
+        {filteredServices.length === 0 ? (
+          <div className="rounded-[2rem] border border-dashed border-slate-200 bg-slate-50 px-8 py-16 text-center">
+            <p className="text-lg font-black text-gray-900">No services match your search</p>
+            <p className="text-sm text-slate-500 mt-2">Try another keyword or clear the filters.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredServices.map((service) => {
+              const Icon = iconMap[service.slug] ?? Layers;
+              const previewItems = getServicePreviewItems(service);
+              const category = getServiceCategory(service);
+
+              return (
+                <Link
+                  key={service.id}
+                  href={`/services/${service.slug}`}
+                  className="group relative bg-white border border-slate-100 rounded-[2rem] p-8 sm:p-9 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 hover:border-brand-primary/30 flex flex-col justify-between hover:-translate-y-1.5"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="w-14 h-14 rounded-2xl bg-brand-subtle text-brand-primary flex items-center justify-center group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-white transition-all duration-300 shadow-sm border border-brand-light/30">
+                        <Icon className="w-7 h-7" />
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-3 py-1 rounded-full">
+                        {category}
+                      </span>
+                    </div>
+
+                    <h3 className="text-xl font-black text-gray-900 mb-3 tracking-tight group-hover:text-brand-primary transition-colors">
+                      {service.service_name}
+                    </h3>
+
+                    <p className="text-slate-600 leading-relaxed text-sm font-medium mb-6 line-clamp-3">
+                      {service.hero.subtitle || service.seo.meta_description}
+                    </p>
+
+                    {previewItems.length > 0 ? (
+                      <div className="space-y-2 mb-6 pt-5 border-t border-slate-100">
+                        {previewItems.map((item) => (
+                          <div
+                            key={item}
+                            className="flex items-center gap-2 text-xs font-semibold text-slate-700"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-brand-primary shrink-0" />
+                            <span className="truncate">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="pt-5 border-t border-slate-100 flex items-center justify-between text-xs font-black text-brand-primary group-hover:gap-2 transition-all">
+                    <span>View Full Solution</span>
+                    <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28">
+        <div className="p-8 sm:p-12 rounded-[2.5rem] bg-gradient-to-r from-brand-dark via-brand-accent1 to-brand-dark text-white grid grid-cols-2 md:grid-cols-4 gap-8 text-center shadow-2xl shadow-brand-dark/20">
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white mb-1">80+</div>
+            <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+              Global Markets
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white mb-1">99.8%</div>
+            <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+              Data Accuracy
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white mb-1">500+</div>
+            <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+              Daily Projects
+            </div>
+          </div>
+          <div>
+            <div className="text-3xl sm:text-4xl font-black text-white mb-1">24/7</div>
+            <div className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+              Field Support
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

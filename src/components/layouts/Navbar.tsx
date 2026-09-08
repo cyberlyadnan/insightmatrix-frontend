@@ -125,7 +125,7 @@ export default function Navbar() {
                 </Link>
               ) : (
                 <Link
-                  href="/register"
+                  href={ROUTES.login}
                   className={`px-5 py-2 rounded-full font-bold border transition-all ${
                     isScrolled || !isHomePage
                       ? "border-gray-200 text-gray-700 hover:bg-gray-50"
@@ -226,11 +226,11 @@ export default function Navbar() {
                     </Link>
                   ) : (
                     <Link
-                      href="/register"
+                      href={ROUTES.login}
                       onClick={() => setIsOpen(false)}
                       className="flex items-center justify-center w-full py-4 rounded-2xl border-2 border-gray-100 text-gray-900 font-black text-lg hover:bg-gray-50"
                     >
-                      Partner Login
+                      Sign in
                     </Link>
                   )}
                 </div>

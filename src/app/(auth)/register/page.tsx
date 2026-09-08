@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -46,6 +46,9 @@ const registerSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+const fieldClass =
+  "pl-10 h-10 rounded-lg border-gray-200 bg-white text-sm focus:border-brand-primary focus:ring-brand-primary/15 transition-all";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -91,32 +94,28 @@ export default function RegisterPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100"
+      transition={{ duration: 0.35 }}
+      className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90"
     >
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-        <p className="text-gray-500">Join our community of creators today</p>
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Create account</h1>
+        <p className="text-sm text-gray-500 mt-1">Join the InsightMatrix panel</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3.5">
           <FormField
             control={form.control}
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Full Name</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">Full name</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      placeholder="John Doe"
-                      className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
-                      {...field}
-                    />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input placeholder="Jane Doe" className={fieldClass} {...field} />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -129,15 +128,11 @@ export default function RegisterPage() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Email Address</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">Email</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <Input
-                      placeholder="name@example.com"
-                      className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
-                      {...field}
-                    />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input placeholder="name@company.com" className={fieldClass} {...field} />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -150,29 +145,26 @@ export default function RegisterPage() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Password</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">Password</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="pl-11 pr-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
+                      placeholder="Min. 8 characters"
+                      className={`${fieldClass} pr-10`}
                       {...field}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </FormControl>
-                <div className="flex items-center gap-2 mt-1">
-                  <ShieldCheck className="w-4 h-4 text-green-500" />
-                  <p className="text-[10px] text-gray-500 font-bold">Encrypted and secure</p>
-                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -183,14 +175,16 @@ export default function RegisterPage() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Confirm Password</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">
+                  Confirm password
+                </FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       type="password"
-                      placeholder="••••••••"
-                      className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
+                      placeholder="Repeat password"
+                      className={fieldClass}
                       {...field}
                     />
                   </div>
@@ -200,46 +194,50 @@ export default function RegisterPage() {
             )}
           />
 
-          <div className="pt-2">
-            <Button
-              type="submit"
-              className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
-              disabled={registerMutation.isPending}
-            >
-              {registerMutation.isPending ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Creating Account...
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2">
-                  Sign Up <ArrowRight className="w-5 h-5" />
-                </div>
-              )}
-            </Button>
-          </div>
+          <Button
+            type="submit"
+            className="w-full h-10 rounded-lg bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold shadow-sm shadow-brand-primary/20 transition-all active:scale-[0.99] mt-1"
+            disabled={registerMutation.isPending}
+          >
+            {registerMutation.isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Creating…
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-1.5">
+                Create account <ArrowRight className="w-4 h-4" />
+              </span>
+            )}
+          </Button>
         </form>
       </Form>
 
-      <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-        <p className="text-gray-600">
+      <div className="mt-5 pt-4 border-t border-gray-100 text-center">
+        <p className="text-xs text-gray-500">
           Already have an account?{" "}
           <Link
-            href="/login"
-            className="font-bold text-brand-primary hover:text-brand-hover transition-colors"
+            href={ROUTES.login}
+            className="font-semibold text-brand-primary hover:text-brand-hover transition-colors"
           >
-            Log in here
+            Sign in
           </Link>
         </p>
       </div>
 
-      <p className="mt-6 text-[11px] text-center text-gray-400 px-4">
-        By signing up, you agree to our{" "}
-        <Link href={ROUTES.terms} className="underline font-bold">
-          Terms of Service
+      <p className="mt-4 text-[10px] text-center text-gray-400 leading-relaxed px-1">
+        By continuing you agree to our{" "}
+        <Link
+          href={ROUTES.terms}
+          className="underline font-medium text-gray-500 hover:text-gray-700"
+        >
+          Terms
         </Link>{" "}
         and{" "}
-        <Link href={ROUTES.privacy} className="underline font-bold">
+        <Link
+          href={ROUTES.privacy}
+          className="underline font-medium text-gray-500 hover:text-gray-700"
+        >
           Privacy Policy
         </Link>
         .

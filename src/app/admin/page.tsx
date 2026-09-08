@@ -17,8 +17,10 @@ import {
   CheckCircle2,
   MessageCircle,
   UserX,
+  ArrowUpRight,
 } from "lucide-react";
-import { PageHeader } from "@/components/crm/page-help";
+import { PageHelp } from "@/components/crm/page-help";
+import { DashboardCharts } from "@/components/admin/dashboard-charts";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
 import { listPanelSurveys } from "@/services/panel-survey/panel-survey-api";
@@ -29,10 +31,44 @@ import {
   listSurveyRespondentProfiles,
 } from "@/services/survey-respondent-profile/survey-respondent-profile-api";
 import { listContactQueries } from "@/services/contact-query";
+import { formatNumber } from "@/utils/format";
 
 function todayIsoDate() {
   return new Date().toISOString().slice(0, 10);
 }
+
+const STAT_TONES = {
+  blue: {
+    icon: "bg-brand-subtle text-brand-primary",
+    value: "text-brand-primary",
+    ring: "group-hover:border-brand-primary/25 group-hover:shadow-brand-primary/5",
+  },
+  emerald: {
+    icon: "bg-emerald-50 text-emerald-600",
+    value: "text-emerald-700",
+    ring: "group-hover:border-emerald-200 group-hover:shadow-emerald-500/5",
+  },
+  violet: {
+    icon: "bg-violet-50 text-violet-600",
+    value: "text-violet-700",
+    ring: "group-hover:border-violet-200 group-hover:shadow-violet-500/5",
+  },
+  sky: {
+    icon: "bg-sky-50 text-sky-600",
+    value: "text-sky-700",
+    ring: "group-hover:border-sky-200 group-hover:shadow-sky-500/5",
+  },
+  teal: {
+    icon: "bg-teal-50 text-teal-600",
+    value: "text-teal-700",
+    ring: "group-hover:border-teal-200 group-hover:shadow-teal-500/5",
+  },
+  amber: {
+    icon: "bg-amber-50 text-amber-600",
+    value: "text-amber-700",
+    ring: "group-hover:border-amber-200 group-hover:shadow-amber-500/5",
+  },
+} as const;
 
 export default function AdminOverview() {
   const user = useAuthStore((s) => s.user);
@@ -107,108 +143,163 @@ export default function AdminOverview() {
       label: "Active Surveys",
       value: activeSurveysData?.meta?.total ?? 0,
       icon: ClipboardList,
-      iconClass: "text-brand-primary",
+      tone: "blue" as const,
       href: ROUTES.admin.surveys,
+      hint: "Live studies",
     },
     {
       label: "Active Vendors",
       value: activeVendorsData?.meta?.total ?? 0,
       icon: Store,
-      iconClass: "text-emerald-600",
+      tone: "emerald" as const,
       href: ROUTES.admin.vendors,
+      hint: "Partner network",
     },
     {
-      label: "Total Survey Providers",
+      label: "Survey Providers",
       value: providersData?.meta?.total ?? 0,
       icon: Building2,
-      iconClass: "text-violet-500",
+      tone: "violet" as const,
       href: ROUTES.admin.companies,
+      hint: "Client companies",
     },
     {
       label: "Today's Respondents",
       value: todayRespondentsData?.meta?.total ?? 0,
       icon: Users,
-      iconClass: "text-sky-600",
+      tone: "sky" as const,
       href: ROUTES.admin.surveyRespondents,
+      hint: "Traffic today",
     },
     {
       label: "Total Completes",
       value: respondentSummary?.completes ?? 0,
       icon: CheckCircle2,
-      iconClass: "text-teal-600",
+      tone: "teal" as const,
       href: ROUTES.admin.respondentAnalytics,
+      hint: "All-time completes",
     },
     {
       label: "Pending Queries",
       value: pendingQueriesData?.meta?.total ?? 0,
       icon: MessageCircle,
-      iconClass: "text-amber-500",
+      tone: "amber" as const,
       href: ROUTES.admin.queries,
+      hint: "Needs attention",
     },
   ] as const;
 
   return (
-    <div className="space-y-10">
-      <PageHeader
-        title="Dashboard"
-        description={`Welcome back, ${user?.fullName ?? "Administrator"}. Here's what's happening today.`}
-        help={ADMIN_PAGE_HELP.dashboard}
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-        {stats.map((stat) => (
-          <Link
-            key={stat.label}
-            href={stat.href}
-            className="h-full min-h-[148px] p-6 rounded-[2rem] bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 hover:border-brand-primary/20 transition-all group flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
-          >
-            <div className="flex justify-between items-start mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <stat.icon size={24} className={stat.iconClass} />
-              </div>
+    <div className="space-y-8">
+      <div className="relative overflow-hidden rounded-2xl border border-brand-primary/10 bg-gradient-to-br from-brand-accent1 via-brand-primary to-brand-accent2 px-6 py-7 text-white shadow-lg shadow-brand-primary/15 sm:px-8">
+        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-48 w-48 rounded-full bg-brand-light/20 blur-3xl" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-2">
+              Operations overview
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Welcome back, {user?.fullName?.split(" ")[0] ?? "Administrator"}
+            </h1>
+            <p className="mt-2 text-sm text-white/80 leading-relaxed">
+              Monitor surveys, vendors, and respondent performance from one place.
+            </p>
+          </div>
+          <div className="flex items-end gap-4 shrink-0">
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-3 min-w-[100px]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
+                Conversion
+              </p>
+              <p className="text-xl font-bold tabular-nums mt-0.5">
+                {loadingSummary ? "—" : `${(respondentSummary?.conversionRate ?? 0).toFixed(1)}%`}
+              </p>
             </div>
-            <div className="mt-auto">
-              <div className="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">
-                {stat.label}
-              </div>
-              <div className={`text-3xl font-black ${stat.iconClass}`}>
-                {cardsLoading ? "—" : stat.value}
-              </div>
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-3 min-w-[100px]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
+                Completes
+              </p>
+              <p className="text-xl font-bold tabular-nums mt-0.5">
+                {loadingSummary ? "—" : formatNumber(respondentSummary?.completes ?? 0)}
+              </p>
             </div>
-          </Link>
-        ))}
+            <div className="pb-0.5">
+              <PageHelp content={ADMIN_PAGE_HELP.dashboard} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {stats.map((stat) => {
+          const tone = STAT_TONES[stat.tone];
+          return (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className={`group relative h-full min-h-[132px] p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 ${tone.ring}`}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${tone.icon}`}
+                >
+                  <stat.icon size={20} strokeWidth={2.25} />
+                </div>
+                <ArrowUpRight
+                  size={16}
+                  className="text-gray-300 group-hover:text-brand-primary transition-colors"
+                />
+              </div>
+              <div className="mt-auto">
+                <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                  {stat.label}
+                </div>
+                <div className="flex items-baseline justify-between gap-2">
+                  <div className={`text-2xl font-bold tabular-nums tracking-tight ${tone.value}`}>
+                    {cardsLoading ? "—" : formatNumber(stat.value)}
+                  </div>
+                  <span className="text-[11px] text-gray-400 font-medium">{stat.hint}</span>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      <DashboardCharts summary={respondentSummary} isLoading={loadingSummary} />
+
+      <div className="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+        <div className="flex items-center justify-between mb-5 gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <UserX size={22} />
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <UserX size={18} />
             </div>
             <div>
-              <h2 className="text-xl font-black text-gray-900">Account Deletion Requests</h2>
+              <h2 className="text-lg font-bold text-gray-900">Account deletion requests</h2>
               <p className="text-xs text-gray-500 font-medium">
-                Approving marks account inactive (`isActive = false`) and does not hard delete user.
+                Approving marks the account inactive — it does not hard-delete the user.
               </p>
             </div>
           </div>
-          <span className="text-sm font-black text-rose-600">
+          <span className="shrink-0 inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-600">
             {deletionRequests.length} pending
           </span>
         </div>
         {isDeletionLoading ? (
-          <p className="text-sm text-gray-500">Loading requests...</p>
+          <p className="text-sm text-gray-500">Loading requests…</p>
         ) : deletionRequests.length === 0 ? (
-          <p className="text-sm text-gray-500">No pending account deletion requests.</p>
+          <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50/60 px-4 py-8 text-center">
+            <p className="text-sm text-gray-500">No pending account deletion requests.</p>
+          </div>
         ) : (
           <div className="space-y-3">
             {deletionRequests.map((request) => (
               <div
                 key={request.id}
-                className="p-4 rounded-2xl border border-gray-100 bg-gray-50/60 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="p-4 rounded-xl border border-gray-100 bg-gray-50/60 flex flex-col md:flex-row md:items-center justify-between gap-4"
               >
                 <div>
-                  <p className="font-black text-gray-900">{request.fullName}</p>
+                  <p className="font-bold text-gray-900">{request.fullName}</p>
                   <p className="text-xs text-gray-500">{request.email}</p>
                   {request.deletionRequestReason ? (
                     <p className="text-xs text-gray-600 mt-2">
@@ -220,9 +311,9 @@ export default function AdminOverview() {
                   type="button"
                   disabled={approveMutation.isPending}
                   onClick={() => approveMutation.mutate(request.id)}
-                  className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-black hover:bg-rose-700 disabled:opacity-60"
+                  className="px-4 py-2 rounded-lg bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 disabled:opacity-60 transition-colors"
                 >
-                  {approveMutation.isPending ? "Approving…" : "Approve Deactivation"}
+                  {approveMutation.isPending ? "Approving…" : "Approve deactivation"}
                 </button>
               </div>
             ))}

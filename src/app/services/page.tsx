@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
   BarChart3,
@@ -21,17 +22,36 @@ import {
   Stethoscope,
   Users,
   Zap,
+  Sparkles,
 } from "lucide-react";
 
 import { SERVICES_CATALOG } from "@/constants/services";
-import type { ServiceListCategory } from "@/constants/service-types";
+import type { ServiceListCategory, ServiceRecord } from "@/constants/service-types";
 import {
-  filterServices,
   getServiceCategory,
   getServicePreviewItems,
+  isIndustryService,
 } from "@/constants/services-utils";
+import { listPublicServices } from "@/services/services-cms/services-cms-api";
+import { queryKeys } from "@/services/queries/queryKeys";
 
 const iconMap: Record<string, typeof Layers> = {
+  Database,
+  Building2,
+  Users,
+  Stethoscope,
+  Code2,
+  PhoneCall,
+  Layers,
+  BarChart3,
+  Globe,
+  Zap,
+  HeartPulse,
+  Laptop,
+  Landmark,
+  ShoppingBag,
+  MessageSquareQuote,
+  Sparkles,
   "online-data-collection": Database,
   "b2b-market-research": Building2,
   "b2c-market-research": Users,
@@ -70,14 +90,95 @@ const TABS: { id: ServiceListCategory; label: string }[] = [
   { id: "industries", label: "Industries" },
 ];
 
+function matchesTab(service: ServiceRecord, tab: ServiceListCategory): boolean {
+  if (tab === "all") return true;
+  const slug = service.slug.toLowerCase();
+
+  if (tab === "industries") return isIndustryService(slug);
+  if (tab === "core") return !isIndustryService(slug);
+
+  if (tab === "b2b-b2c") {
+    return (
+      slug.includes("b2b") ||
+      slug.includes("b2c") ||
+      slug.includes("consumer") ||
+      slug.includes("online-data")
+    );
+  }
+
+  if (tab === "healthcare") {
+    return slug.includes("healthcare") || slug.includes("pharma") || slug.includes("biotech");
+  }
+
+  if (tab === "methodologies") {
+    return (
+      slug.includes("qualitative") ||
+      slug.includes("quantitative") ||
+      slug.includes("brand") ||
+      slug.includes("pricing") ||
+      slug.includes("concept") ||
+      slug.includes("product") ||
+      slug.includes("segmentation") ||
+      slug.includes("usage") ||
+      slug.includes("omnibus") ||
+      slug.includes("public-opinion") ||
+      slug.includes("employee")
+    );
+  }
+
+  if (tab === "operations") {
+    return (
+      slug.includes("cati") ||
+      slug.includes("programming") ||
+      slug.includes("recruitment") ||
+      slug.includes("translation") ||
+      slug.includes("data-processing") ||
+      slug.includes("panel")
+    );
+  }
+
+  return true;
+}
+
 export default function ServicesPage() {
   const [activeTab, setActiveTab] = useState<ServiceListCategory>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredServices = useMemo(
-    () => filterServices({ search: searchQuery, tab: activeTab }),
-    [searchQuery, activeTab]
-  );
+  const { data: remoteData } = useQuery({
+    queryKey: queryKeys.servicesCms.publicList({ pageSize: 100 }),
+    queryFn: () => listPublicServices({ pageSize: 100 }),
+    staleTime: 60 * 1000,
+  });
+
+  const allServices: ServiceRecord[] = useMemo(() => {
+    if (remoteData?.items && remoteData.items.length > 0) {
+      return remoteData.items;
+    }
+    return SERVICES_CATALOG;
+  }, [remoteData]);
+
+  const filteredServices = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+
+    return allServices.filter((service) => {
+      if (!matchesTab(service, activeTab)) return false;
+      if (!q) return true;
+
+      const haystack = [
+        service.service_name,
+        service.slug,
+        service.hero?.title,
+        service.hero?.subtitle,
+        service.seo?.meta_description,
+        ...(service.what_we_offer?.items ?? []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(q);
+    });
+  }, [allServices, searchQuery, activeTab]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -110,7 +211,7 @@ export default function ServicesPage() {
                 href="#services-catalog"
                 className="px-8 py-4 bg-white/10 border border-white/30 text-white font-black rounded-full hover:bg-white/20 backdrop-blur-md transition-all active:scale-95"
               >
-                Browse All Services ({SERVICES_CATALOG.length})
+                Browse All Services ({allServices.length})
               </a>
             </div>
           </div>
@@ -175,13 +276,14 @@ export default function ServicesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredServices.map((service) => {
-              const Icon = iconMap[service.slug] ?? Layers;
+              const iconKey = service.icon || service.slug;
+              const Icon = iconMap[iconKey] || iconMap[service.slug] || Layers;
               const previewItems = getServicePreviewItems(service);
               const category = getServiceCategory(service);
 
               return (
                 <Link
-                  key={service.id}
+                  key={service.slug}
                   href={`/services/${service.slug}`}
                   className="group relative bg-white border border-slate-100 rounded-[2rem] p-8 sm:p-9 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 hover:border-brand-primary/30 flex flex-col justify-between hover:-translate-y-1.5"
                 >
@@ -200,7 +302,7 @@ export default function ServicesPage() {
                     </h3>
 
                     <p className="text-slate-600 leading-relaxed text-sm font-medium mb-6 line-clamp-3">
-                      {service.hero.subtitle || service.seo.meta_description}
+                      {service.hero?.subtitle || service.seo?.meta_description}
                     </p>
 
                     {previewItems.length > 0 ? (

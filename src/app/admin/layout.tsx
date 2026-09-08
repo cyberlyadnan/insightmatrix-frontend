@@ -28,6 +28,7 @@ import {
   Share2,
   Users,
   Shield,
+  Layers,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -38,6 +39,7 @@ function isSidebarActive(pathname: string, href: string) {
 
 const sidebarLinks = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+  { name: "Services", icon: Layers, href: "/admin/services" },
   { name: "Survey Providers", icon: Building2, href: "/admin/companies" },
   { name: "Vendors", icon: Store, href: "/admin/vendors" },
   { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },

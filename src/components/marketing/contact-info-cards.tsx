@@ -1,0 +1,118 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import { Mail, Phone, MapPin, BuildingIcon, Sparkles } from "lucide-react";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+
+export function ContactInfoCards() {
+  const { settings } = useSiteSettings();
+  const address = settings.address;
+  const phones = settings.phones?.length ? settings.phones : ["+91 8707017533", "+91 8299357161"];
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-4">Core contact points</h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {[
+          {
+            icon: Mail,
+            title: "Email",
+            info: settings.email || "info@insightmatrix.online",
+            info2: settings.salesEmail ? `Sales: ${settings.salesEmail}` : "",
+            accent: "bg-brand-subtle text-brand-primary",
+          },
+          {
+            icon: Phone,
+            title: "Contact Numbers",
+            info: phones[0] || "",
+            info2: phones[1] || "",
+            accent: "bg-violet-50 text-violet-600",
+          },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all"
+          >
+            <div
+              className={`w-14 h-14 rounded-2xl ${item.accent} flex items-center justify-center mb-6`}
+            >
+              <item.icon className="w-7 h-7" />
+            </div>
+            <h3 className="text-xl font-extrabold text-gray-900 mb-2">{item.title}</h3>
+            <p className="text-gray-500 text-sm mb-1">{item.info}</p>
+            {item.info2 ? (
+              <p className="text-gray-500 text-xs font-semibold">{item.info2}</p>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      <p className="text-gray-600 text-sm font-medium">
+        <span className="font-extrabold text-gray-900">Business Hours: </span>
+        {settings.businessHours || "Monday – Saturday, 9:00 AM – 7:00 PM"}
+      </p>
+
+      <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-8 items-center lg:items-start group transition-all hover:shadow-xl">
+        <div className="w-full sm:w-1/2">
+          <div className="w-14 h-14 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-6">
+            <MapPin className="w-7 h-7" />
+          </div>
+          <h3 className="text-xl font-extrabold text-gray-900 mb-4">Our Headquarters</h3>
+          <p className="text-gray-500 leading-relaxed text-sm font-medium">
+            {address?.street || "123 Data Point Avenue, Suite 800"}
+            <br />
+            {address?.city || "San Francisco"}, {address?.state || "CA"}{" "}
+            {address?.postalCode || "94105"}, {address?.country || "USA"}
+          </p>
+        </div>
+        <div className="w-full sm:w-1/2 h-44 bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100">
+          <div className="absolute inset-0 bg-[#f8fafc] flex items-center justify-center">
+            <div className="relative">
+              <div className="w-10 h-10 bg-brand-primary rounded-full absolute -top-5 -left-5 animate-ping opacity-20" />
+              <div className="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center relative z-10 shadow-lg shadow-brand-primary/40">
+                <MapPin className="text-white w-5 h-5" />
+              </div>
+            </div>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-white/80" />
+          <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            <BuildingIcon className="w-4 h-4 text-gray-400" />
+            <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+              {address?.hqLabel || "Silicon Valley HQ"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Support Highlight */}
+      <div className="bg-gradient-to-br from-brand-primary to-brand-accent1 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-brand-primary/30 relative overflow-hidden">
+        <Sparkles className="absolute -top-10 -right-10 w-40 h-40 opacity-20" />
+        <div className="relative z-10">
+          <h3 className="text-2xl font-black mb-4">Enterprise scale?</h3>
+          <p className="text-white/80 font-medium mb-6 leading-relaxed">
+            Looking to integrate our data via API or need custom white-labeled panel management? Our
+            enterprise team specializes in high-volume research global deployments.
+          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-3">
+              {[1, 2, 3].map((i) => (
+                <Image
+                  key={i}
+                  src={`https://i.pravatar.cc/80?img=${i + 20}`}
+                  width={40}
+                  height={40}
+                  unoptimized
+                  className="w-10 h-10 rounded-full border-2 border-brand-primary shadow-lg"
+                  alt="Specialist"
+                />
+              ))}
+            </div>
+            <span className="text-sm font-bold">Experts standing by</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

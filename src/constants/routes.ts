@@ -47,6 +47,9 @@ export const ROUTES = {
     respondentAnalytics: "/admin/respondent-analytics",
     securityLogs: "/admin/security-logs",
     queries: "/admin/queries",
+    services: "/admin/services",
+    servicesCreate: "/admin/services/create",
+    serviceEdit: (id: string) => `/admin/services/${id}/edit`,
   },
   vendor: {
     login: "/vendor/login",

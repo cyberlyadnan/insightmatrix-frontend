@@ -34,10 +34,15 @@ export type ServiceRecord = {
   id: string;
   slug: string;
   service_name: string;
+  category?: string;
+  icon?: string;
   seo: {
     page_title: string;
     meta_description: string;
     url: string;
+    keywords?: string[];
+    canonicalUrl?: string;
+    ogImage?: string;
   };
   hero: {
     title: string;

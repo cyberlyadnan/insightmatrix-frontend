@@ -1,7 +1,8 @@
 "use client";
 
-import { HOME_PAGE_DATA } from "@/constants/site-content";
+import { useMemo } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import {
   BarChart3,
   MessageSquareQuote,
@@ -14,22 +15,79 @@ import {
   Database,
   ArrowRight,
   Sparkles,
+  Layers,
+  HeartPulse,
+  Laptop,
+  Landmark,
+  ShoppingBag,
+  Zap,
 } from "lucide-react";
 
-const serviceIcons = [
-  BarChart3,
-  MessageSquareQuote,
+import { HOME_PAGE_DATA } from "@/constants/site-content";
+import { listPublicServices } from "@/services/services-cms/services-cms-api";
+import { queryKeys } from "@/services/queries/queryKeys";
+
+const iconMap: Record<string, typeof Layers> = {
+  Database,
   Building2,
   Users,
   Stethoscope,
-  Globe,
   Code2,
   PhoneCall,
-  Database,
-];
+  Layers,
+  BarChart3,
+  Globe,
+  Zap,
+  HeartPulse,
+  Laptop,
+  Landmark,
+  ShoppingBag,
+  MessageSquareQuote,
+  Sparkles,
+  "online-data-collection": Database,
+  "b2b-market-research": Building2,
+  "b2c-market-research": Users,
+  "healthcare-market-research": Stethoscope,
+  "qualitative-market-research": MessageSquareQuote,
+  "survey-programming": Code2,
+  "cati-services": PhoneCall,
+  "data-processing": Layers,
+  "online-panel-solutions": Users,
+  "respondent-recruitment": Users,
+  "quantitative-market-research": BarChart3,
+  "translation-localization": Globe,
+  "brand-tracking": Zap,
+};
 
 export default function OurServicesSection() {
-  const { services } = HOME_PAGE_DATA;
+  const { services: fallbackData } = HOME_PAGE_DATA;
+
+  const { data: remoteData } = useQuery({
+    queryKey: queryKeys.servicesCms.publicList({ pageSize: 12 }),
+    queryFn: () => listPublicServices({ pageSize: 12 }),
+    staleTime: 60 * 1000,
+  });
+
+  const displayServices = useMemo(() => {
+    if (remoteData?.items && remoteData.items.length > 0) {
+      // Pick up to 9 featured or first 9
+      const featured = remoteData.items.filter((s) => s.featured);
+      const list = featured.length >= 6 ? featured : remoteData.items;
+      return list.slice(0, 9).map((s) => ({
+        title: s.service_name,
+        slug: s.slug,
+        description:
+          s.hero?.subtitle || s.seo?.meta_description || "Comprehensive global research solution.",
+        icon: s.icon,
+      }));
+    }
+    return fallbackData.items.map((i) => ({
+      title: i.title,
+      slug: i.slug,
+      description: i.description,
+      icon: "Layers",
+    }));
+  }, [remoteData, fallbackData]);
 
   return (
     <section className="py-28 bg-white relative overflow-hidden">
@@ -43,20 +101,20 @@ export default function OurServicesSection() {
             <span>End-to-End Capabilities</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 tracking-tight mb-6">
-            {services.heading}
+            {fallbackData.heading}
           </h2>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-medium">
-            {services.sub}
+            {fallbackData.sub}
           </p>
         </div>
 
         {/* 9 Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.items.map((item, idx) => {
-            const Icon = serviceIcons[idx % serviceIcons.length];
+          {displayServices.map((item, idx) => {
+            const Icon = iconMap[item.icon] || iconMap[item.slug] || Layers;
             return (
               <Link
-                key={idx}
+                key={item.slug || idx}
                 href={`/services/${item.slug}`}
                 className="group relative bg-white border border-slate-100 rounded-[2rem] p-8 sm:p-9 transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 hover:border-brand-primary/30 flex flex-col justify-between hover:-translate-y-1.5"
               >
@@ -67,7 +125,7 @@ export default function OurServicesSection() {
                   <h3 className="text-xl font-black text-gray-900 mb-3 tracking-tight group-hover:text-brand-primary transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-slate-600 leading-relaxed text-sm font-medium mb-6">
+                  <p className="text-slate-600 leading-relaxed text-sm font-medium mb-6 line-clamp-3">
                     {item.description}
                   </p>
                 </div>

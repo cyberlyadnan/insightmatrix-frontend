@@ -1,98 +1,326 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  Settings, 
-  Layout, 
-  Eye,
+import Link from "next/link";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
   CheckCircle2,
-  AlertCircle,
-  MoreVertical,
-  Zap,
-  Tag
+  XCircle,
+  Layers,
+  Sparkles,
+  RefreshCw,
+  ExternalLink,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  listAdminServices,
+  toggleServiceStatus,
+  deleteService,
+} from "@/services/services-cms/services-cms-api";
+import { queryKeys } from "@/services/queries/queryKeys";
 
-const initialServices = [
-  { id: 1, name: "Consumer Habit Research", icon: "TrendingUp", status: "Active", priceRange: "$5k - $20k", items: 4 },
-  { id: 2, name: "B2B Market Penetration", icon: "Target", status: "Active", priceRange: "$10k - $50k", items: 6 },
-  { id: 3, name: "Brand Voice Discovery", icon: "MessageSquare", status: "Paused", priceRange: "$2k - $8k", items: 3 },
-  { id: 4, name: "Rapid Audience Profiling", icon: "Zap", status: "Active", priceRange: "$1k - $5k", items: 2 },
-  { id: 5, name: "Competitor Intelligence", icon: "Shield", status: "Active", priceRange: "$15k+", items: 5 },
-  { id: 6, name: "Product UX Feedback", icon: "Smile", status: "Active", priceRange: "$3k - $12k", items: 4 },
+const CATEGORIES = [
+  { value: "all", label: "All Categories" },
+  { value: "core", label: "Core Services" },
+  { value: "industries", label: "Industries" },
+  { value: "b2b-b2c", label: "B2B & B2C" },
+  { value: "healthcare", label: "Healthcare" },
+  { value: "methodologies", label: "Methodologies" },
+  { value: "operations", label: "Operations" },
 ];
 
-export default function AdminServices() {
-  const [services, setServices] = useState(initialServices);
+export default function AdminServicesPage() {
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [status, setStatus] = useState<"published" | "draft" | "all">("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
+
+  const filters = { search, category, status, page, pageSize };
+
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: queryKeys.servicesCms.adminList(filters),
+    queryFn: () => listAdminServices(filters),
+  });
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, nextStatus }: { id: string; nextStatus: "published" | "draft" }) =>
+      toggleServiceStatus(id, nextStatus),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.servicesCms.all });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteService(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.servicesCms.all });
+    },
+  });
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const services = data?.items ?? [];
+  const meta = data?.meta ?? { page: 1, pageSize: 50, total: 0, totalPages: 1 };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Service Catalog</h1>
-          <p className="text-gray-500 font-medium text-sm">Define and manage the professional services offered on InsightMatrix.</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Services CMS</h1>
+            <span className="px-3 py-1 bg-brand-subtle text-brand-primary text-xs font-black rounded-full border border-brand-light/30">
+              {meta.total} Total Services
+            </span>
+          </div>
+          <p className="mt-1 text-sm text-gray-500 font-medium">
+            Manage dynamic service catalog, SEO metadata, audience targeting, and public pages.
+          </p>
         </div>
-        <button className="flex items-center justify-center gap-2 px-6 py-4 bg-gray-900 hover:bg-black text-white font-black rounded-2xl shadow-xl shadow-gray-200 transition-all active:scale-95">
-          <Plus size={20} />
-          New Service Item
-        </button>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="p-2.5 rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all disabled:opacity-60"
+            title="Refresh list"
+          >
+            <RefreshCw size={16} className={isFetching ? "animate-spin text-brand-primary" : ""} />
+          </button>
+
+          <Link
+            href="/admin/services/create"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-primary text-white text-xs font-bold shadow-lg shadow-brand-primary/20 hover:bg-brand-hover active:scale-95 transition-all"
+          >
+            <Plus size={16} />
+            <span>Create New Service</span>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((service, i) => (
-          <motion.div 
-            key={service.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.05 }}
-            className="group bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-gray-200/40 transition-all relative overflow-hidden"
+      {/* Filter Toolbar */}
+      <div className="bg-white p-4 rounded-[1.75rem] border border-gray-100 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="Search services by title, slug, or keywords..."
+            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+          />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
+            className="h-10 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none"
           >
-            {/* Status Badge */}
-            <div className="absolute top-6 right-6">
-               <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                 service.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'
-               }`}>
-                  {service.status}
-               </span>
-            </div>
+            {CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
 
-            <div className="w-14 h-14 rounded-2xl bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-8 group-hover:scale-110 transition-transform">
-               <Zap size={28} />
-            </div>
+          <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl">
+            {(["all", "published", "draft"] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => {
+                  setStatus(s);
+                  setPage(1);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
+                  status === s
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-            <h3 className="text-xl font-black text-gray-900 mb-2 leading-tight group-hover:text-brand-primary transition-colors">{service.name}</h3>
-            <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-8">{service.items} Key Feature Points Included</p>
+      {/* Services Table */}
+      <div className="bg-white rounded-[1.75rem] border border-gray-100 shadow-sm overflow-hidden">
+        <div className="w-full overflow-x-auto">
+          <table className="w-full text-left text-xs text-gray-700 border-collapse whitespace-nowrap">
+            <thead>
+              <tr className="bg-[#091428] text-white uppercase text-[10px] tracking-wider font-extrabold select-none">
+                <th className="py-2.5 px-3">Order</th>
+                <th className="py-2.5 px-3">Service Name</th>
+                <th className="py-2.5 px-3">Category</th>
+                <th className="py-2.5 px-3">Slug / Route</th>
+                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">Featured</th>
+                <th className="py-2.5 px-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-gray-400">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-brand-primary mb-2" />
+                    <p className="font-bold text-xs">Loading services...</p>
+                  </td>
+                </tr>
+              ) : services.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-12 text-center text-gray-400">
+                    <p className="font-bold text-sm text-gray-800">No services found</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Try adjusting your search or filters.
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                services.map((item) => {
+                  const isPublished = item.status === "published";
+                  const entityId = item._id || item.slug;
 
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl mb-8">
-               <div className="flex items-center gap-2 text-gray-400">
-                  <Tag size={16} />
-                  <span className="text-xs font-bold uppercase tracking-widest">Base Rate</span>
-               </div>
-               <span className="text-sm font-black text-gray-900">{service.priceRange}</span>
-            </div>
+                  return (
+                    <tr key={item.slug} className="hover:bg-blue-50/40 transition-colors h-11">
+                      <td className="py-1.5 px-3 font-mono font-bold text-gray-400">
+                        #{item.order ?? 0}
+                      </td>
 
-            <div className="flex gap-2">
-               <button className="flex-1 py-3 bg-gray-900 text-white font-black text-xs rounded-xl hover:bg-black transition-colors flex items-center justify-center gap-2 group/btn">
-                  Edit Details <Edit size={14} className="group-hover/btn:rotate-12 transition-transform" />
-               </button>
-               <button className="w-12 h-12 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:text-rose-500 hover:border-rose-500 transition-all">
-                  <Trash2 size={18} />
-               </button>
-            </div>
-          </motion.div>
-        ))}
-        
-        {/* Add Shortcut */}
-        <button className="h-full min-h-[300px] border-4 border-dashed border-gray-100 rounded-[2.5rem] flex flex-col items-center justify-center text-gray-300 hover:border-brand-primary/20 hover:text-brand-primary transition-all group">
-            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4 group-hover:bg-brand-primary/10 transition-colors">
-               <Plus size={32} />
-            </div>
-            <span className="text-sm font-black uppercase tracking-widest">Quick Service Add</span>
-        </button>
+                      <td className="py-1.5 px-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-brand-subtle text-brand-primary flex items-center justify-center font-bold shrink-0">
+                            <Layers size={14} />
+                          </div>
+                          <div>
+                            <span className="font-bold text-gray-900 block">
+                              {item.service_name}
+                            </span>
+                            <span className="text-[10px] text-gray-400 truncate max-w-xs block">
+                              {item.seo?.meta_description ||
+                                item.hero?.subtitle ||
+                                "No description"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="py-1.5 px-3">
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-gray-100 text-gray-700">
+                          {item.category || "core"}
+                        </span>
+                      </td>
+
+                      <td className="py-1.5 px-3 font-mono text-[11px] text-gray-600">
+                        /services/{item.slug}
+                      </td>
+
+                      <td className="py-1.5 px-3">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                            isPublished
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isPublished ? "bg-emerald-500" : "bg-amber-500"
+                            }`}
+                          />
+                          {item.status}
+                        </span>
+                      </td>
+
+                      <td className="py-1.5 px-3">
+                        {item.featured ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-extrabold">
+                            <Sparkles size={10} /> Featured
+                          </span>
+                        ) : (
+                          <span className="text-gray-300 font-mono">-</span>
+                        )}
+                      </td>
+
+                      <td className="py-1.5 px-3 text-right">
+                        <div className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap">
+                          {/* Live preview */}
+                          <Link
+                            href={`/services/${item.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                            title="Open live public service page"
+                          >
+                            <ExternalLink size={13} />
+                          </Link>
+
+                          {/* Edit */}
+                          <Link
+                            href={`/admin/services/${entityId}/edit`}
+                            className="p-1.5 rounded-lg border border-brand-primary/30 text-brand-primary bg-brand-subtle hover:bg-brand-primary hover:text-white transition-all font-bold"
+                            title="Edit service details"
+                          >
+                            <Edit2 size={13} />
+                          </Link>
+
+                          {/* Status toggle */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              toggleStatusMutation.mutate({
+                                id: entityId,
+                                nextStatus: isPublished ? "draft" : "published",
+                              })
+                            }
+                            disabled={toggleStatusMutation.isPending}
+                            className={`p-1.5 rounded-lg border transition-colors ${
+                              isPublished
+                                ? "border-amber-200 text-amber-600 hover:bg-amber-50"
+                                : "border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                            }`}
+                            title={isPublished ? "Set to Draft" : "Publish Service"}
+                          >
+                            {isPublished ? <XCircle size={13} /> : <CheckCircle2 size={13} />}
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(entityId, item.service_name)}
+                            disabled={deleteMutation.isPending}
+                            className="p-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-colors"
+                            title="Delete service"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

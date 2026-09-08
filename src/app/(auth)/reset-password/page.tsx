@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
 import { resetPasswordRequest } from "@/services/auth";
 
@@ -37,6 +38,9 @@ const resetSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+const fieldClass =
+  "pl-10 h-10 rounded-lg border-gray-200 bg-white text-sm focus:border-brand-primary focus:ring-brand-primary/15 transition-all";
 
 function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -76,15 +80,18 @@ function ResetPasswordForm() {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100 text-center space-y-4"
+        className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90 text-center space-y-4"
       >
-        <h1 className="text-2xl font-bold text-gray-900">Invalid reset link</h1>
-        <p className="text-gray-500">
-          Use the reset link from your email, or request a new one from the forgot password page.
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Invalid reset link</h1>
+        <p className="text-sm text-gray-500 leading-relaxed">
+          Use the reset link from your email, or request a new one.
         </p>
         <Link
-          href="/forgot-password"
-          className={cn(buttonVariants({ variant: "default" }), "inline-flex h-12 px-8 rounded-xl")}
+          href={ROUTES.forgotPassword}
+          className={cn(
+            buttonVariants({ variant: "default" }),
+            "inline-flex h-10 px-6 rounded-lg bg-brand-primary hover:bg-brand-hover text-sm font-semibold"
+          )}
         >
           Forgot password
         </Link>
@@ -95,25 +102,23 @@ function ResetPasswordForm() {
   if (isSuccess) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100 text-center"
+        className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90 text-center"
       >
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="w-8 h-8 text-green-600" />
+        <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-6 h-6 text-emerald-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successful</h1>
-        <p className="text-gray-500 mb-8">
-          Your password has been updated. You can now log in with your new password.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight mb-1.5">Password updated</h1>
+        <p className="text-sm text-gray-500 mb-6">You can now sign in with your new password.</p>
         <Link
-          href="/login"
+          href={ROUTES.login}
           className={cn(
             buttonVariants({ variant: "default" }),
-            "w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold flex items-center justify-center"
+            "w-full h-10 rounded-lg bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold flex items-center justify-center"
           )}
         >
-          Go to Login
+          Go to sign in
         </Link>
       </motion.div>
     );
@@ -121,39 +126,40 @@ function ResetPasswordForm() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100"
+      transition={{ duration: 0.35 }}
+      className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90"
     >
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Set New Password</h1>
-        <p className="text-gray-500">Choose a strong, unique password for your account.</p>
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Set new password</h1>
+        <p className="text-sm text-gray-500 mt-1">Choose a strong password for your account.</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">New Password</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">New password</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="pl-11 pr-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
+                      placeholder="Min. 8 characters"
+                      className={`${fieldClass} pr-10`}
                       {...field}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </FormControl>
@@ -167,14 +173,16 @@ function ResetPasswordForm() {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Confirm New Password</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">
+                  Confirm password
+                </FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       type="password"
-                      placeholder="••••••••"
-                      className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
+                      placeholder="Repeat password"
+                      className={fieldClass}
                       {...field}
                     />
                   </div>
@@ -186,18 +194,18 @@ function ResetPasswordForm() {
 
           <Button
             type="submit"
-            className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
+            className="w-full h-10 rounded-lg bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold shadow-sm shadow-brand-primary/20 transition-all active:scale-[0.99]"
             disabled={resetMutation.isPending}
           >
             {resetMutation.isPending ? (
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Updating...
-              </div>
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Updating…
+              </span>
             ) : (
-              <div className="flex items-center justify-center gap-2">
-                Update Password <ArrowRight className="w-5 h-5" />
-              </div>
+              <span className="flex items-center justify-center gap-1.5">
+                Update password <ArrowRight className="w-4 h-4" />
+              </span>
             )}
           </Button>
         </form>
@@ -210,8 +218,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex justify-center py-16">
-          <div className="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+        <div className="bg-white px-6 py-12 rounded-2xl shadow-sm border border-gray-100 flex justify-center">
+          <div className="w-6 h-6 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >

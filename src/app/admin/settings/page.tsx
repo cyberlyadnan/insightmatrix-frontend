@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Shield } from "lucide-react";
+import { CompanyProfileSettingsForm } from "@/components/admin/settings/company-profile-settings-form";
 import { SurveyRoutingCallbacksSection } from "@/components/admin/SurveyRoutingCallbacksSection";
 import { PageHelp } from "@/components/crm/page-help";
 import { DashboardSection } from "@/components/dashboard/DashboardSection";
@@ -12,15 +13,19 @@ export default function AdminSettingsPage() {
     <div className="space-y-8">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">Settings</h1>
+          <h1 className="text-3xl font-black text-gray-900">Settings & Configuration</h1>
           <p className="mt-2 text-gray-600">
-            Configure CMS preferences, routing URLs, and notifications. Further controls connect as
-            the API layer grows.
+            Manage dynamic company profile, contact details, social links, SEO defaults, and survey
+            routing.
           </p>
         </div>
         <PageHelp content={ADMIN_PAGE_HELP.settings} />
       </div>
 
+      {/* Dynamic Company Profile & Social Links Form */}
+      <CompanyProfileSettingsForm />
+
+      {/* Survey Routing Callbacks */}
       <SurveyRoutingCallbacksSection />
 
       <DashboardSection
@@ -51,7 +56,7 @@ export default function AdminSettingsPage() {
       </DashboardSection>
 
       <DashboardSection
-        title="Security"
+        title="Security & Access"
         description="Session management and admin roles will connect to your API layer."
         actions={
           <Button

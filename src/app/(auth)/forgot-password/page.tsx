@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
 import { forgotPasswordRequest } from "@/services/auth";
 
@@ -57,27 +58,27 @@ export default function ForgotPasswordPage() {
   if (isSubmitted) {
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100 text-center"
+        className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90 text-center"
       >
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <CheckCircle2 className="w-8 h-8 text-green-600" />
+        <div className="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle2 className="w-6 h-6 text-emerald-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h1>
-        <p className="text-gray-500 mb-8">
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight mb-1.5">Check your email</h1>
+        <p className="text-sm text-gray-500 mb-6 leading-relaxed">
           If an account exists for{" "}
-          <span className="font-bold text-gray-900">{form.getValues("email")}</span>, you will
+          <span className="font-semibold text-gray-800">{form.getValues("email")}</span>, you will
           receive reset instructions shortly.
         </p>
         <Link
-          href="/login"
+          href={ROUTES.login}
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "w-full h-12 rounded-xl border-gray-200 font-bold hover:bg-gray-50 flex items-center justify-center"
+            "w-full h-10 rounded-lg border-gray-200 text-sm font-semibold hover:bg-gray-50 flex items-center justify-center"
           )}
         >
-          <ChevronLeft className="w-4 h-4 mr-2" /> Back to Login
+          <ChevronLeft className="w-4 h-4 mr-1" /> Back to sign in
         </Link>
       </motion.div>
     );
@@ -85,36 +86,36 @@ export default function ForgotPasswordPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100"
+      transition={{ duration: 0.35 }}
+      className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90"
     >
-      <div className="mb-8">
+      <div className="mb-5">
         <Link
-          href="/login"
-          className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-brand-primary transition-colors mb-4"
+          href={ROUTES.login}
+          className="inline-flex items-center text-xs font-semibold text-gray-400 hover:text-brand-primary transition-colors mb-3"
         >
-          <ChevronLeft className="w-4 h-4 mr-1" /> Back to Login
+          <ChevronLeft className="w-3.5 h-3.5 mr-0.5" /> Back to sign in
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h1>
-        <p className="text-gray-500">No worries, we&apos;ll send you reset instructions.</p>
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Reset password</h1>
+        <p className="text-sm text-gray-500 mt-1">We&apos;ll email you a secure reset link.</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Email Address</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">Email</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
-                      placeholder="name@example.com"
-                      className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
+                      placeholder="name@company.com"
+                      className="pl-10 h-10 rounded-lg border-gray-200 bg-white text-sm focus:border-brand-primary focus:ring-brand-primary/15 transition-all"
                       {...field}
                     />
                   </div>
@@ -126,18 +127,18 @@ export default function ForgotPasswordPage() {
 
           <Button
             type="submit"
-            className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
+            className="w-full h-10 rounded-lg bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold shadow-sm shadow-brand-primary/20 transition-all active:scale-[0.99]"
             disabled={forgotMutation.isPending}
           >
             {forgotMutation.isPending ? (
-              <div className="flex items-center gap-2">
-                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Sending...
-              </div>
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Sending…
+              </span>
             ) : (
-              <div className="flex items-center justify-center gap-2">
-                Reset Password <ArrowRight className="w-5 h-5" />
-              </div>
+              <span className="flex items-center justify-center gap-1.5">
+                Send reset link <ArrowRight className="w-4 h-4" />
+              </span>
             )}
           </Button>
         </form>

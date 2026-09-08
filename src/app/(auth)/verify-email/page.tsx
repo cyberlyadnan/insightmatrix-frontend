@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ROUTES } from "@/constants/routes";
 import { parseApiError } from "@/services/api/errors";
 import { resendVerificationRequest } from "@/services/auth";
 
@@ -48,32 +49,32 @@ export default function VerifyEmailPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white p-8 rounded-3xl shadow-xl shadow-black/5 border border-gray-100"
+      transition={{ duration: 0.35 }}
+      className="bg-white px-6 py-7 sm:px-7 rounded-2xl shadow-sm border border-gray-100/90"
     >
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Verify your email</h1>
-        <p className="text-gray-500">
-          Open the verification link we sent you. It redirects back to sign-in when successful.
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-gray-900 tracking-tight">Verify your email</h1>
+        <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+          Open the link we sent you, or request a new verification email below.
         </p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-gray-700 font-semibold">Email Address</FormLabel>
+                <FormLabel className="text-xs font-semibold text-gray-600">Email</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
-                      placeholder="name@example.com"
-                      className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20 transition-all font-medium"
+                      placeholder="name@company.com"
+                      className="pl-10 h-10 rounded-lg border-gray-200 bg-white text-sm focus:border-brand-primary focus:ring-brand-primary/15 transition-all"
                       {...field}
                     />
                   </div>
@@ -85,26 +86,29 @@ export default function VerifyEmailPage() {
 
           <Button
             type="submit"
-            className="w-full h-12 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold text-lg shadow-lg shadow-brand-primary/20 transition-all active:scale-[0.98]"
+            className="w-full h-10 rounded-lg bg-brand-primary hover:bg-brand-hover text-white text-sm font-semibold shadow-sm shadow-brand-primary/20 transition-all active:scale-[0.99]"
             disabled={resendMutation.isPending}
           >
             {resendMutation.isPending ? (
               <span className="flex items-center gap-2">
-                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Sending...
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Sending…
               </span>
             ) : (
-              <span className="flex items-center justify-center gap-2">
-                Resend verification email <ArrowRight className="w-5 h-5" />
+              <span className="flex items-center justify-center gap-1.5">
+                Resend verification <ArrowRight className="w-4 h-4" />
               </span>
             )}
           </Button>
         </form>
       </Form>
 
-      <p className="mt-8 text-center text-sm text-gray-600">
+      <p className="mt-5 pt-4 border-t border-gray-100 text-center text-xs text-gray-500">
         Already verified?{" "}
-        <Link href="/login" className="font-bold text-brand-primary hover:text-brand-hover">
+        <Link
+          href={ROUTES.login}
+          className="font-semibold text-brand-primary hover:text-brand-hover"
+        >
           Sign in
         </Link>
       </p>

@@ -102,4 +102,15 @@ export const queryKeys = {
       ["vendor-respondent-sessions", "list", filters] as const,
     detail: (id: string) => ["vendor-respondent-sessions", id] as const,
   },
+  servicesCms: {
+    all: ["services-cms"] as const,
+    adminList: (filters: Record<string, unknown>) =>
+      ["services-cms", "admin-list", filters] as const,
+    publicList: (filters: Record<string, unknown>) =>
+      ["services-cms", "public-list", filters] as const,
+    detail: (slugOrId: string) => ["services-cms", slugOrId] as const,
+  },
+  siteSettings: {
+    profile: ["site-settings", "profile"] as const,
+  },
 } as const;

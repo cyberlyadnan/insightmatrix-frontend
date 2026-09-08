@@ -39,34 +39,72 @@ function todayIsoDate() {
 
 const STAT_TONES = {
   blue: {
-    icon: "bg-brand-subtle text-brand-primary",
-    value: "text-brand-primary",
-    ring: "group-hover:border-brand-primary/25 group-hover:shadow-brand-primary/5",
+    cardBg: "bg-gradient-to-br from-blue-50/90 via-indigo-50/40 to-white",
+    cardBorder: "border-blue-200/80 hover:border-blue-400 hover:shadow-xl hover:shadow-blue-500/10",
+    iconBox:
+      "bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30",
+    arrowColor: "text-blue-400 group-hover:text-blue-700",
+    labelColor: "text-blue-900/80",
+    valueColor: "text-blue-700",
+    hintBadge: "text-blue-700 bg-blue-100/80 border border-blue-200/70",
+    glowBlob: "bg-blue-400/20",
   },
   emerald: {
-    icon: "bg-emerald-50 text-emerald-600",
-    value: "text-emerald-700",
-    ring: "group-hover:border-emerald-200 group-hover:shadow-emerald-500/5",
+    cardBg: "bg-gradient-to-br from-emerald-50/90 via-teal-50/40 to-white",
+    cardBorder:
+      "border-emerald-200/80 hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-500/10",
+    iconBox:
+      "bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-500/30",
+    arrowColor: "text-emerald-400 group-hover:text-emerald-700",
+    labelColor: "text-emerald-900/80",
+    valueColor: "text-emerald-700",
+    hintBadge: "text-emerald-700 bg-emerald-100/80 border border-emerald-200/70",
+    glowBlob: "bg-emerald-400/20",
   },
   violet: {
-    icon: "bg-violet-50 text-violet-600",
-    value: "text-violet-700",
-    ring: "group-hover:border-violet-200 group-hover:shadow-violet-500/5",
+    cardBg: "bg-gradient-to-br from-purple-50/90 via-violet-50/40 to-white",
+    cardBorder:
+      "border-purple-200/80 hover:border-purple-400 hover:shadow-xl hover:shadow-purple-500/10",
+    iconBox:
+      "bg-gradient-to-br from-purple-600 to-violet-600 text-white shadow-md shadow-purple-500/30",
+    arrowColor: "text-purple-400 group-hover:text-purple-700",
+    labelColor: "text-purple-900/80",
+    valueColor: "text-purple-700",
+    hintBadge: "text-purple-700 bg-purple-100/80 border border-purple-200/70",
+    glowBlob: "bg-purple-400/20",
   },
   sky: {
-    icon: "bg-sky-50 text-sky-600",
-    value: "text-sky-700",
-    ring: "group-hover:border-sky-200 group-hover:shadow-sky-500/5",
+    cardBg: "bg-gradient-to-br from-sky-50/90 via-cyan-50/40 to-white",
+    cardBorder: "border-sky-200/80 hover:border-sky-400 hover:shadow-xl hover:shadow-sky-500/10",
+    iconBox: "bg-gradient-to-br from-sky-500 to-cyan-600 text-white shadow-md shadow-sky-500/30",
+    arrowColor: "text-sky-400 group-hover:text-sky-700",
+    labelColor: "text-sky-900/80",
+    valueColor: "text-sky-700",
+    hintBadge: "text-sky-700 bg-sky-100/80 border border-sky-200/70",
+    glowBlob: "bg-sky-400/20",
   },
   teal: {
-    icon: "bg-teal-50 text-teal-600",
-    value: "text-teal-700",
-    ring: "group-hover:border-teal-200 group-hover:shadow-teal-500/5",
+    cardBg: "bg-gradient-to-br from-teal-50/90 via-emerald-50/40 to-white",
+    cardBorder: "border-teal-200/80 hover:border-teal-400 hover:shadow-xl hover:shadow-teal-500/10",
+    iconBox:
+      "bg-gradient-to-br from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-500/30",
+    arrowColor: "text-teal-400 group-hover:text-teal-700",
+    labelColor: "text-teal-900/80",
+    valueColor: "text-teal-700",
+    hintBadge: "text-teal-700 bg-teal-100/80 border border-teal-200/70",
+    glowBlob: "bg-teal-400/20",
   },
   amber: {
-    icon: "bg-amber-50 text-amber-600",
-    value: "text-amber-700",
-    ring: "group-hover:border-amber-200 group-hover:shadow-amber-500/5",
+    cardBg: "bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-white",
+    cardBorder:
+      "border-amber-200/80 hover:border-amber-400 hover:shadow-xl hover:shadow-amber-500/10",
+    iconBox:
+      "bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/30",
+    arrowColor: "text-amber-400 group-hover:text-amber-700",
+    labelColor: "text-amber-900/80",
+    valueColor: "text-amber-700",
+    hintBadge: "text-amber-800 bg-amber-100/80 border border-amber-200/70",
+    glowBlob: "bg-amber-400/20",
   },
 } as const;
 
@@ -230,35 +268,54 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         {stats.map((stat) => {
           const tone = STAT_TONES[stat.tone];
           return (
             <Link
               key={stat.label}
               href={stat.href}
-              className={`group relative h-full min-h-[132px] p-5 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 ${tone.ring}`}
+              className={`group relative h-full min-h-[148px] p-5 rounded-[1.5rem] ${tone.cardBg} border ${tone.cardBorder} shadow-sm transition-all duration-300 flex flex-col justify-between overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 hover:-translate-y-1`}
             >
-              <div className="flex justify-between items-start mb-4">
+              {/* Decorative background glow blob */}
+              <div
+                className={`pointer-events-none absolute -top-8 -right-8 w-28 h-28 rounded-full blur-2xl transition-opacity duration-300 opacity-60 group-hover:opacity-100 ${tone.glowBlob}`}
+              />
+
+              <div className="flex justify-between items-start mb-3 relative z-10">
                 <div
-                  className={`w-11 h-11 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${tone.icon}`}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${tone.iconBox}`}
                 >
-                  <stat.icon size={20} strokeWidth={2.25} />
+                  <stat.icon size={22} strokeWidth={2.2} />
                 </div>
-                <ArrowUpRight
-                  size={16}
-                  className="text-gray-300 group-hover:text-brand-primary transition-colors"
-                />
+                <div
+                  className={`p-1.5 rounded-xl bg-white/80 backdrop-blur-sm border border-white/60 shadow-xs ${tone.arrowColor}`}
+                >
+                  <ArrowUpRight
+                    size={16}
+                    strokeWidth={2.5}
+                    className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </div>
               </div>
-              <div className="mt-auto">
-                <div className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+
+              <div className="relative z-10">
+                <div
+                  className={`text-[11px] font-black uppercase tracking-wider mb-1.5 ${tone.labelColor}`}
+                >
                   {stat.label}
                 </div>
                 <div className="flex items-baseline justify-between gap-2">
-                  <div className={`text-2xl font-bold tabular-nums tracking-tight ${tone.value}`}>
+                  <div
+                    className={`text-3xl font-black tabular-nums tracking-tight ${tone.valueColor}`}
+                  >
                     {cardsLoading ? "—" : formatNumber(stat.value)}
                   </div>
-                  <span className="text-[11px] text-gray-400 font-medium">{stat.hint}</span>
+                  <span
+                    className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${tone.hintBadge}`}
+                  >
+                    {stat.hint}
+                  </span>
                 </div>
               </div>
             </Link>

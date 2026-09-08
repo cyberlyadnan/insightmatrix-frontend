@@ -229,10 +229,12 @@ export default function AdminOverview() {
 
   return (
     <div className="space-y-8">
-      <div className="relative overflow-hidden rounded-2xl border border-brand-primary/10 bg-gradient-to-br from-brand-accent1 via-brand-primary to-brand-accent2 px-6 py-7 text-white shadow-lg shadow-brand-primary/15 sm:px-8">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-20 left-1/3 h-48 w-48 rounded-full bg-brand-light/20 blur-3xl" />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="relative z-20 rounded-2xl border border-brand-primary/10 bg-gradient-to-br from-brand-accent1 via-brand-primary to-brand-accent2 px-6 py-7 text-white shadow-lg shadow-brand-primary/15 sm:px-8">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+          <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute -bottom-20 left-1/3 h-48 w-48 rounded-full bg-brand-light/20 blur-3xl" />
+        </div>
+        <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70 mb-2">
               Operations overview
@@ -268,7 +270,7 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 relative z-0">
         {stats.map((stat) => {
           const tone = STAT_TONES[stat.tone];
           return (

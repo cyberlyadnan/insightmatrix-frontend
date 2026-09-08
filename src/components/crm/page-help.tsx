@@ -42,13 +42,13 @@ export function PageHelp({ content, className }: PageHelpProps) {
   }, [open]);
 
   return (
-    <div ref={rootRef} className={cn("relative inline-flex", className)}>
+    <div ref={rootRef} className={cn("relative z-50 inline-flex", className)}>
       <button
         type="button"
         aria-label="Page help"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-primary hover:border-brand-primary/30 transition-colors"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 hover:text-brand-primary hover:border-brand-primary/30 transition-colors shadow-xs"
       >
         <HelpCircle className="h-4 w-4" />
       </button>
@@ -56,14 +56,14 @@ export function PageHelp({ content, className }: PageHelpProps) {
         <div
           role="dialog"
           aria-label={content.title ?? "Help"}
-          className="absolute right-0 top-full z-40 mt-2 w-[min(100vw-2rem,22rem)] rounded-2xl border border-gray-100 bg-white p-4 shadow-xl shadow-gray-200/50"
+          className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-2xl border border-gray-100 bg-white p-5 shadow-2xl shadow-slate-900/30 text-gray-900 ring-1 ring-black/5 [color-scheme:light]"
         >
           {content.title ? (
             <p className="text-sm font-black text-gray-900 mb-2">{content.title}</p>
           ) : null}
           <p className="text-sm text-gray-600 leading-relaxed">{content.about}</p>
           <p className="text-sm text-gray-600 leading-relaxed mt-2">{content.actions}</p>
-          <p className="text-xs text-gray-500 leading-relaxed mt-3 border-t border-gray-50 pt-3">
+          <p className="text-xs text-gray-500 leading-relaxed mt-3 border-t border-gray-100 pt-3">
             {content.tips}
           </p>
         </div>

@@ -39,6 +39,12 @@ export const ADMIN_PAGE_HELP = {
     actions: "Search by survey, project ID, tracking id, or token and open respondent details.",
     tips: "Filter by status to focus on completes, terminates, or pending prescreens.",
   },
+  users: {
+    title: "Panel Users",
+    about: "Browse registered InsightMatrix accounts — profile, status, and panel prescreen.",
+    actions: "Search members, filter by role or prescreen status, and open a full profile detail.",
+    tips: "Default view focuses on public panel members (role: user). Open a row for filled demographic answers.",
+  },
   respondentAnalytics: {
     title: "Respondent Analytics",
     about: "Review aggregate respondent outcomes across all surveys.",

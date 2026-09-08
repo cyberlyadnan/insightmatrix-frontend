@@ -1,4 +1,5 @@
 import { apiClient } from "@/services/api";
+import type { AuthAxiosRequestConfig } from "@/services/api/auth-request-config";
 
 type ApiEnvelope<T> = {
   success: boolean;
@@ -40,12 +41,17 @@ export type TestEmailResult = {
   };
 };
 
+/** skipAuthRedirect: SMTP diagnostics must never force a global logout on 401. */
 export async function getEmailDeliveryStatus() {
-  const { data } = await apiClient.get<ApiEnvelope<EmailDeliveryStatus>>("/email/status");
+  const { data } = await apiClient.get<ApiEnvelope<EmailDeliveryStatus>>("/email/status", {
+    skipAuthRedirect: true,
+  } as AuthAxiosRequestConfig);
   return data.data;
 }
 
 export async function sendAdminTestEmail(to: string) {
-  const { data } = await apiClient.post<ApiEnvelope<TestEmailResult>>("/email/test", { to });
+  const { data } = await apiClient.post<ApiEnvelope<TestEmailResult>>("/email/test", { to }, {
+    skipAuthRedirect: true,
+  } as AuthAxiosRequestConfig);
   return data;
 }

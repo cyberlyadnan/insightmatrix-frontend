@@ -5,6 +5,7 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useAuthProfileQuery } from "@/hooks/use-auth-profile-query";
+import { useAuthStore } from "@/store/authStore";
 
 function GateSpinner({ message }: { message: string }) {
   return (
@@ -23,31 +24,34 @@ export function DashboardRoleGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const hydrated = useAuthHydrated();
+  const storeUser = useAuthStore((s) => s.user);
   const {
     data: profileUser,
     isFetched,
     isPending,
+    isFetching,
   } = useAuthProfileQuery({
     enabled: hydrated,
   });
 
+  const user = profileUser ?? storeUser;
+
   useEffect(() => {
-    if (!hydrated || !isFetched) return;
-    if (!profileUser) {
-      // Profile query already cleared the store on 401/403; just leave the area.
+    if (!hydrated || isFetching || (!isFetched && isPending)) return;
+    if (!user) {
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
-    if (profileUser.role === "admin") {
+    if (user.role === "admin") {
       router.replace(ROUTES.admin.root);
     }
-  }, [hydrated, isFetched, profileUser, router, pathname]);
+  }, [hydrated, isFetched, isPending, isFetching, user, router, pathname]);
 
-  if (!hydrated || (!isFetched && isPending)) {
+  if (!hydrated || (!isFetched && isPending && !user)) {
     return <GateSpinner message="Loading your workspace…" />;
   }
 
-  if (!profileUser || profileUser.role === "admin") {
+  if (!user || user.role === "admin") {
     return <GateSpinner message="Redirecting…" />;
   }
 

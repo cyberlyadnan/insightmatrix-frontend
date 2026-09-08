@@ -1,50 +1,11 @@
 import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { env } from "@/config";
 import { isAuthProbeRequest } from "./auth-request-config";
-import { refreshSession } from "./refresh-session";
+import { clearServerAuthCookies, refreshSession } from "./refresh-session";
 import { clearAuthCookies } from "@/utils/cookies";
 
-let isRefreshing = false;
-let refreshSubscribers: Array<(ok: boolean) => void> = [];
 let lastRefreshSuccessTime = 0;
 let isRedirectingToLogin = false;
-
-function subscribeTokenRefresh(cb: (ok: boolean) => void) {
-  refreshSubscribers.push(cb);
-}
-
-function onRefreshed(ok: boolean) {
-  refreshSubscribers.forEach((cb) => cb(ok));
-  refreshSubscribers = [];
-}
-
-async function handleRefreshSession(): Promise<boolean> {
-  if (isRefreshing) {
-    return new Promise((resolve) => {
-      subscribeTokenRefresh(resolve);
-    });
-  }
-
-  // If a refresh succeeded very recently (< 3 seconds), reuse the success
-  if (Date.now() - lastRefreshSuccessTime < 3000) {
-    return true;
-  }
-
-  isRefreshing = true;
-  try {
-    const ok = await refreshSession();
-    if (ok) {
-      lastRefreshSuccessTime = Date.now();
-    }
-    onRefreshed(ok);
-    return ok;
-  } catch {
-    onRefreshed(false);
-    return false;
-  } finally {
-    isRefreshing = false;
-  }
-}
 
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig) {
   const url = config?.url ?? "";
@@ -99,13 +60,28 @@ export function attachInterceptors(instance: AxiosInstance) {
       }
 
       originalRequest._retry = true;
-      const ok = await handleRefreshSession();
+
+      // Reuse a very recent successful refresh (parallel 401 storm after one rotation)
+      let ok = Date.now() - lastRefreshSuccessTime < 3000;
+      if (!ok) {
+        ok = await refreshSession();
+        if (ok) lastRefreshSuccessTime = Date.now();
+      }
+
       if (ok) {
         return instance(originalRequest);
       }
 
-      // If refresh failed, clear stale session in store and cookies
+      const isProbe = isAuthProbeRequest(originalRequest);
+
+      // Diagnostic / probe requests must not nuke an otherwise-valid admin session.
+      // Show the page error instead of hard-logging the user out.
+      if (isProbe) {
+        return Promise.reject(error);
+      }
+
       clearAuthCookies();
+      void clearServerAuthCookies();
       try {
         const { useAuthStore } = await import("@/store/authStore");
         useAuthStore.getState().clearSession();
@@ -113,11 +89,7 @@ export function attachInterceptors(instance: AxiosInstance) {
         // Ignore store import error
       }
 
-      if (
-        typeof window !== "undefined" &&
-        !isAuthProbeRequest(originalRequest) &&
-        !isRedirectingToLogin
-      ) {
+      if (typeof window !== "undefined" && !isRedirectingToLogin) {
         const path = window.location.pathname;
         const onAuthRoute =
           path.startsWith("/login") ||

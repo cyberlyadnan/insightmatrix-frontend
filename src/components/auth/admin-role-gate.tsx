@@ -5,6 +5,7 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useAuthProfileQuery } from "@/hooks/use-auth-profile-query";
+import { useAuthStore } from "@/store/authStore";
 
 function GateSpinner({ message }: { message: string }) {
   return (
@@ -22,30 +23,36 @@ function GateSpinner({ message }: { message: string }) {
 export function AdminRoleGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const hydrated = useAuthHydrated();
+  const storeUser = useAuthStore((s) => s.user);
   const {
     data: profileUser,
     isFetched,
     isPending,
+    isFetching,
   } = useAuthProfileQuery({
     enabled: hydrated,
   });
 
+  // Prefer live profile, fall back to hydrated store so a transient diagnostic
+  // 401 (e.g. email SMTP check) cannot empty the gate and bounce to /login.
+  const user = profileUser ?? storeUser;
+
   useEffect(() => {
-    if (!hydrated || !isFetched) return;
-    if (!profileUser) {
+    if (!hydrated || isFetching || (!isFetched && isPending)) return;
+    if (!user) {
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(ROUTES.admin.root)}`);
       return;
     }
-    if (profileUser.role !== "admin") {
+    if (user.role !== "admin") {
       router.replace(ROUTES.dashboard.root);
     }
-  }, [hydrated, isFetched, profileUser, router]);
+  }, [hydrated, isFetched, isPending, isFetching, user, router]);
 
-  if (!hydrated || (!isFetched && isPending)) {
+  if (!hydrated || (!isFetched && isPending && !user)) {
     return <GateSpinner message="Checking admin access…" />;
   }
 
-  if (!profileUser || profileUser.role !== "admin") {
+  if (!user || user.role !== "admin") {
     return <GateSpinner message="Redirecting…" />;
   }
 

@@ -17,7 +17,9 @@ async function fetchAuthProfilePreservingSession(): Promise<AuthUser | null> {
     }
     return profile;
   } catch (err) {
-    if (isAxiosError(err) && (err.response?.status === 401 || err.response?.status === 403)) {
+    // Only treat true auth failure as logout. 403 means "forbidden for this
+    // resource", not "session is dead" — clearing here bounced admins to login.
+    if (isAxiosError(err) && err.response?.status === 401) {
       useAuthStore.getState().clearSession();
       clearAuthCookies();
       return null;

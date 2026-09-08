@@ -4,7 +4,21 @@ import { useRef, useState, type ChangeEvent } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { User, Shield, ChevronRight, Camera, Loader2 } from "lucide-react";
+import {
+  User,
+  Shield,
+  ChevronRight,
+  Camera,
+  Loader2,
+  ShieldCheck,
+  ClipboardCheck,
+  AlertTriangle,
+  Mail,
+  Calendar,
+  CheckCircle2,
+  Settings as SettingsIcon,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
 import { ROUTES } from "@/constants/routes";
 import { optimizeAvatarImage } from "@/lib/optimize-avatar-image";
@@ -33,30 +47,29 @@ export default function PanelSettings() {
   const displayUser = profileUser ?? user;
   const [deleteReason, setDeleteReason] = useState("");
   const avatarInputRef = useRef<HTMLInputElement>(null);
+
   const accountItems = [
     {
       name: "Account Information",
-      desc: "Update your name, email, and avatar",
+      desc: "Update your full name, email address, and profile photo",
       icon: User,
       href: ROUTES.dashboard.settingsAccount,
+      badge: "Profile",
     },
     {
       name: "Security & Privacy",
-      desc: "Update your password and start forgot-password flow",
+      desc: "Change your account password and manage authentication settings",
       icon: Shield,
       href: ROUTES.dashboard.settingsSecurity,
+      badge: "Protected",
     },
-    // {
-    //   name: "Notification Settings",
-    //   desc: "Choose what updates you want to receive",
-    //   icon: Bell,
-    // },
-    // {
-    //   name: "Connected Devices",
-    //   desc: "View and manage active sessions",
-    //   icon: Smartphone,
-    // },
-    // { name: "Data Usage", desc: "Manage your research data preferences", icon: Lock },
+    {
+      name: "Profile Prescreen",
+      desc: "Review and update demographic answers for research survey matching",
+      icon: ClipboardCheck,
+      href: ROUTES.dashboard.prescreen,
+      badge: "Active",
+    },
   ];
 
   const deletionRequestMutation = useMutation({
@@ -64,9 +77,9 @@ export default function PanelSettings() {
     onSuccess: async (updated) => {
       setUser(updated);
       await queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile });
-      toast.success("Account deletion request submitted.");
+      toast.success("Account deactivation request submitted.");
     },
-    onError: (error) => toast.error(parseApiError(error, "Could not submit deletion request.")),
+    onError: (error) => toast.error(parseApiError(error, "Could not submit deactivation request.")),
   });
 
   const cancelDeletionMutation = useMutation({
@@ -75,7 +88,7 @@ export default function PanelSettings() {
       setUser(updated);
       setDeleteReason("");
       await queryClient.invalidateQueries({ queryKey: queryKeys.auth.profile });
-      toast.success("Account deletion request cancelled.");
+      toast.success("Account deactivation request cancelled.");
     },
     onError: (error) => toast.error(parseApiError(error, "Could not cancel request.")),
   });
@@ -120,19 +133,31 @@ export default function PanelSettings() {
   const totalMissions = displayUser?.panelCompletedSurveys ?? 0;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
+      {/* Top Page Header */}
       <div>
-        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Profile Settings</h1>
-        <p className="text-gray-500 font-medium">
-          Customize your experience and security preferences.
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-6 h-6 rounded-md bg-brand-subtle text-brand-primary flex items-center justify-center font-bold">
+            <SettingsIcon size={14} />
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
+            Account Management
+          </span>
+        </div>
+        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+          Profile & Security Settings
+        </h1>
+        <p className="text-xs text-gray-500 font-medium mt-0.5 max-w-xl leading-relaxed">
+          Manage your personal details, credentials, verification status, and data preferences.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-10">
-        {/* Profile Card */}
-        <div className="lg:col-span-4">
-          <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-gray-100 flex flex-col items-center text-center shadow-sm">
-            <div className="relative mb-6">
+      <div className="grid lg:grid-cols-12 gap-6">
+        {/* Left Column: Profile Card */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 flex flex-col items-center text-center shadow-2xs">
+            {/* Avatar with Camera Overlay */}
+            <div className="relative mb-4">
               <input
                 ref={avatarInputRef}
                 type="file"
@@ -144,14 +169,14 @@ export default function PanelSettings() {
               />
               {avatarUrl ? (
                 <div
-                  className="w-28 h-28 md:w-32 md:h-32 rounded-[2.2rem] md:rounded-[2.5rem] bg-cover bg-center border-4 border-white shadow-xl"
+                  className="w-20 h-20 rounded-2xl bg-cover bg-center border-2 border-white shadow-md"
                   style={{ backgroundImage: `url("${avatarUrl}")` }}
                   aria-label="User avatar"
                   role="img"
                 />
               ) : (
-                <div className="w-28 h-28 md:w-32 md:h-32 rounded-[2.2rem] md:rounded-[2.5rem] bg-brand-subtle flex items-center justify-center text-brand-primary border-4 border-white shadow-xl">
-                  <User size={48} className="md:w-16 md:h-16" />
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-primary to-indigo-600 flex items-center justify-center text-white font-black text-2xl shadow-md">
+                  {displayUser?.fullName?.charAt(0).toUpperCase() || "M"}
                 </div>
               )}
               <button
@@ -160,100 +185,132 @@ export default function PanelSettings() {
                 aria-label="Upload profile photo"
                 disabled={avatarUploadMutation.isPending}
                 onClick={() => avatarInputRef.current?.click()}
-                className="absolute bottom-1 right-1 w-9 h-9 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-gray-900 text-white flex items-center justify-center shadow-lg border-2 border-white hover:bg-brand-primary transition-colors active:scale-95 disabled:opacity-60 disabled:pointer-events-none"
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg bg-gray-900 text-white flex items-center justify-center shadow-sm border-2 border-white hover:bg-brand-primary transition-colors active:scale-95 disabled:opacity-60"
               >
                 {avatarUploadMutation.isPending ? (
-                  <Loader2 size={18} className="animate-spin" aria-hidden />
+                  <Loader2 size={13} className="animate-spin" aria-hidden />
                 ) : (
-                  <Camera size={18} aria-hidden />
+                  <Camera size={13} aria-hidden />
                 )}
               </button>
             </div>
-            <h3 className="text-xl md:text-2xl font-black text-gray-900">
+
+            <h3 className="text-base font-black text-gray-900">
               {displayUser?.fullName ?? "Dashboard Member"}
             </h3>
-            <p className="text-[10px] md:text-xs font-black text-brand-primary uppercase tracking-widest mt-1">
-              Platinum Member
+            <p className="text-[11px] font-medium text-gray-400 mt-0.5 mb-2">
+              {displayUser?.email ?? ""}
             </p>
 
-            <div className="w-full mt-8 md:mt-10 pt-8 md:pt-10 border-t border-gray-50 space-y-4">
-              <div className="flex justify-between items-center text-xs md:text-sm">
-                <span className="font-bold text-gray-400">Total Missions</span>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-black uppercase tracking-wider">
+              <Sparkles size={11} className="text-amber-500" />
+              Platinum Member
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="w-full mt-5 pt-4 border-t border-gray-100 space-y-2.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-gray-400 flex items-center gap-1.5">
+                  <CheckCircle2 size={13} className="text-emerald-500" />
+                  Total Studies
+                </span>
                 <span className="font-black text-gray-900 tabular-nums">{totalMissions}</span>
               </div>
-              <div className="flex justify-between items-center text-xs md:text-sm">
-                <span className="font-bold text-gray-400">Member Since</span>
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-gray-400 flex items-center gap-1.5">
+                  <Calendar size={13} className="text-brand-primary" />
+                  Member Since
+                </span>
                 <span className="font-black text-gray-900">{memberSinceLabel}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-gray-400 flex items-center gap-1.5">
+                  <ShieldCheck size={13} className="text-indigo-500" />
+                  Prescreen Status
+                </span>
+                <span className="font-black text-emerald-600">100% Verified</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Settings Sections */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] border border-gray-100 overflow-hidden divide-y divide-gray-50">
+        {/* Right Column: Settings Sections */}
+        <div className="lg:col-span-8 space-y-4">
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden divide-y divide-gray-100 shadow-2xs">
             {accountItems.map((item) => {
-              const Row = (
-                <div className="p-6 md:p-8 flex items-center justify-between group cursor-pointer hover:bg-gray-50/50 transition-colors">
-                  <div className="flex items-center gap-4 md:gap-6 min-w-0">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all shrink-0">
-                      <item.icon size={20} className="md:w-6 md:h-6" />
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="p-4 sm:p-5 flex items-center justify-between group hover:bg-slate-50/70 transition-colors"
+                >
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-brand-primary/10 group-hover:text-brand-primary transition-all shrink-0">
+                      <Icon size={18} />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="font-black text-gray-900 leading-tight mb-1 text-sm md:text-base truncate">
-                        {item.name}
-                      </h4>
-                      <p className="text-[10px] md:text-xs font-medium text-gray-500 truncate">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-black text-gray-900 text-xs sm:text-sm group-hover:text-brand-primary transition-colors">
+                          {item.name}
+                        </h4>
+                        <span className="text-[9px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.2 rounded">
+                          {item.badge}
+                        </span>
+                      </div>
+                      <p className="text-[11px] font-medium text-gray-500 truncate mt-0.5">
                         {item.desc}
                       </p>
                     </div>
                   </div>
                   <ChevronRight
-                    size={18}
-                    className="text-gray-300 group-hover:text-brand-primary transition-all shrink-0"
+                    size={16}
+                    className="text-gray-300 group-hover:text-brand-primary group-hover:translate-x-0.5 transition-all shrink-0"
                   />
-                </div>
-              );
-
-              return (
-                <Link key={item.name} href={item.href}>
-                  {Row}
                 </Link>
               );
             })}
           </div>
 
-          <div className="p-6 md:p-8 bg-rose-50 rounded-[2rem] md:rounded-[2.5rem] border border-rose-100 space-y-4">
-            <div className="min-w-0">
-              <h4 className="font-black text-rose-600 mb-1 text-sm md:text-base">
-                Deactivate Account Request
-              </h4>
-              <p className="text-[11px] md:text-xs font-medium text-rose-400">
-                Request deactivation. Admin must approve. Account is marked inactive, not deleted.
-              </p>
-            </div>
-            {displayUser?.deletionRequested ? (
-              <div className="rounded-xl bg-white p-4 border border-rose-100">
-                <p className="text-xs font-bold text-rose-600 mb-1">Request submitted</p>
-                <p className="text-xs text-gray-500 mb-3">
-                  Your request is pending admin approval.
+          {/* Account Deactivation Area */}
+          <div className="p-5 bg-white rounded-2xl border border-rose-100 shadow-2xs space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle size={16} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-black text-gray-900 text-xs sm:text-sm">Deactivate Account</h4>
+                <p className="text-[11px] text-gray-500 font-medium mt-0.5 leading-relaxed">
+                  Requesting deactivation will mark your panel membership inactive pending
+                  administrator approval.
                 </p>
+              </div>
+            </div>
+
+            {displayUser?.deletionRequested ? (
+              <div className="rounded-xl bg-rose-50/60 p-3.5 border border-rose-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold text-rose-700">Deactivation Request Pending</p>
+                  <p className="text-[11px] text-rose-600/80">
+                    Your request has been submitted and is waiting for review.
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => cancelDeletionMutation.mutate()}
                   disabled={cancelDeletionMutation.isPending}
-                  className="px-4 py-2 bg-white text-rose-600 font-black text-[10px] md:text-xs rounded-xl border border-rose-200 hover:bg-rose-600 hover:text-white transition-all disabled:opacity-60"
+                  className="px-3.5 py-1.5 bg-white text-rose-700 font-bold text-xs rounded-lg border border-rose-200 hover:bg-rose-600 hover:text-white transition-all disabled:opacity-60 shadow-2xs self-start sm:self-auto"
                 >
                   {cancelDeletionMutation.isPending ? "Cancelling..." : "Cancel Request"}
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5 pt-1">
                 <textarea
                   value={deleteReason}
                   onChange={(e) => setDeleteReason(e.target.value)}
-                  placeholder="Reason for deactivation request (optional)"
-                  className="w-full min-h-24 p-3 rounded-xl border border-rose-100 bg-white text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-rose-100"
+                  placeholder="Reason for deactivation request (optional)..."
+                  className="w-full min-h-16 p-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs text-gray-900 placeholder:text-gray-400 outline-none focus:bg-white focus:ring-2 focus:ring-rose-200 transition-all"
                 />
                 <button
                   type="button"
@@ -261,9 +318,11 @@ export default function PanelSettings() {
                     deletionRequestMutation.mutate({ reason: deleteReason.trim() || undefined })
                   }
                   disabled={deletionRequestMutation.isPending}
-                  className="w-full sm:w-auto px-6 py-3 bg-white text-rose-600 font-black text-[10px] md:text-xs rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm active:scale-95 disabled:opacity-60"
+                  className="px-4 py-2 bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white font-bold text-xs rounded-xl border border-rose-200 transition-all active:scale-95 disabled:opacity-60"
                 >
-                  {deletionRequestMutation.isPending ? "Submitting..." : "Request Deactivation"}
+                  {deletionRequestMutation.isPending
+                    ? "Submitting..."
+                    : "Submit Deactivation Request"}
                 </button>
               </div>
             )}

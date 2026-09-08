@@ -13,6 +13,7 @@ import {
   UploadCloud,
   User,
   Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -125,44 +126,40 @@ export default function EditAccountInfoPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <Link
-            href={ROUTES.dashboard.settings}
-            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-brand-primary transition-colors mb-3"
-          >
-            <ArrowLeft size={16} />
-            Back to Settings
-          </Link>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-            Edit Account Information
-          </h1>
-          <p className="text-gray-500 font-medium">Update all profile fields you can control.</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <Link
+          href={ROUTES.dashboard.settings}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-brand-primary transition-colors mb-2"
+        >
+          <ArrowLeft size={14} />
+          <span>Back to Settings</span>
+        </Link>
+        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+          Edit Account Information
+        </h1>
+        <p className="text-xs text-gray-500 font-medium mt-0.5">
+          Update your public profile name, contact email, and avatar photo.
+        </p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-8 bg-white rounded-[2.5rem] border border-gray-100 p-8 md:p-10 shadow-sm"
-        >
+      <div className="grid lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 bg-white rounded-2xl border border-gray-100 p-5 sm:p-7 shadow-2xs">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-bold text-gray-700">Full Name</FormLabel>
+                    <FormLabel className="text-xs font-bold text-gray-700">Full Name</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
                           {...field}
-                          placeholder="John Doe"
-                          className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
+                          placeholder="Your full name"
+                          className="pl-9 h-10 text-xs rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
                         />
                       </div>
                     </FormControl>
@@ -176,14 +173,14 @@ export default function EditAccountInfoPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-bold text-gray-700">Email Address</FormLabel>
+                    <FormLabel className="text-xs font-bold text-gray-700">Email Address</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
                           {...field}
                           placeholder="name@example.com"
-                          className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
+                          className="pl-9 h-10 text-xs rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
                         />
                       </div>
                     </FormControl>
@@ -197,44 +194,50 @@ export default function EditAccountInfoPage() {
                 name="avatar"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="font-bold text-gray-700">Avatar URL</FormLabel>
+                    <FormLabel className="text-xs font-bold text-gray-700">
+                      Avatar Image URL
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <ImageIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
                           {...field}
                           placeholder="https://example.com/avatar.png"
-                          className="pl-11 h-12 rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
+                          className="pl-9 h-10 text-xs rounded-xl border-gray-200 focus:border-brand-primary focus:ring-brand-primary/20"
                         />
                       </div>
                     </FormControl>
-                    <p className="text-xs text-gray-500 font-medium">
-                      Leave empty to remove your avatar.
-                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50/70 p-5">
-                <p className="text-sm font-bold text-gray-700 mb-1">Upload avatar image</p>
-                <p className="text-xs text-gray-500 mb-4">
-                  Image is optimized in your browser (max 512px, compressed) before upload.
-                </p>
-                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:text-brand-primary cursor-pointer transition-colors">
-                  <UploadCloud size={16} />
-                  {avatarUploadMutation.isPending ? "Optimizing and uploading..." : "Choose Image"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={onAvatarFileChange}
-                    disabled={avatarUploadMutation.isPending}
-                  />
-                </label>
-                {selectedFileName ? (
-                  <p className="text-xs text-gray-500 mt-3">Selected: {selectedFileName}</p>
-                ) : null}
+              {/* Upload Drop Box */}
+              <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50/70 p-4 space-y-2">
+                <div>
+                  <p className="text-xs font-bold text-gray-800">Upload profile image directly</p>
+                  <p className="text-[11px] text-gray-400">
+                    Image is automatically optimized in browser (max 512px) before cloud upload.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 pt-1">
+                  <label className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:text-brand-primary cursor-pointer transition-colors shadow-2xs">
+                    <UploadCloud size={14} />
+                    <span>{avatarUploadMutation.isPending ? "Uploading..." : "Select File"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onAvatarFileChange}
+                      disabled={avatarUploadMutation.isPending}
+                    />
+                  </label>
+                  {selectedFileName ? (
+                    <span className="text-xs text-gray-500 font-medium truncate">
+                      {selectedFileName}
+                    </span>
+                  ) : null}
+                </div>
               </div>
 
               <div className="pt-2">
@@ -245,68 +248,49 @@ export default function EditAccountInfoPage() {
                     avatarUploadMutation.isPending ||
                     !form.formState.isDirty
                   }
-                  className="h-12 px-6 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-bold"
+                  className="h-10 px-5 rounded-xl bg-brand-primary hover:bg-brand-hover text-white text-xs font-black uppercase tracking-wider shadow-sm transition-all active:scale-95 disabled:opacity-50"
                 >
                   {updateMutation.isPending ? (
-                    <span className="inline-flex items-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                      Saving...
-                    </span>
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                      <span>Saving Changes...</span>
+                    </>
                   ) : (
-                    <span className="inline-flex items-center gap-2">
-                      <Save size={16} />
-                      Save Changes
-                    </span>
+                    <>
+                      <Save size={13} className="mr-1.5" />
+                      <span>Save Changes</span>
+                    </>
                   )}
                 </Button>
               </div>
             </form>
           </Form>
-        </motion.div>
+        </div>
 
-        <div className="lg:col-span-4 space-y-4">
-          <div className="bg-white rounded-[2rem] border border-gray-100 p-6 shadow-sm">
-            <h3 className="font-black text-gray-900 mb-4">Avatar Preview</h3>
+        {/* Right Column: Live Avatar Card */}
+        <div className="lg:col-span-4 bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center text-center shadow-2xs h-fit space-y-3">
+          <div className="w-16 h-16 rounded-2xl bg-brand-subtle flex items-center justify-center text-brand-primary font-black text-xl border border-brand-primary/20 shadow-xs overflow-hidden">
             {avatarPreview ? (
               <div
-                className="w-24 h-24 rounded-2xl border border-gray-200 bg-cover bg-center"
+                className="w-full h-full bg-cover bg-center"
                 style={{ backgroundImage: `url("${avatarPreview}")` }}
-                aria-label="Avatar preview"
+                aria-label="Preview avatar"
                 role="img"
               />
             ) : (
-              <div className="w-24 h-24 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400">
-                <User size={28} />
-              </div>
+              user?.fullName?.charAt(0).toUpperCase() || "M"
             )}
           </div>
-
-          <div className="bg-white rounded-[2rem] border border-gray-100 p-6 shadow-sm">
-            <h3 className="font-black text-gray-900 mb-4">Current Account Details</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between gap-3">
-                <span className="text-gray-500 font-semibold">Role</span>
-                <span className="font-black text-gray-900">{user?.role ?? "user"}</span>
-              </div>
-              <div className="flex justify-between gap-3">
-                <span className="text-gray-500 font-semibold">Status</span>
-                <span className="font-black text-gray-900">{user?.status ?? "active"}</span>
-              </div>
-              <div className="flex justify-between gap-3">
-                <span className="text-gray-500 font-semibold">Email verified</span>
-                <span className="font-black text-gray-900">{user?.isVerified ? "Yes" : "No"}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-emerald-50 border border-emerald-100 rounded-[2rem] p-6">
-            <div className="inline-flex w-10 h-10 items-center justify-center rounded-xl bg-white text-emerald-600 mb-3">
-              <CheckCircle2 size={18} />
-            </div>
-            <h4 className="font-black text-emerald-700 mb-1">Everything editable is here</h4>
-            <p className="text-sm text-emerald-600 font-medium">
-              You can update your name, email, and avatar from this page.
+          <div>
+            <h3 className="text-sm font-black text-gray-900">
+              {form.watch("fullName") || "Member Name"}
+            </h3>
+            <p className="text-[11px] text-gray-400 font-medium">
+              {form.watch("email") || "member@example.com"}
             </p>
+          </div>
+          <div className="w-full pt-3 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+            Live preview of your profile identity across the panel.
           </div>
         </div>
       </div>

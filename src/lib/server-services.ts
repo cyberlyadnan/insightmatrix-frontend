@@ -6,10 +6,13 @@ function getBackendBaseUrl(): string {
   if (process.env.BACKEND_URL) {
     return process.env.BACKEND_URL.replace(/\/+$/, "") + "/api/v1";
   }
+  if (process.env.API_PUBLIC_URL) {
+    return process.env.API_PUBLIC_URL.replace(/\/+$/, "") + "/api/v1";
+  }
   if (process.env.NEXT_PUBLIC_BACKEND_URL) {
     return process.env.NEXT_PUBLIC_BACKEND_URL.replace(/\/+$/, "") + "/api/v1";
   }
-  return "http://localhost:5000/api/v1";
+  return "https://api.insightmatrix.online/api/v1";
 }
 
 export async function fetchServerServiceBySlug(slug: string): Promise<ServiceRecord | null> {

@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   ArrowRight,
   Sparkles,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -93,8 +94,7 @@ export default function DashboardPrescreenPage() {
         <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
         <h1 className="text-base font-black text-gray-900">Profile Verified</h1>
         <p className="text-xs text-gray-500 leading-relaxed">
-          Your profile prescreen is active. If you need to change demographics, ask an admin to
-          republish the member profile form.
+          Your profile prescreen is active and verified.
         </p>
         <Link
           href={ROUTES.dashboard.surveys}
@@ -135,21 +135,20 @@ export default function DashboardPrescreenPage() {
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0">
-              <CheckCircle2 size={16} />
+              <Lock size={16} />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-black text-emerald-950">
-                Profile saved — editable anytime
+                Demographic Responses Verified & Locked
               </p>
               <p className="text-[11px] text-emerald-800 font-medium truncate">
-                Update country or other answers below, then save. Matching surveys refresh after
-                save.
+                Your profile answers are locked for research matching integrity.
               </p>
             </div>
           </div>
           <Link
             href={ROUTES.dashboard.surveys}
-            className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold inline-flex items-center gap-1 shadow-xs"
+            className="shrink-0 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold inline-flex items-center gap-1 shadow-xs"
           >
             <span>Surveys</span>
             <ArrowRight size={12} />
@@ -161,20 +160,21 @@ export default function DashboardPrescreenPage() {
             <Sparkles size={16} />
           </div>
           <div>
-            <p className="text-xs font-black text-amber-950">Complete your profile</p>
+            <p className="text-xs font-black text-amber-950">Complete your profile prescreen</p>
             <p className="text-[11px] text-amber-800 font-medium">
-              Fill these demographics once to unlock matched studies. You can edit them later.
+              Fill these demographics once to unlock high-incentive matched research studies.
             </p>
           </div>
         </div>
       )}
 
-      {/* Form Container — always editable when form is configured */}
+      {/* Form Container */}
       <div className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-7 shadow-xs">
         <MemberPrescreenForm
-          key={`${bundle.form.id}-${bundle.existingAnswers ? "edit" : "new"}`}
+          key={`${bundle.form.id}-${isCompleted ? "locked" : "active"}`}
           form={bundle.form}
           initialAnswers={bundle.existingAnswers}
+          readOnly={isCompleted}
           isSubmitting={submitMutation.isPending}
           onSubmit={async (answers) => {
             await submitMutation.mutateAsync(answers);

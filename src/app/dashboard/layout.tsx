@@ -28,6 +28,7 @@ import {
   X,
   Coins,
   Sparkles,
+  History,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -61,6 +62,7 @@ const panelSections: PanelNavSection[] = [
         badge: "Earn",
         badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
       },
+      { name: "Survey History", icon: History, href: ROUTES.dashboard.history },
       { name: "Points & Wallet", icon: Wallet, href: ROUTES.dashboard.wallet },
       { name: "Profile Prescreen", icon: ShieldCheck, href: ROUTES.dashboard.prescreen },
     ],

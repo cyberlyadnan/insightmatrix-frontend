@@ -72,8 +72,19 @@ export default function RegisterPage() {
       await qc.invalidateQueries({ queryKey: queryKeys.auth.profile });
       const hydrated = await fetchProfileOptional();
       if (hydrated) {
-        completeMemberLogin(qc, setUser, hydrated, getPostLoginDestination(hydrated, null));
-        toast.success("Account ready");
+        try {
+          await completeMemberLogin(qc, setUser, hydrated, getPostLoginDestination(hydrated, null));
+          toast.success("Account ready");
+        } catch (err) {
+          useAuthStore.getState().clearSession();
+          toast.error(
+            parseApiError(
+              err,
+              "Account created, but the session cookie was not saved. Restart the Next.js app so BACKEND_URL points at your local API."
+            )
+          );
+          router.replace("/login");
+        }
       } else {
         toast.success("Check your email to verify your account, then sign in.");
         router.replace("/login");

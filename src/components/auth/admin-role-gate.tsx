@@ -5,8 +5,6 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useAuthProfileQuery } from "@/hooks/use-auth-profile-query";
-import { useAuthStore } from "@/store/authStore";
-import { clearAuthCookies } from "@/utils/cookies";
 
 function GateSpinner({ message }: { message: string }) {
   return (
@@ -35,8 +33,6 @@ export function AdminRoleGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated || !isFetched) return;
     if (!profileUser) {
-      useAuthStore.getState().clearSession();
-      clearAuthCookies();
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(ROUTES.admin.root)}`);
       return;
     }

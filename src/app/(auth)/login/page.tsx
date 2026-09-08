@@ -27,6 +27,7 @@ import { getPostLoginDestination } from "@/lib/auth/redirect";
 import { completeMemberLogin } from "@/lib/auth/complete-login";
 import { parseApiError } from "@/services/api/errors";
 import { loginRequest } from "@/services/auth";
+import { queryKeys } from "@/services/queries";
 import { useAuthStore } from "@/store/authStore";
 
 const loginSchema = z.object({
@@ -66,10 +67,21 @@ function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: loginRequest,
-    onSuccess: (user) => {
-      toast.success("Welcome back");
+    onSuccess: async (user) => {
       const redirect = searchParams.get("redirect");
-      completeMemberLogin(qc, setUser, user, getPostLoginDestination(user, redirect));
+      try {
+        await completeMemberLogin(qc, setUser, user, getPostLoginDestination(user, redirect));
+        toast.success("Welcome back");
+      } catch (err) {
+        useAuthStore.getState().clearSession();
+        qc.setQueryData(queryKeys.auth.profile, null);
+        toast.error(
+          parseApiError(
+            err,
+            "Signed in, but the session cookie was not saved. Restart the Next.js app so BACKEND_URL points at your local API."
+          )
+        );
+      }
     },
     onError: (err) => {
       toast.error(parseApiError(err, "Could not sign in"));

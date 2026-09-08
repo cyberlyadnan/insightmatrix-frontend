@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -28,7 +28,7 @@ import {
   vendorPrimaryButtonClass,
 } from "@/constants/vendor-ui";
 import { parseApiError } from "@/services/api/errors";
-import { vendorLoginRequest } from "@/services/vendor-auth";
+import { vendorLoginRequest, vendorMeRequest } from "@/services/vendor-auth";
 import { queryKeys } from "@/services/queries";
 import { useVendorAuthStore } from "@/store/vendorAuthStore";
 
@@ -39,7 +39,6 @@ const loginSchema = z.object({
 
 function VendorLoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
   const searchParams = useSearchParams();
   const qc = useQueryClient();
   const setVendor = useVendorAuthStore((s) => s.setVendor);
@@ -54,14 +53,28 @@ function VendorLoginForm() {
     onSuccess: async (vendor) => {
       setVendor(vendor);
       qc.setQueryData(queryKeys.vendorAuth.profile, vendor);
-      void qc.invalidateQueries({ queryKey: queryKeys.vendorAuth.profile });
+      try {
+        const me = await vendorMeRequest();
+        setVendor(me);
+        qc.setQueryData(queryKeys.vendorAuth.profile, me);
+      } catch (err) {
+        useVendorAuthStore.getState().clearVendor();
+        qc.setQueryData(queryKeys.vendorAuth.profile, null);
+        toast.error(
+          parseApiError(
+            err,
+            "Signed in, but the session cookie was not saved. Restart the Next.js app so BACKEND_URL points at your local API."
+          )
+        );
+        return;
+      }
       toast.success("Welcome back");
       const redirect = searchParams.get("redirect");
       const dest =
         redirect && redirect.startsWith("/vendor") && !redirect.startsWith(ROUTES.vendor.login)
           ? redirect
           : ROUTES.vendor.dashboard;
-      router.replace(dest);
+      window.location.replace(dest);
     },
     onError: (err) => toast.error(parseApiError(err, "Could not sign in")),
   });

@@ -54,6 +54,7 @@ export const queryKeys = {
   memberPanel: {
     available: ["member-panel", "available"] as const,
     wallet: ["member-panel", "wallet"] as const,
+    history: ["member-panel", "history"] as const,
   },
   companyPayments: {
     all: ["company-payments"] as const,

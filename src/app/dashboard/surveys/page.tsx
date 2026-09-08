@@ -38,13 +38,21 @@ export default function PanelSurveys() {
     staleTime: 30_000,
   });
 
+  const [startingId, setStartingId] = useState<string | null>(null);
+
   const startMutation = useMutation({
     mutationFn: (surveyId: string) => startPanelSurveyAttempt(surveyId),
+    onMutate: (surveyId) => {
+      setStartingId(surveyId);
+    },
     onSuccess: async (res) => {
       await qc.invalidateQueries({ queryKey: queryKeys.memberPanel.available });
       router.push(res.startPath);
     },
-    onError: (e) => toast.error(parseApiError(e, "Could not start survey")),
+    onError: (e) => {
+      setStartingId(null);
+      toast.error(parseApiError(e, "Could not start survey"));
+    },
   });
 
   const allSurveys = data?.surveys;
@@ -272,11 +280,14 @@ export default function PanelSurveys() {
 
                   <button
                     type="button"
-                    disabled={!canStart || startMutation.isPending}
-                    onClick={() => startMutation.mutate(survey.id)}
+                    disabled={!canStart || startingId === survey.id}
+                    onClick={() => {
+                      if (startingId || startMutation.isPending) return;
+                      startMutation.mutate(survey.id);
+                    }}
                     className="h-9 px-3.5 rounded-xl bg-gradient-to-r from-brand-primary to-blue-600 text-white text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 shadow-xs hover:opacity-95 disabled:opacity-50 transition-all shrink-0 active:scale-95"
                   >
-                    {startMutation.isPending && startMutation.variables === survey.id ? (
+                    {startingId === survey.id ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
                     ) : canStart ? (
                       <>

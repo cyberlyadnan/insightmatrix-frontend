@@ -6,7 +6,6 @@ import { useEffect, type ReactNode } from "react";
 import { ROUTES } from "@/constants/routes";
 import { fetchProfileOptional } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
-import { useAuthStore } from "@/store/authStore";
 
 /** Auth pages (login/register/…) are for guests only */
 export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
@@ -29,8 +28,6 @@ export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
     if (authChecking) return;
     if (profileUser) {
       router.replace(profileUser.role === "admin" ? ROUTES.admin.root : ROUTES.dashboard.root);
-    } else {
-      useAuthStore.getState().clearSession();
     }
   }, [authChecking, profileUser, router]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -46,13 +46,21 @@ export default function DashboardHome() {
     staleTime: 60_000,
   });
 
+  const [startingId, setStartingId] = useState<string | null>(null);
+
   const startMutation = useMutation({
     mutationFn: (surveyId: string) => startPanelSurveyAttempt(surveyId),
+    onMutate: (surveyId) => {
+      setStartingId(surveyId);
+    },
     onSuccess: async (res) => {
       await qc.invalidateQueries({ queryKey: queryKeys.memberPanel.available });
       router.push(res.startPath);
     },
-    onError: (e) => toast.error(parseApiError(e, "Could not start survey")),
+    onError: (e) => {
+      setStartingId(null);
+      toast.error(parseApiError(e, "Could not start survey"));
+    },
   });
 
   const surveys = surveysData?.surveys ?? [];
@@ -120,11 +128,14 @@ export default function DashboardHome() {
             {featuredSurvey ? (
               <button
                 type="button"
-                disabled={startMutation.isPending}
-                onClick={() => startMutation.mutate(featuredSurvey.id)}
+                disabled={startingId === featuredSurvey.id}
+                onClick={() => {
+                  if (startingId || startMutation.isPending) return;
+                  startMutation.mutate(featuredSurvey.id);
+                }}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-brand-primary via-blue-600 to-indigo-600 text-white text-xs font-black uppercase tracking-wider inline-flex items-center justify-center gap-2 shadow-md shadow-brand-primary/25 hover:opacity-95 active:scale-95 transition-all disabled:opacity-50"
               >
-                {startMutation.isPending ? (
+                {startingId === featuredSurvey.id ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
@@ -334,11 +345,14 @@ export default function DashboardHome() {
 
                       <button
                         type="button"
-                        disabled={!canStart || startMutation.isPending}
-                        onClick={() => startMutation.mutate(survey.id)}
+                        disabled={!canStart || startingId === survey.id}
+                        onClick={() => {
+                          if (startingId || startMutation.isPending) return;
+                          startMutation.mutate(survey.id);
+                        }}
                         className="px-3.5 py-2 rounded-lg bg-brand-primary text-white text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5 shadow-xs hover:bg-brand-hover active:scale-95 disabled:opacity-50 transition-all shrink-0"
                       >
-                        {startMutation.isPending && startMutation.variables === survey.id ? (
+                        {startingId === survey.id ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
                         ) : canStart ? (
                           <>

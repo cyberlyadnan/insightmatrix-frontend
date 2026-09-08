@@ -1,87 +1,26 @@
 "use client";
 
-import { Bell, Shield } from "lucide-react";
-import { CompanyProfileSettingsForm } from "@/components/admin/settings/company-profile-settings-form";
-import { SurveyRoutingCallbacksSection } from "@/components/admin/SurveyRoutingCallbacksSection";
+import { AdminSettingsHub } from "@/components/admin/settings/AdminSettingsHub";
 import { PageHelp } from "@/components/crm/page-help";
-import { DashboardSection } from "@/components/dashboard/DashboardSection";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
-import { Button } from "@/components/ui/button";
 
 export default function AdminSettingsPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">Settings & Configuration</h1>
-          <p className="mt-2 text-gray-600">
-            Manage dynamic company profile, contact details, social links, SEO defaults, and survey
-            routing.
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+            Settings &amp; Configuration
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            Control global brand parameters, multi-channel communication endpoints, SEO defaults,
+            and survey routing webhooks.
           </p>
         </div>
         <PageHelp content={ADMIN_PAGE_HELP.settings} />
       </div>
 
-      {/* Dynamic Company Profile & Social Links Form */}
-      <CompanyProfileSettingsForm />
-
-      {/* Survey Routing Callbacks */}
-      <SurveyRoutingCallbacksSection />
-
-      <DashboardSection
-        title="Notifications"
-        description="Email alerts for queries, testimonials, and publishing workflows."
-        actions={
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="border-gray-200 bg-white text-gray-900 hover:bg-gray-50 hover:text-gray-900"
-          >
-            Save changes
-          </Button>
-        }
-      >
-        <div className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-100">
-            <Bell className="h-5 w-5 text-brand-primary" />
-          </div>
-          <div>
-            <p className="font-bold text-gray-900">Digest emails</p>
-            <p className="text-sm text-gray-600">
-              Weekly summary of inbound queries and moderation tasks.
-            </p>
-          </div>
-        </div>
-      </DashboardSection>
-
-      <DashboardSection
-        title="Security & Access"
-        description="Session management and admin roles will connect to your API layer."
-        actions={
-          <Button
-            type="button"
-            size="sm"
-            className="bg-gray-900 text-white hover:bg-black hover:text-white"
-          >
-            Review policies
-          </Button>
-        }
-      >
-        <div className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-gray-50/80 p-5">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm border border-gray-100">
-            <Shield className="h-5 w-5 text-brand-primary" />
-          </div>
-          <div>
-            <p className="font-bold text-gray-900">Role-based access</p>
-            <p className="text-sm text-gray-600">
-              Wire{" "}
-              <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">canAccessAdminRoute</code>{" "}
-              checks into middleware once JWT roles are available from the backend.
-            </p>
-          </div>
-        </div>
-      </DashboardSection>
+      <AdminSettingsHub />
     </div>
   );
 }

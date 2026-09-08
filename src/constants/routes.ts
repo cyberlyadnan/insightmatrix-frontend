@@ -11,6 +11,7 @@ export const ROUTES = {
     /** Required member profile questionnaire before surveys (when configured in admin) */
     prescreen: "/dashboard/prescreen",
     wallet: "/dashboard/wallet",
+    history: "/dashboard/history",
     settings: "/dashboard/settings",
     settingsAccount: "/dashboard/settings/account",
     settingsSecurity: "/dashboard/settings/security",
@@ -47,6 +48,8 @@ export const ROUTES = {
     respondentAnalytics: "/admin/respondent-analytics",
     securityLogs: "/admin/security-logs",
     email: "/admin/email",
+    users: "/admin/users",
+    user: (id: string) => `/admin/users/${id}`,
     queries: "/admin/queries",
     services: "/admin/services",
     servicesCreate: "/admin/services/create",

@@ -72,3 +72,48 @@ export async function getPanelWallet(): Promise<PanelWalletResponse> {
   const { data } = await apiClient.get<ApiEnvelope<PanelWalletResponse>>("/users/panel/wallet");
   return data.data;
 }
+
+export type MemberAttemptOutcome =
+  | "completed"
+  | "in_progress"
+  | "terminated"
+  | "quota_full"
+  | "quality_reject"
+  | "screenout";
+
+export type MemberSurveyHistoryItem = {
+  id: string;
+  attemptToken: string;
+  surveyId: string;
+  surveyName: string;
+  surveyCode: string;
+  estimatedLOI: number | null;
+  attemptStatus: "started" | "completed_rewarded";
+  outcome: MemberAttemptOutcome;
+  outcomeLabel: string;
+  pointsAwarded: number;
+  pointsPotential: number;
+  startedAt: string | null;
+  resolvedAt: string | null;
+  providerName: string | null;
+};
+
+export type MemberSurveyHistorySummary = {
+  totalAttempts: number;
+  completed: number;
+  inProgress: number;
+  notQualified: number;
+  pointsFromSurveys: number;
+};
+
+export type MemberSurveyHistoryResponse = {
+  items: MemberSurveyHistoryItem[];
+  summary: MemberSurveyHistorySummary;
+};
+
+export async function getPanelSurveyHistory(): Promise<MemberSurveyHistoryResponse> {
+  const { data } = await apiClient.get<ApiEnvelope<MemberSurveyHistoryResponse>>(
+    "/users/panel/survey-history"
+  );
+  return data.data;
+}

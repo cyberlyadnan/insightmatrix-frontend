@@ -24,6 +24,8 @@ export interface PrescreenQuestion {
   description: string;
   helperText: string;
   required: boolean;
+  /** Core matching fields that admins cannot remove from the panel profile */
+  isLocked?: boolean;
   placeholder: string;
   defaultValue: string | number | boolean | string[] | null;
   options: PrescreenOption[];

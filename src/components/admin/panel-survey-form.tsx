@@ -467,7 +467,8 @@ export function PanelSurveyForm({
                             </span>
                           </div>
                           <p className="text-xs text-gray-500 mt-1">
-                            Shown to eligible logged-in members on their dashboard.
+                            Shown to logged-in members whose demographic profile matches this
+                            survey&apos;s targeting (country, age, industry, etc.).
                           </p>
                         </div>
                       </label>
@@ -777,6 +778,15 @@ export function PanelSurveyForm({
 
         <div className={cn("space-y-8", activeTab !== "advanced" && "hidden")}>
           <SectionCard title="Targeting configuration" id={PANEL_SURVEY_SECTION_IDS.targeting}>
+            <div className="mb-5 rounded-xl border border-brand-primary/15 bg-brand-subtle/60 px-4 py-3 text-xs text-gray-700 leading-relaxed">
+              <p className="font-bold text-gray-900 mb-1">Member survey matching</p>
+              <p>
+                For <span className="font-semibold">public</span> surveys, members only see this
+                study when their locked demographic profile matches: country, age range, gender,
+                employment/profession, industry, and devices. Leave a field empty to allow all
+                values for that dimension.
+              </p>
+            </div>
             <div className="grid gap-6 md:grid-cols-2">
               <FormField
                 control={form.control}

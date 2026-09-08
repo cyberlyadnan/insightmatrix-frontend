@@ -108,9 +108,9 @@ export default function PanelSurveys() {
               <AlertCircle size={18} />
             </div>
             <div>
-              <p className="font-black text-xs text-amber-950">Complete your profile prescreen</p>
+              <p className="font-black text-xs text-amber-950">Complete your demographic profile</p>
               <p className="text-[11px] text-amber-800/80 font-medium">
-                Answer demographic questions to qualify for high-incentive premium studies.
+                Surveys are matched to your country, age, industry, and other profile answers.
               </p>
             </div>
           </div>

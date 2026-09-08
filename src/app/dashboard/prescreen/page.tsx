@@ -93,7 +93,8 @@ export default function DashboardPrescreenPage() {
         <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
         <h1 className="text-base font-black text-gray-900">Profile Verified</h1>
         <p className="text-xs text-gray-500 leading-relaxed">
-          Your profile prescreen is active and verified.
+          Your profile prescreen is active. If you need to change demographics, ask an admin to
+          republish the member profile form.
         </p>
         <Link
           href={ROUTES.dashboard.surveys}
@@ -137,9 +138,12 @@ export default function DashboardPrescreenPage() {
               <CheckCircle2 size={16} />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-black text-emerald-950">Profile Prescreen Active</p>
+              <p className="text-xs font-black text-emerald-950">
+                Profile saved — editable anytime
+              </p>
               <p className="text-[11px] text-emerald-800 font-medium truncate">
-                Your answers are saved. You can update any responses below at any time.
+                Update country or other answers below, then save. Matching surveys refresh after
+                save.
               </p>
             </div>
           </div>
@@ -157,18 +161,18 @@ export default function DashboardPrescreenPage() {
             <Sparkles size={16} />
           </div>
           <div>
-            <p className="text-xs font-black text-amber-950">One-Time Setup Required</p>
+            <p className="text-xs font-black text-amber-950">Complete your profile</p>
             <p className="text-[11px] text-amber-800 font-medium">
-              Complete these questions once to activate study matching and unlock point earning.
+              Fill these demographics once to unlock matched studies. You can edit them later.
             </p>
           </div>
         </div>
       )}
 
-      {/* Form Container */}
+      {/* Form Container — always editable when form is configured */}
       <div className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-7 shadow-xs">
         <MemberPrescreenForm
-          key={bundle.form.id}
+          key={`${bundle.form.id}-${bundle.existingAnswers ? "edit" : "new"}`}
           form={bundle.form}
           initialAnswers={bundle.existingAnswers}
           isSubmitting={submitMutation.isPending}

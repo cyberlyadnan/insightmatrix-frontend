@@ -261,6 +261,7 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                   type="checkbox"
                   className="mt-1 rounded border-gray-300 text-brand-primary"
                   checked={Boolean(isRequiredForPanel)}
+                  disabled={initialData?.slug === "panel-member-profile"}
                   onChange={(e) => form.setValue("isRequiredForPanel", e.target.checked)}
                 />
                 <span>
@@ -268,8 +269,12 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                     Required for member panel
                   </span>
                   <span className="block text-xs text-gray-600 mt-1 leading-relaxed">
-                    When published, members must complete this prescreen before accessing surveys.
-                    Only one published prescreen can hold this flag at a time.
+                    When published, members must complete this demographic profile before seeing
+                    matched surveys. Core fields (age, gender, country, employment, industry,
+                    devices) are locked and cannot be removed.
+                    {initialData?.slug === "panel-member-profile"
+                      ? " This canonical profile cannot be unmarked."
+                      : " Only one published form can hold this flag."}
                   </span>
                 </span>
               </label>
@@ -302,35 +307,52 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                       <span className="text-xs font-bold text-gray-500 uppercase truncate">
                         {q.type}
                       </span>
+                      {q.isLocked ? (
+                        <span className="shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-700">
+                          Locked
+                        </span>
+                      ) : null}
                     </div>
-                    <button
-                      type="button"
-                      className="text-rose-600 hover:text-rose-700"
-                      onClick={() => removeQuestion(q.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {q.isLocked ? (
+                      <span
+                        className="text-[10px] font-semibold text-gray-400"
+                        title="Required for survey matching"
+                      >
+                        Matching field
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-rose-600 hover:text-rose-700"
+                        onClick={() => removeQuestion(q.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                   <div className="mt-3 space-y-2">
                     <Input
                       value={q.title}
                       onChange={(e) => updateQuestion(q.id, { title: e.target.value })}
                       className="text-gray-900 placeholder:text-gray-400"
+                      disabled={q.isLocked}
                     />
                     <Input
                       value={q.description}
                       onChange={(e) => updateQuestion(q.id, { description: e.target.value })}
                       placeholder="Question description"
                       className="text-gray-900 placeholder:text-gray-400"
+                      disabled={q.isLocked}
                     />
                     <div className="flex items-center justify-between">
                       <label className="text-xs text-gray-600 flex items-center gap-2">
                         <input
                           type="checkbox"
                           checked={q.required}
+                          disabled={q.isLocked}
                           onChange={(e) => updateQuestion(q.id, { required: e.target.checked })}
                         />
-                        Required
+                        Required{q.isLocked ? " (always on)" : ""}
                       </label>
                     </div>
                     {isOptionType(q.type) && (
@@ -339,6 +361,7 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                           <div key={option.id} className="flex flex-col sm:flex-row gap-2">
                             <Input
                               value={option.label}
+                              disabled={q.isLocked}
                               onChange={(e) =>
                                 updateQuestion(q.id, {
                                   options: q.options.map((item) =>
@@ -354,37 +377,45 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                               }
                               className="text-gray-900 placeholder:text-gray-400"
                             />
-                            <button
-                              type="button"
-                              className="px-3 h-10 rounded-lg border border-gray-300 text-xs text-gray-900 bg-white hover:bg-gray-50 whitespace-nowrap"
-                              onClick={() =>
-                                updateQuestion(q.id, {
-                                  options: q.options.filter((item) => item.id !== option.id),
-                                })
-                              }
-                            >
-                              Remove
-                            </button>
+                            {!q.isLocked ? (
+                              <button
+                                type="button"
+                                className="px-3 h-10 rounded-lg border border-gray-300 text-xs text-gray-900 bg-white hover:bg-gray-50 whitespace-nowrap"
+                                onClick={() =>
+                                  updateQuestion(q.id, {
+                                    options: q.options.filter((item) => item.id !== option.id),
+                                  })
+                                }
+                              >
+                                Remove
+                              </button>
+                            ) : null}
                           </div>
                         ))}
-                        <button
-                          type="button"
-                          className="text-xs font-bold text-brand-primary hover:text-brand-hover"
-                          onClick={() =>
-                            updateQuestion(q.id, {
-                              options: [
-                                ...q.options,
-                                {
-                                  id: `opt_${Math.random().toString(36).slice(2, 9)}`,
-                                  label: `Option ${q.options.length + 1}`,
-                                  value: `option_${q.options.length + 1}`,
-                                },
-                              ],
-                            })
-                          }
-                        >
-                          + Add option
-                        </button>
+                        {!q.isLocked ? (
+                          <button
+                            type="button"
+                            className="text-xs font-bold text-brand-primary hover:text-brand-hover"
+                            onClick={() =>
+                              updateQuestion(q.id, {
+                                options: [
+                                  ...q.options,
+                                  {
+                                    id: `opt_${Math.random().toString(36).slice(2, 9)}`,
+                                    label: `Option ${q.options.length + 1}`,
+                                    value: `option_${q.options.length + 1}`,
+                                  },
+                                ],
+                              })
+                            }
+                          >
+                            + Add option
+                          </button>
+                        ) : (
+                          <p className="text-[11px] text-amber-700 font-medium">
+                            Option values are locked so survey targeting stays aligned.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

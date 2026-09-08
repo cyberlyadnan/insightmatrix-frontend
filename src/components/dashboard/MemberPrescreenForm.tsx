@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+import { CountrySearchSelect } from "@/components/dashboard/country-search-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { PrescreenForm, PrescreenQuestion } from "@/types/prescreen";
@@ -16,6 +17,10 @@ type Props = {
 
 function sortedQuestions(form: PrescreenForm): PrescreenQuestion[] {
   return [...(form.questions ?? [])].sort((a, b) => a.order - b.order);
+}
+
+function isCountryQuestion(q: PrescreenQuestion): boolean {
+  return q.id.endsWith("_q_country") || /country of residence/i.test(q.title);
 }
 
 function isEmptyAnswer(value: unknown): boolean {
@@ -52,7 +57,12 @@ export function MemberPrescreenForm({ form, initialAnswers, onSubmit, isSubmitti
     const initial: Record<string, unknown> = {};
     for (const q of sortedQuestions(form)) {
       if (initialAnswers && initialAnswers[q.id] !== undefined && initialAnswers[q.id] !== null) {
-        initial[q.id] = initialAnswers[q.id];
+        let value = initialAnswers[q.id];
+        if (isCountryQuestion(q) && typeof value === "string") {
+          const v = value.trim().toUpperCase();
+          value = v === "UK" || v === "GBR" ? "GB" : v;
+        }
+        initial[q.id] = value;
       } else if (q.defaultValue !== null && q.defaultValue !== undefined) {
         initial[q.id] = q.defaultValue as unknown;
       } else if (q.type === "checkbox") {
@@ -102,7 +112,11 @@ export function MemberPrescreenForm({ form, initialAnswers, onSubmit, isSubmitti
             {q.description ? (
               <p className="text-[11px] text-gray-500 mt-0.5">{q.description}</p>
             ) : null}
-            {q.helperText ? (
+            {isCountryQuestion(q) ? (
+              <p className="text-[10px] text-gray-400 mt-0.5">
+                Search the full country list — same codes used for survey targeting.
+              </p>
+            ) : q.helperText ? (
               <p className="text-[10px] text-gray-400 mt-0.5">{q.helperText}</p>
             ) : null}
           </div>
@@ -156,7 +170,16 @@ export function MemberPrescreenForm({ form, initialAnswers, onSubmit, isSubmitti
             />
           ) : null}
 
-          {q.type === "dropdown" ? (
+          {q.type === "dropdown" && isCountryQuestion(q) ? (
+            <CountrySearchSelect
+              value={String(answers[q.id] ?? "")}
+              onChange={(v) => setVal(q.id, v)}
+              placeholder={q.placeholder || "Search and select country…"}
+              required={q.required}
+            />
+          ) : null}
+
+          {q.type === "dropdown" && !isCountryQuestion(q) ? (
             <select
               value={String(answers[q.id] ?? "")}
               onChange={(e) => setVal(q.id, e.target.value)}

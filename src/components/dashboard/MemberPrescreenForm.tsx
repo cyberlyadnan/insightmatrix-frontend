@@ -9,6 +9,7 @@ import type { PrescreenForm, PrescreenQuestion } from "@/types/prescreen";
 
 type Props = {
   form: PrescreenForm;
+  initialAnswers?: Record<string, unknown> | null;
   onSubmit: (answers: Record<string, unknown>) => Promise<void>;
   isSubmitting: boolean;
 };
@@ -42,7 +43,7 @@ function validateRequiredBeforeSubmit(
   return null;
 }
 
-export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
+export function MemberPrescreenForm({ form, initialAnswers, onSubmit, isSubmitting }: Props) {
   const questions = useMemo(() => sortedQuestions(form), [form]);
 
   const [clientError, setClientError] = useState<string | null>(null);
@@ -50,7 +51,9 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
   const [answers, setAnswers] = useState<Record<string, unknown>>(() => {
     const initial: Record<string, unknown> = {};
     for (const q of sortedQuestions(form)) {
-      if (q.defaultValue !== null && q.defaultValue !== undefined) {
+      if (initialAnswers && initialAnswers[q.id] !== undefined && initialAnswers[q.id] !== null) {
+        initial[q.id] = initialAnswers[q.id];
+      } else if (q.defaultValue !== null && q.defaultValue !== undefined) {
         initial[q.id] = q.defaultValue as unknown;
       } else if (q.type === "checkbox") {
         initial[q.id] = [];
@@ -88,16 +91,20 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {questions.map((q) => (
-        <div key={q.id} className="space-y-2">
+        <div key={q.id} className="space-y-2 p-4 rounded-xl bg-gray-50/70 border border-gray-100">
           <div>
-            <p className="text-sm font-black text-gray-900">
+            <p className="text-xs sm:text-sm font-black text-gray-900 leading-snug">
               {q.title}
               {q.required ? <span className="text-rose-500 ml-1">*</span> : null}
             </p>
-            {q.description ? <p className="text-xs text-gray-500 mt-1">{q.description}</p> : null}
-            {q.helperText ? <p className="text-[11px] text-gray-400 mt-1">{q.helperText}</p> : null}
+            {q.description ? (
+              <p className="text-[11px] text-gray-500 mt-0.5">{q.description}</p>
+            ) : null}
+            {q.helperText ? (
+              <p className="text-[10px] text-gray-400 mt-0.5">{q.helperText}</p>
+            ) : null}
           </div>
 
           {q.type === "short_text" || q.type === "email" ? (
@@ -106,7 +113,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
               value={String(answers[q.id] ?? "")}
               onChange={(e) => setVal(q.id, e.target.value)}
               placeholder={q.placeholder || undefined}
-              className="text-gray-900 border-gray-200"
+              className="text-xs text-gray-900 border-gray-200 bg-white h-9 rounded-lg"
               required={q.required}
             />
           ) : null}
@@ -116,7 +123,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
               value={String(answers[q.id] ?? "")}
               onChange={(e) => setVal(q.id, e.target.value)}
               placeholder={q.placeholder || undefined}
-              className="w-full min-h-24 rounded-xl border border-gray-200 p-3 text-sm text-gray-900 placeholder:text-gray-400"
+              className="w-full min-h-20 rounded-lg border border-gray-200 p-2.5 text-xs text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-brand-primary/20"
               required={q.required}
             />
           ) : null}
@@ -134,7 +141,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
               placeholder={q.placeholder || undefined}
               min={q.validation?.minValue ?? undefined}
               max={q.validation?.maxValue ?? undefined}
-              className="text-gray-900 border-gray-200"
+              className="text-xs text-gray-900 border-gray-200 bg-white h-9 rounded-lg"
               required={q.required}
             />
           ) : null}
@@ -144,7 +151,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
               type="date"
               value={String(answers[q.id] ?? "")}
               onChange={(e) => setVal(q.id, e.target.value)}
-              className="text-gray-900 border-gray-200"
+              className="text-xs text-gray-900 border-gray-200 bg-white h-9 rounded-lg"
               required={q.required}
             />
           ) : null}
@@ -153,7 +160,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
             <select
               value={String(answers[q.id] ?? "")}
               onChange={(e) => setVal(q.id, e.target.value)}
-              className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
+              className="w-full h-9 rounded-lg border border-gray-200 px-3 text-xs text-gray-900 bg-white"
               required={q.required}
             >
               <option value="">{q.placeholder || "Select…"}</option>
@@ -166,11 +173,11 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
           ) : null}
 
           {q.type === "radio" ? (
-            <fieldset className="space-y-2">
+            <fieldset className="space-y-1.5 pt-1">
               {(q.options ?? []).map((opt) => (
                 <label
                   key={opt.id}
-                  className="flex items-center gap-2 text-sm text-gray-800 cursor-pointer"
+                  className="flex items-center gap-2 text-xs text-gray-800 cursor-pointer font-medium"
                 >
                   <input
                     type="radio"
@@ -187,13 +194,13 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
           ) : null}
 
           {q.type === "checkbox" ? (
-            <fieldset className="space-y-2">
+            <fieldset className="space-y-1.5 pt-1">
               {(q.options ?? []).map((opt) => {
                 const arr = Array.isArray(answers[q.id]) ? (answers[q.id] as string[]) : [];
                 return (
                   <label
                     key={opt.id}
-                    className="flex items-center gap-2 text-sm text-gray-800 cursor-pointer"
+                    className="flex items-center gap-2 text-xs text-gray-800 cursor-pointer font-medium"
                   >
                     <input
                       type="checkbox"
@@ -209,11 +216,11 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
           ) : null}
 
           {q.type === "yes_no" ? (
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 pt-1">
               <button
                 type="button"
                 onClick={() => setVal(q.id, true)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold border transition-colors ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
                   answers[q.id] === true
                     ? "bg-brand-primary text-white border-brand-primary"
                     : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
@@ -224,7 +231,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
               <button
                 type="button"
                 onClick={() => setVal(q.id, false)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold border transition-colors ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
                   answers[q.id] === false
                     ? "bg-brand-primary text-white border-brand-primary"
                     : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
@@ -238,7 +245,7 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
       ))}
 
       {clientError ? (
-        <p role="alert" className="text-sm font-semibold text-rose-600">
+        <p role="alert" className="text-xs font-semibold text-rose-600">
           {clientError}
         </p>
       ) : null}
@@ -246,15 +253,15 @@ export function MemberPrescreenForm({ form, onSubmit, isSubmitting }: Props) {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="w-full h-12 rounded-2xl bg-brand-primary text-white font-black uppercase tracking-widest text-xs"
+        className="w-full h-11 rounded-xl bg-brand-primary hover:bg-brand-hover text-white font-black uppercase tracking-wider text-xs shadow-md shadow-brand-primary/20 transition-all active:scale-95"
       >
         {isSubmitting ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin inline mr-2" />
-            Saving…
+            Saving Profile…
           </>
         ) : (
-          "Submit profile"
+          "Save & Update Profile"
         )}
       </Button>
     </form>

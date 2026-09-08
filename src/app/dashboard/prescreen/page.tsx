@@ -1,10 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ClipboardCheck, Loader2 } from "lucide-react";
+import {
+  ClipboardCheck,
+  Loader2,
+  ShieldCheck,
+  CheckCircle2,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import { MemberPrescreenForm } from "@/components/dashboard/MemberPrescreenForm";
 import { ROUTES } from "@/constants/routes";
@@ -20,7 +28,6 @@ export default function DashboardPrescreenPage() {
   const router = useRouter();
   const qc = useQueryClient();
   const setUser = useAuthStore((s) => s.setUser);
-  /** Wall-clock time on the form (for analytics); set when the questionnaire first renders */
   const formStartedAtMsRef = useRef<number | null>(null);
 
   const { data: bundle, isLoading } = useQuery({
@@ -29,18 +36,10 @@ export default function DashboardPrescreenPage() {
   });
 
   useEffect(() => {
-    if (!bundle) return;
-    if (bundle.notConfigured) return;
-    if (!bundle.needsCompletion) {
-      router.replace(ROUTES.dashboard.root);
-    }
-  }, [bundle, router]);
-
-  useEffect(() => {
-    if (bundle?.needsCompletion && bundle.form && formStartedAtMsRef.current === null) {
+    if (formStartedAtMsRef.current === null) {
       formStartedAtMsRef.current = Date.now();
     }
-  }, [bundle?.needsCompletion, bundle?.form]);
+  }, []);
 
   const submitMutation = useMutation({
     mutationFn: async (answers: Record<string, unknown>) => {
@@ -54,57 +53,124 @@ export default function DashboardPrescreenPage() {
       await qc.invalidateQueries({ queryKey: queryKeys.panelPrescreen.bundle });
       await qc.invalidateQueries({ queryKey: queryKeys.memberPanel.available });
       await qc.invalidateQueries({ queryKey: queryKeys.memberPanel.wallet });
-      toast.success("Profile saved — you can explore surveys now.");
-      router.replace(ROUTES.dashboard.surveys);
+      toast.success("Profile prescreen saved successfully!");
+      router.push(ROUTES.dashboard.surveys);
     },
     onError: (e) => toast.error(parseApiError(e, "Could not save prescreen")),
   });
 
   if (isLoading || !bundle) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-10 h-10 text-brand-primary animate-spin" />
-        <p className="text-sm text-gray-500">Loading profile questionnaire…</p>
+      <div className="min-h-[40vh] flex flex-col items-center justify-center gap-3">
+        <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
+        <p className="text-xs font-bold text-gray-500">Loading profile questionnaire…</p>
       </div>
     );
   }
 
   if (bundle.notConfigured) {
     return (
-      <div className="max-w-lg mx-auto rounded-3xl border border-amber-100 bg-amber-50/80 p-8 text-center">
-        <ClipboardCheck className="w-12 h-12 text-amber-600 mx-auto mb-4" />
-        <h1 className="text-xl font-black text-gray-900 mb-2">Prescreen not ready</h1>
-        <p className="text-sm text-gray-600 leading-relaxed">
-          An administrator must publish the required member profile prescreen (Admin →
-          Prescreening). Until then, survey matching profiles are unavailable.
+      <div className="max-w-md mx-auto rounded-2xl border border-amber-200 bg-amber-50/80 p-6 text-center space-y-3">
+        <ClipboardCheck className="w-10 h-10 text-amber-600 mx-auto" />
+        <h1 className="text-base font-black text-gray-900">Prescreen Not Configured</h1>
+        <p className="text-xs text-gray-600 leading-relaxed">
+          The administrator has not published a required panel prescreen yet. All matched research
+          opportunities are open directly.
         </p>
+        <Link
+          href={ROUTES.dashboard.surveys}
+          className="inline-flex px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-bold"
+        >
+          Browse Surveys
+        </Link>
       </div>
     );
   }
 
-  if (!bundle.needsCompletion || !bundle.form) {
+  if (!bundle.form) {
     return (
-      <div className="min-h-[40vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
+      <div className="max-w-md mx-auto rounded-2xl border border-gray-100 bg-white p-6 text-center space-y-3 shadow-sm">
+        <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto" />
+        <h1 className="text-base font-black text-gray-900">Profile Verified</h1>
+        <p className="text-xs text-gray-500 leading-relaxed">
+          Your profile prescreen is active and verified.
+        </p>
+        <Link
+          href={ROUTES.dashboard.surveys}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-primary text-white text-xs font-bold"
+        >
+          <span>Explore Surveys</span>
+          <ArrowRight size={14} />
+        </Link>
       </div>
     );
   }
+
+  const isCompleted = !bundle.needsCompletion;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div className="text-center space-y-2">
-        <h1 className="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
-          {bundle.form.title}
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Top Header */}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-brand-subtle text-brand-primary flex items-center justify-center font-bold">
+            <ShieldCheck size={14} />
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">
+            Demographic Verification
+          </span>
+        </div>
+        <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+          {bundle.form.title || "Profile Prescreen"}
         </h1>
-        <p className="text-sm text-gray-600 leading-relaxed">{bundle.form.description}</p>
-        <p className="text-xs font-bold uppercase tracking-widest text-brand-primary">
-          Required once — helps match you to relevant surveys
+        <p className="text-xs text-gray-500 font-medium leading-relaxed">
+          {bundle.form.description ||
+            "Answer demographic questions to qualify for relevant research studies and earn points upon completion."}
         </p>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-10 shadow-sm">
+      {/* Status Notice */}
+      {isCompleted ? (
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0">
+              <CheckCircle2 size={16} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-black text-emerald-950">Profile Prescreen Active</p>
+              <p className="text-[11px] text-emerald-800 font-medium truncate">
+                Your answers are saved. You can update any responses below at any time.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={ROUTES.dashboard.surveys}
+            className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold inline-flex items-center gap-1 shadow-xs"
+          >
+            <span>Surveys</span>
+            <ArrowRight size={12} />
+          </Link>
+        </div>
+      ) : (
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0">
+            <Sparkles size={16} />
+          </div>
+          <div>
+            <p className="text-xs font-black text-amber-950">One-Time Setup Required</p>
+            <p className="text-[11px] text-amber-800 font-medium">
+              Complete these questions once to activate study matching and unlock point earning.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Form Container */}
+      <div className="bg-white border border-gray-100 rounded-2xl p-5 sm:p-7 shadow-xs">
         <MemberPrescreenForm
+          key={bundle.form.id}
           form={bundle.form}
+          initialAnswers={bundle.existingAnswers}
           isSubmitting={submitMutation.isPending}
           onSubmit={async (answers) => {
             await submitMutation.mutateAsync(answers);

@@ -12,6 +12,7 @@ export type PanelPrescreenBundle = {
   needsCompletion: boolean;
   notConfigured: boolean;
   form: PrescreenForm | null;
+  existingAnswers?: Record<string, unknown> | null;
 };
 
 export async function getPanelPrescreenBundle(): Promise<PanelPrescreenBundle> {

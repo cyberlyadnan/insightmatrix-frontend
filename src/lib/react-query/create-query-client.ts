@@ -33,7 +33,7 @@ const defaultOptions: QueryClientConfig["defaultOptions"] = {
     gcTime: QUERY_GC_TIME_MS,
     retry: (failureCount, error) => {
       const status = getHttpStatus(error);
-      if (status === 401 || status === 403 || status === 404) return false;
+      if (status === 401 || status === 403 || status === 404 || status === 429) return false;
       return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30_000),

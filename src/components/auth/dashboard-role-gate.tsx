@@ -6,6 +6,7 @@ import { ROUTES } from "@/constants/routes";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useAuthProfileQuery } from "@/hooks/use-auth-profile-query";
 import { useAuthStore } from "@/store/authStore";
+import { clearAuthCookies } from "@/utils/cookies";
 
 function GateSpinner({ message }: { message: string }) {
   return (
@@ -19,12 +20,11 @@ function GateSpinner({ message }: { message: string }) {
   );
 }
 
-/** Blocks `admin` from the member dashboard; sends them to `/admin` only */
+/** Blocks `admin` from the member dashboard; sends unauthenticated to `/login` */
 export function DashboardRoleGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const hydrated = useAuthHydrated();
-  const storeUser = useAuthStore((s) => s.user);
   const {
     data: profileUser,
     isFetched,
@@ -33,29 +33,24 @@ export function DashboardRoleGate({ children }: { children: ReactNode }) {
     enabled: hydrated,
   });
 
-  const user = profileUser ?? storeUser;
-  const isKnownMember = Boolean(storeUser && storeUser.role !== "admin");
-
   useEffect(() => {
     if (!hydrated || !isFetched) return;
-    if (!user) {
+    if (!profileUser) {
+      useAuthStore.getState().clearSession();
+      clearAuthCookies();
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
-    if (user.role === "admin") {
+    if (profileUser.role === "admin") {
       router.replace(ROUTES.admin.root);
     }
-  }, [hydrated, isFetched, user, router, pathname]);
-
-  if (isKnownMember) {
-    return <>{children}</>;
-  }
+  }, [hydrated, isFetched, profileUser, router, pathname]);
 
   if (!hydrated || (!isFetched && isPending)) {
     return <GateSpinner message="Loading your workspace…" />;
   }
 
-  if (!user || user.role === "admin") {
+  if (!profileUser || profileUser.role === "admin") {
     return <GateSpinner message="Redirecting…" />;
   }
 

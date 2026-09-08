@@ -6,6 +6,7 @@ import { ROUTES } from "@/constants/routes";
 import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useAuthProfileQuery } from "@/hooks/use-auth-profile-query";
 import { useAuthStore } from "@/store/authStore";
+import { clearAuthCookies } from "@/utils/cookies";
 
 function GateSpinner({ message }: { message: string }) {
   return (
@@ -19,11 +20,10 @@ function GateSpinner({ message }: { message: string }) {
   );
 }
 
-/** Client gate for `/admin` — middleware only checks for an access cookie */
+/** Client gate for `/admin` — ensures user has verified active admin session */
 export function AdminRoleGate({ children }: { children: ReactNode }) {
   const router = useRouter();
   const hydrated = useAuthHydrated();
-  const storeUser = useAuthStore((s) => s.user);
   const {
     data: profileUser,
     isFetched,
@@ -32,31 +32,24 @@ export function AdminRoleGate({ children }: { children: ReactNode }) {
     enabled: hydrated,
   });
 
-  const user = profileUser ?? storeUser;
-  const isKnownAdmin = storeUser?.role === "admin";
-
   useEffect(() => {
-    if (!hydrated || isKnownAdmin) return;
-    if (!isFetched) return;
-    if (!user) {
+    if (!hydrated || !isFetched) return;
+    if (!profileUser) {
+      useAuthStore.getState().clearSession();
+      clearAuthCookies();
       router.replace(`${ROUTES.login}?redirect=${encodeURIComponent(ROUTES.admin.root)}`);
       return;
     }
-    if (user.role !== "admin") {
+    if (profileUser.role !== "admin") {
       router.replace(ROUTES.dashboard.root);
     }
-  }, [hydrated, isKnownAdmin, isFetched, user, router]);
-
-  // Logged-in admin from session — never unmount admin UI for background auth checks
-  if (isKnownAdmin) {
-    return <>{children}</>;
-  }
+  }, [hydrated, isFetched, profileUser, router]);
 
   if (!hydrated || (!isFetched && isPending)) {
     return <GateSpinner message="Checking admin access…" />;
   }
 
-  if (!user || user.role !== "admin") {
+  if (!profileUser || profileUser.role !== "admin") {
     return <GateSpinner message="Redirecting…" />;
   }
 

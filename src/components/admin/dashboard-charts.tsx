@@ -119,8 +119,8 @@ export function DashboardCharts({
             No respondent data yet
           </div>
         ) : (
-          <div className="relative h-[220px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="relative h-[220px] min-w-0 min-h-[220px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={220}>
               <PieChart>
                 <Pie
                   data={outcomeData}
@@ -194,8 +194,8 @@ export function DashboardCharts({
           </div>
         </div>
 
-        <div className="h-[240px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-[240px] min-w-0 min-h-[240px]">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={240}>
             <BarChart
               data={funnelData}
               barCategoryGap="28%"

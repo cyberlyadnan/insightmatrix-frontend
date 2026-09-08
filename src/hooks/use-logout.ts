@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { queryKeys } from "@/services/queries";
 import { logoutRequest } from "@/services/auth";
 import { useAuthStore } from "@/store/authStore";
+import { clearAuthCookies } from "@/utils/cookies";
 
 export function useLogout() {
   const qc = useQueryClient();
@@ -15,6 +16,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: logoutRequest,
     onSettled: () => {
+      clearAuthCookies();
       qc.removeQueries({ queryKey: queryKeys.auth.profile });
       clearSession();
       router.replace("/login");

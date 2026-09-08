@@ -27,21 +27,19 @@ export function middleware(request: NextRequest) {
   const vendorRefreshToken = request.cookies.get(COOKIE_KEYS.vendorRefreshToken)?.value;
   const hasVendorAuth = Boolean(vendorAccessToken || vendorRefreshToken);
 
-  if (pathname === VENDOR_AUTH_PATH && hasVendorAuth) {
+  if (
+    pathname === VENDOR_AUTH_PATH &&
+    hasVendorAuth &&
+    !request.nextUrl.searchParams.has("redirect")
+  ) {
     return NextResponse.redirect(new URL(ROUTES.vendor.dashboard, request.url));
   }
 
   if (isAuthPath(pathname) && hasMemberAuth) {
-    const redirectTarget =
-      pathname === ROUTES.login && request.nextUrl.searchParams.get("redirect");
-    const safeRedirect =
-      redirectTarget &&
-      redirectTarget.startsWith("/") &&
-      !redirectTarget.startsWith("//") &&
-      redirectTarget.startsWith(ROUTES.admin.root)
-        ? redirectTarget
-        : ROUTES.dashboard.root;
-    return NextResponse.redirect(new URL(safeRedirect, request.url));
+    const hasExplicitRedirect = request.nextUrl.searchParams.has("redirect");
+    if (!hasExplicitRedirect) {
+      return NextResponse.redirect(new URL(ROUTES.dashboard.root, request.url));
+    }
   }
 
   const guardEnabled = process.env.NEXT_PUBLIC_ENABLE_ROUTE_GUARD === "true";

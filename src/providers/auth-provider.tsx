@@ -15,6 +15,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const hydrated = useAuthHydrated();
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
+  const clearSession = useAuthStore((s) => s.clearSession);
   const skipMemberHydration = isVendorRoute(pathname);
 
   const {
@@ -27,8 +28,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (skipMemberHydration || !hydrated || isFetching || !isFetched) return;
-    if (profile) setUser(profile);
-  }, [profile, isFetched, isFetching, setUser, skipMemberHydration, hydrated]);
+    if (profile) {
+      setUser(profile);
+    } else {
+      clearSession();
+    }
+  }, [profile, isFetched, isFetching, setUser, clearSession, skipMemberHydration, hydrated]);
 
   // Proactive token refresh heartbeat every 10 minutes when logged in
   useEffect(() => {

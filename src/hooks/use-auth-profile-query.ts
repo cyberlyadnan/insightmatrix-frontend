@@ -1,16 +1,27 @@
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 
 import { fetchProfile } from "@/services/auth";
 import { queryKeys } from "@/services/queries";
 import { useAuthStore } from "@/store/authStore";
+import { clearAuthCookies } from "@/utils/cookies";
 import type { AuthUser } from "@/types";
 
 const AUTH_PROFILE_STALE_MS = 10 * 60 * 1000;
 
 async function fetchAuthProfilePreservingSession(): Promise<AuthUser | null> {
   try {
-    return await fetchProfile();
-  } catch {
+    const profile = await fetchProfile();
+    if (profile) {
+      useAuthStore.getState().setUser(profile);
+    }
+    return profile;
+  } catch (err) {
+    if (isAxiosError(err) && (err.response?.status === 401 || err.response?.status === 403)) {
+      useAuthStore.getState().clearSession();
+      clearAuthCookies();
+      return null;
+    }
     const cached = useAuthStore.getState().user;
     return cached ?? null;
   }

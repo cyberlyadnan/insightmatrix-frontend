@@ -2,10 +2,12 @@ import type { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConf
 import { env } from "@/config";
 import { isAuthProbeRequest } from "./auth-request-config";
 import { refreshSession } from "./refresh-session";
+import { clearAuthCookies } from "@/utils/cookies";
 
 let isRefreshing = false;
 let refreshSubscribers: Array<(ok: boolean) => void> = [];
 let lastRefreshSuccessTime = 0;
+let isRedirectingToLogin = false;
 
 function subscribeTokenRefresh(cb: (ok: boolean) => void) {
   refreshSubscribers.push(cb);
@@ -102,7 +104,20 @@ export function attachInterceptors(instance: AxiosInstance) {
         return instance(originalRequest);
       }
 
-      if (typeof window !== "undefined" && !isAuthProbeRequest(originalRequest)) {
+      // If refresh failed, clear stale session in store and cookies
+      clearAuthCookies();
+      try {
+        const { useAuthStore } = await import("@/store/authStore");
+        useAuthStore.getState().clearSession();
+      } catch {
+        // Ignore store import error
+      }
+
+      if (
+        typeof window !== "undefined" &&
+        !isAuthProbeRequest(originalRequest) &&
+        !isRedirectingToLogin
+      ) {
         const path = window.location.pathname;
         const onAuthRoute =
           path.startsWith("/login") ||
@@ -112,7 +127,12 @@ export function attachInterceptors(instance: AxiosInstance) {
           path.startsWith("/verify-email");
         const onVendorRoute = path.startsWith("/vendor");
         if (!onAuthRoute && !onVendorRoute) {
-          window.location.href = `/login?redirect=${encodeURIComponent(path)}`;
+          isRedirectingToLogin = true;
+          const target = `/login?redirect=${encodeURIComponent(path)}`;
+          window.location.href = target;
+          setTimeout(() => {
+            isRedirectingToLogin = false;
+          }, 3000);
         }
       }
 

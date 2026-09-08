@@ -11,7 +11,6 @@ import { useAuthStore } from "@/store/authStore";
 /** Auth pages (login/register/…) are for guests only */
 export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const storeUser = useAuthStore((s) => s.user);
   const {
     data: profileUser,
     isFetched,
@@ -23,15 +22,19 @@ export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
     staleTime: 60_000,
     retry: false,
   });
-  const user = profileUser ?? storeUser;
+
   const authChecking = !isFetched || isFetching || isPending;
 
   useEffect(() => {
-    if (authChecking || !user) return;
-    router.replace(user.role === "admin" ? ROUTES.admin.root : ROUTES.dashboard.root);
-  }, [authChecking, user, router]);
+    if (authChecking) return;
+    if (profileUser) {
+      router.replace(profileUser.role === "admin" ? ROUTES.admin.root : ROUTES.dashboard.root);
+    } else {
+      useAuthStore.getState().clearSession();
+    }
+  }, [authChecking, profileUser, router]);
 
-  if (authChecking || user) {
+  if (authChecking || profileUser) {
     return (
       <div className="flex min-h-[50vh] w-full items-center justify-center">
         <div

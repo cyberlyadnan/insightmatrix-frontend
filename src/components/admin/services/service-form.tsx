@@ -156,10 +156,11 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting, mode }: Servi
   const [coverageTitle, setCoverageTitle] = useState(
     initialData?.global_coverage?.title ?? "Global Coverage"
   );
+  const [coverageDesc, setCoverageDesc] = useState(initialData?.global_coverage?.description ?? "");
   const [coverageRegions, setCoverageRegions] = useState<string[]>(
     initialData?.global_coverage?.regions?.length
       ? initialData.global_coverage.regions
-      : ["North America", "Europe", "Asia-Pacific", "Middle East", "Latin America", "Africa"]
+      : ["North America", "Europe", "Asia-Pacific", "Latin America", "Middle East & Africa"]
   );
 
   // Why InsightMatrix
@@ -969,16 +970,30 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting, mode }: Servi
             <h2 className="text-base font-black text-gray-900 pb-3 border-b border-gray-100 mb-4">
               Global Coverage & Regions
             </h2>
-            <div className="mb-4">
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                Coverage Section Title
-              </label>
-              <input
-                type="text"
-                value={coverageTitle}
-                onChange={(e) => setCoverageTitle(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold"
-              />
+            <div className="mb-4 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                  Coverage Section Title
+                </label>
+                <input
+                  type="text"
+                  value={coverageTitle}
+                  onChange={(e) => setCoverageTitle(e.target.value)}
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                  Coverage Description (Optional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={coverageDesc}
+                  onChange={(e) => setCoverageDesc(e.target.value)}
+                  placeholder="e.g. Robust coverage across over 90+ global markets..."
+                  className="w-full p-3 rounded-xl border border-gray-200 text-sm font-semibold"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               {coverageRegions.map((region, idx) => (

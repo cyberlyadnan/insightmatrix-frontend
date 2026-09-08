@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   XCircle,
   Layers,
-  Sparkles,
   RefreshCw,
   ExternalLink,
 } from "lucide-react";
@@ -170,24 +169,21 @@ export default function AdminServicesPage() {
               <tr className="bg-[#091428] text-white uppercase text-[10px] tracking-wider font-extrabold select-none">
                 <th className="py-2.5 px-3">Order</th>
                 <th className="py-2.5 px-3">Service Name</th>
-                <th className="py-2.5 px-3">Category</th>
-                <th className="py-2.5 px-3">Slug / Route</th>
                 <th className="py-2.5 px-3">Status</th>
-                <th className="py-2.5 px-3">Featured</th>
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-400">
+                  <td colSpan={4} className="py-12 text-center text-gray-400">
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto text-brand-primary mb-2" />
                     <p className="font-bold text-xs">Loading services...</p>
                   </td>
                 </tr>
               ) : services.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-400">
+                  <td colSpan={4} className="py-12 text-center text-gray-400">
                     <p className="font-bold text-sm text-gray-800">No services found</p>
                     <p className="text-xs text-gray-400 mt-1">
                       Try adjusting your search or filters.
@@ -224,16 +220,6 @@ export default function AdminServicesPage() {
                       </td>
 
                       <td className="py-1.5 px-3">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-gray-100 text-gray-700">
-                          {item.category || "core"}
-                        </span>
-                      </td>
-
-                      <td className="py-1.5 px-3 font-mono text-[11px] text-gray-600">
-                        /services/{item.slug}
-                      </td>
-
-                      <td className="py-1.5 px-3">
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
                             isPublished
@@ -248,16 +234,6 @@ export default function AdminServicesPage() {
                           />
                           {item.status}
                         </span>
-                      </td>
-
-                      <td className="py-1.5 px-3">
-                        {item.featured ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-extrabold">
-                            <Sparkles size={10} /> Featured
-                          </span>
-                        ) : (
-                          <span className="text-gray-300 font-mono">-</span>
-                        )}
                       </td>
 
                       <td className="py-1.5 px-3 text-right">

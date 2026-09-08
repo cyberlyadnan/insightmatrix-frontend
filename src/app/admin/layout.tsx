@@ -37,22 +37,61 @@ function isSidebarActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-const sidebarLinks = [
-  { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
-  { name: "Services", icon: Layers, href: "/admin/services" },
-  { name: "Survey Providers", icon: Building2, href: "/admin/companies" },
-  { name: "Vendors", icon: Store, href: "/admin/vendors" },
-  { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },
-  { name: "Vendor Allocations", icon: Share2, href: "/admin/vendor-allocations" },
-  { name: "Survey Respondents", icon: Users, href: "/admin/survey-respondents" },
-  { name: "Respondent Analytics", icon: Activity, href: "/admin/respondent-analytics" },
-  { name: "Export Center", icon: Share2, href: "/admin/respondent-exports" },
-  { name: "Security Logs", icon: Shield, href: "/admin/security-logs" },
-  { name: "Company Payments", icon: Receipt, href: "/admin/company-payments" },
-  { name: "Queries", icon: MessageSquare, href: "/admin/queries" },
-  { name: "Panel Book", icon: BookOpen, href: "/admin/panel-book" },
-  { name: "Prescreening", icon: ListChecks, href: "/admin/prescreen" },
-  { name: "Settings", icon: Settings, href: "/admin/settings" },
+type SidebarItem = {
+  name: string;
+  icon: React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
+  href: string;
+  badge?: string;
+  badgeColor?: string;
+};
+
+type SidebarSection = {
+  title: string;
+  items: SidebarItem[];
+};
+
+const sidebarSections: SidebarSection[] = [
+  {
+    title: "Core & CMS",
+    items: [
+      { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+      {
+        name: "Services",
+        icon: Layers,
+        href: "/admin/services",
+        badge: "CMS",
+        badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+      },
+    ],
+  },
+  {
+    title: "Operations",
+    items: [
+      { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },
+      { name: "Survey Providers", icon: Building2, href: "/admin/companies" },
+      { name: "Vendors", icon: Store, href: "/admin/vendors" },
+      { name: "Vendor Allocations", icon: Share2, href: "/admin/vendor-allocations" },
+    ],
+  },
+  {
+    title: "Panel & Data",
+    items: [
+      { name: "Survey Respondents", icon: Users, href: "/admin/survey-respondents" },
+      { name: "Respondent Analytics", icon: Activity, href: "/admin/respondent-analytics" },
+      { name: "Export Center", icon: Share2, href: "/admin/respondent-exports" },
+      { name: "Prescreening", icon: ListChecks, href: "/admin/prescreen" },
+      { name: "Panel Book", icon: BookOpen, href: "/admin/panel-book" },
+    ],
+  },
+  {
+    title: "System & Billing",
+    items: [
+      { name: "Company Payments", icon: Receipt, href: "/admin/company-payments" },
+      { name: "Queries", icon: MessageSquare, href: "/admin/queries" },
+      { name: "Security Logs", icon: Shield, href: "/admin/security-logs" },
+      { name: "Settings", icon: Settings, href: "/admin/settings" },
+    ],
+  },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -68,62 +107,161 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="h-screen bg-gray-50 flex overflow-hidden">
         {/* Desktop Sidebar */}
         <aside
-          className={`hidden lg:flex flex-col bg-gray-900 text-white transition-all duration-300 border-r border-white/5 min-h-0 ${
+          className={`hidden lg:flex flex-col bg-[#080F1D] text-slate-200 transition-all duration-300 border-r border-slate-800/80 shadow-2xl min-h-0 relative select-none ${
             isSidebarOpen ? "w-64" : "w-20"
           }`}
         >
-          <div className="p-6 flex items-center min-h-[4.5rem]">
-            <ImxLogo
-              href="/admin"
-              size={isSidebarOpen ? "sm" : "xs"}
-              surface="dark"
-              className={isSidebarOpen ? undefined : "mx-auto"}
-            />
+          {/* Subtle Ambient Radial Glow */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-brand-primary/15 via-blue-600/5 to-transparent blur-xl" />
+
+          {/* Sidebar Top Header */}
+          <div className="p-4 flex items-center justify-between min-h-[4.75rem] border-b border-slate-800/80 bg-[#0A1325]/80 backdrop-blur-md relative z-10">
+            {isSidebarOpen ? (
+              <>
+                <ImxLogo href="/admin" size="sm" surface="dark" />
+                <span className="inline-flex items-center gap-1.5 text-[9px] font-black tracking-widest text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase shadow-2xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Console
+                </span>
+              </>
+            ) : (
+              <ImxLogo href="/admin" size="xs" surface="dark" className="mx-auto" />
+            )}
           </div>
 
-          <nav className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-2">
-            {sidebarLinks.map((link) => {
-              const isActive = isSidebarActive(pathname, link.href);
-              const Icon = link.icon;
+          {/* Navigation Menu */}
+          <nav className="flex-1 min-h-0 overflow-y-auto px-3 py-4 space-y-4 relative z-10 scrollbar-thin scrollbar-thumb-slate-800">
+            {sidebarSections.map((section, sIdx) => (
+              <div key={section.title} className="space-y-1">
+                {isSidebarOpen ? (
+                  <div className="px-3 pt-2 pb-1 flex items-center justify-between text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 select-none">
+                    <span>{section.title}</span>
+                  </div>
+                ) : (
+                  sIdx > 0 && <div className="my-2 mx-auto w-6 h-px bg-slate-800/80" />
+                )}
 
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all group ${
-                    isActive
-                      ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
-                      : "text-gray-400 hover:bg-white/5 hover:text-white"
-                  }`}
-                >
-                  <Icon
-                    size={20}
-                    className={
-                      isActive ? "text-white" : "group-hover:scale-110 transition-transform"
-                    }
-                  />
-                  {isSidebarOpen && (
-                    <span className="font-bold text-sm tracking-tight">{link.name}</span>
-                  )}
-                </Link>
-              );
-            })}
+                {section.items.map((link) => {
+                  const isActive = isSidebarActive(pathname, link.href);
+                  const Icon = link.icon;
+
+                  if (!isSidebarOpen) {
+                    return (
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        title={link.name}
+                        className={`flex items-center justify-center w-11 h-11 mx-auto rounded-xl transition-all duration-200 group relative ${
+                          isActive
+                            ? "bg-gradient-to-br from-brand-primary to-indigo-600 text-white shadow-lg shadow-brand-primary/30 border border-white/20"
+                            : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent hover:border-slate-700/50"
+                        }`}
+                      >
+                        {isActive && (
+                          <span className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-4 bg-brand-light rounded-r-full shadow-sm" />
+                        )}
+                        <Icon
+                          size={19}
+                          className={
+                            isActive
+                              ? "text-white"
+                              : "text-slate-400 group-hover:text-blue-400 group-hover:scale-110 transition-transform duration-200"
+                          }
+                        />
+                      </Link>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      className={`flex items-center justify-between px-3.5 py-2 rounded-xl transition-all duration-200 group relative ${
+                        isActive
+                          ? "bg-gradient-to-r from-brand-primary via-[#0d59f2] to-[#1e6bf7] text-white font-extrabold shadow-lg shadow-brand-primary/25 border border-white/15"
+                          : "text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent hover:border-slate-700/50 hover:translate-x-0.5"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-white rounded-r-full shadow-sm shadow-white/60" />
+                      )}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon
+                          size={17}
+                          className={`shrink-0 ${
+                            isActive
+                              ? "text-white"
+                              : "text-slate-400 group-hover:text-sky-400 group-hover:scale-110 transition-transform duration-200"
+                          }`}
+                        />
+                        <span className="text-xs font-bold tracking-tight truncate">
+                          {link.name}
+                        </span>
+                      </div>
+                      {link.badge && (
+                        <span
+                          className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md border shadow-2xs ${
+                            isActive
+                              ? "bg-white/20 text-white border-white/30"
+                              : link.badgeColor || "bg-slate-800 text-slate-300 border-slate-700"
+                          }`}
+                        >
+                          {link.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </nav>
 
-          <div className="p-4 border-t border-white/5">
-            <button
-              type="button"
-              onClick={() => logout.mutate()}
-              disabled={logout.isPending}
-              className="flex items-center gap-4 px-4 py-3 w-full text-gray-400 hover:text-red-400 transition-colors uppercase text-[10px] font-black tracking-widest disabled:opacity-60"
-            >
-              <LogOut size={18} />
-              {isSidebarOpen && <span>Logout</span>}
-            </button>
+          {/* User Profile & Logout Bottom Footer */}
+          <div className="p-3 border-t border-slate-800/80 bg-[#070D18]/90 backdrop-blur-md relative z-10">
+            {isSidebarOpen ? (
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/90 border border-slate-800/80">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-md shadow-brand-primary/25 shrink-0">
+                  {user?.fullName?.charAt(0) || "A"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-black text-white truncate">
+                    {user?.fullName || "Administrator"}
+                  </div>
+                  <div className="text-[9px] font-extrabold text-brand-light uppercase tracking-wider truncate">
+                    {user?.role || "super admin"}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => logout.mutate()}
+                  disabled={logout.isPending}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0"
+                  title="Logout"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <div
+                  className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-indigo-600 flex items-center justify-center text-white font-black text-xs shadow-md shadow-brand-primary/25"
+                  title={user?.fullName || "Administrator"}
+                >
+                  {user?.fullName?.charAt(0) || "A"}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => logout.mutate()}
+                  disabled={logout.isPending}
+                  className="p-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            )}
           </div>
         </aside>
-
-        {/* Mobile Menu Button - Removed from bottom and moved to header */}
 
         {/* Mobile Sidebar Overlay */}
         <AnimatePresence>
@@ -134,39 +272,73 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
+                className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 lg:hidden"
               />
               <motion.aside
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
-                className="fixed top-0 left-0 bottom-0 w-72 bg-gray-950 text-white z-[60] p-6 lg:hidden flex flex-col min-h-0"
+                className="fixed top-0 left-0 bottom-0 w-72 bg-[#080F1D] text-slate-200 z-[60] p-5 lg:hidden flex flex-col min-h-0 border-r border-slate-800/80 shadow-2xl"
               >
-                <div className="flex items-center justify-between mb-10">
+                <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800/80">
                   <ImxLogo href="/admin" size="sm" surface="dark" />
-                  <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-400">
-                    <X />
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60"
+                  >
+                    <X size={20} />
                   </button>
                 </div>
-                <nav className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1">
-                  {sidebarLinks.map((link) => {
-                    const isActive = isSidebarActive(pathname, link.href);
-                    const Icon = link.icon;
-                    return (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${
-                          isActive ? "bg-brand-primary text-white" : "text-gray-400"
-                        }`}
-                      >
-                        <Icon size={20} />
-                        <span className="font-bold">{link.name}</span>
-                      </Link>
-                    );
-                  })}
+                <nav className="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
+                  {sidebarSections.map((section) => (
+                    <div key={section.title} className="space-y-1">
+                      <div className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                        {section.title}
+                      </div>
+                      {section.items.map((link) => {
+                        const isActive = isSidebarActive(pathname, link.href);
+                        const Icon = link.icon;
+                        return (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all ${
+                              isActive
+                                ? "bg-gradient-to-r from-brand-primary to-blue-600 text-white font-extrabold shadow-lg shadow-brand-primary/25"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800/60"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Icon size={18} />
+                              <span className="text-sm font-bold">{link.name}</span>
+                            </div>
+                            {link.badge && (
+                              <span
+                                className={`text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md border ${
+                                  link.badgeColor || "bg-slate-800 text-slate-300 border-slate-700"
+                                }`}
+                              >
+                                {link.badge}
+                              </span>
+                            )}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ))}
                 </nav>
+                <div className="pt-4 mt-4 border-t border-slate-800/80">
+                  <button
+                    type="button"
+                    onClick={() => logout.mutate()}
+                    disabled={logout.isPending}
+                    className="flex items-center gap-3 px-4 py-2.5 w-full text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-xs font-black uppercase tracking-wider"
+                  >
+                    <LogOut size={16} />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </motion.aside>
             </>
           )}

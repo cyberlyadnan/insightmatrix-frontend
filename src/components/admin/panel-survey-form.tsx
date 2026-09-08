@@ -29,6 +29,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   PANEL_QUOTA_GROUP_STATUSES,
+  PANEL_SURVEY_AUDIENCES,
+  PANEL_SURVEY_AUDIENCE_LABELS,
   PANEL_SURVEY_DEVICE_TYPES,
   PANEL_SURVEY_STATUSES,
   PANEL_GENDER_LABELS,
@@ -428,6 +430,82 @@ export function PanelSurveyForm({
                         ))}
                       </select>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="surveyAudience"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="font-bold text-gray-700">
+                      Survey Audience / Visibility
+                    </FormLabel>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                      <label
+                        className={cn(
+                          "flex items-start gap-3.5 p-4 rounded-2xl border cursor-pointer transition-all",
+                          field.value === "public"
+                            ? "border-emerald-500/80 bg-emerald-50/40 shadow-sm ring-2 ring-emerald-500/20"
+                            : "border-gray-200 bg-white hover:border-gray-300"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="surveyAudienceRadio"
+                          value="public"
+                          checked={field.value === "public"}
+                          onChange={() => field.onChange("public")}
+                          className="mt-1 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-black text-gray-900">
+                              🌐 Public Survey
+                            </span>
+                            <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-full bg-emerald-100 text-emerald-800">
+                              User Panel
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Shown to eligible logged-in members on their dashboard.
+                          </p>
+                        </div>
+                      </label>
+
+                      <label
+                        className={cn(
+                          "flex items-start gap-3.5 p-4 rounded-2xl border cursor-pointer transition-all",
+                          field.value === "internal" || field.value === "private"
+                            ? "border-violet-500/80 bg-violet-50/40 shadow-sm ring-2 ring-violet-500/20"
+                            : "border-gray-200 bg-white hover:border-gray-300"
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="surveyAudienceRadio"
+                          value="internal"
+                          checked={field.value === "internal" || field.value === "private"}
+                          onChange={() => field.onChange("internal")}
+                          className="mt-1 text-violet-600 focus:ring-violet-500"
+                        />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-black text-gray-900">
+                              🔒 Internal / Private
+                            </span>
+                            <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-full bg-violet-100 text-violet-800">
+                              Restricted
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Hidden from user dashboard. For direct allocations & internal links
+                            only.
+                          </p>
+                        </div>
+                      </label>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

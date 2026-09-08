@@ -32,7 +32,12 @@ import {
 import { PageHeader } from "@/components/crm/page-help";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
-import { PANEL_SURVEY_STATUS_LABELS, type PanelSurveyStatus } from "@/constants/panel-survey";
+import {
+  PANEL_SURVEY_AUDIENCE_LABELS,
+  PANEL_SURVEY_STATUS_LABELS,
+  type PanelSurveyAudience,
+  type PanelSurveyStatus,
+} from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
 import { buildPanelSurveyShareLinkExample } from "@/lib/panel-survey-share-link";
 import { crmToast } from "@/lib/crm-toast";
@@ -114,6 +119,21 @@ function StatusBadge({ status }: { status: PanelSurveyStatus }) {
   );
 }
 
+function AudienceBadge({ audience }: { audience?: PanelSurveyAudience }) {
+  const isPublic = !audience || audience === "public";
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+        isPublic
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+          : "bg-violet-50 text-violet-700 border border-violet-200"
+      }`}
+    >
+      {isPublic ? "🌐 Public" : "🔒 Internal"}
+    </span>
+  );
+}
+
 export default function AdminPanelSurveysPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
@@ -121,6 +141,7 @@ export default function AdminPanelSurveysPage() {
   const [providerId, setProviderId] = useState("");
   const [country, setCountry] = useState("");
   const [statusFilter, setStatusFilter] = useState<"" | PanelSurveyStatus>("");
+  const [audienceFilter, setAudienceFilter] = useState<"" | PanelSurveyAudience>("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<SortField>("createdAt");
@@ -154,12 +175,23 @@ export default function AdminPanelSurveysPage() {
       providerId: providerId || undefined,
       country: country.trim().toUpperCase() || undefined,
       surveyStatus: statusFilter || undefined,
+      surveyAudience: audienceFilter || undefined,
       page,
       pageSize,
       sortBy,
       sortOrder,
     }),
-    [deferredSearch, providerId, country, statusFilter, page, pageSize, sortBy, sortOrder]
+    [
+      deferredSearch,
+      providerId,
+      country,
+      statusFilter,
+      audienceFilter,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+    ]
   );
 
   const { data, isLoading, isFetching } = useQuery({
@@ -213,6 +245,7 @@ export default function AdminPanelSurveysPage() {
       [
         "Survey",
         "Code",
+        "Audience",
         "Country",
         "Vendor Count",
         "Live Completes",
@@ -226,6 +259,9 @@ export default function AdminPanelSurveysPage() {
       items.map((row) => [
         row.surveyName,
         row.surveyCode,
+        row.surveyAudience === "internal" || row.surveyAudience === "private"
+          ? "Internal"
+          : "Public",
         (row.targetCountries ?? []).join("; "),
         row.vendorCount ?? 0,
         row.liveCompletes ?? 0,
@@ -243,27 +279,27 @@ export default function AdminPanelSurveysPage() {
     <div className="space-y-8 text-gray-900">
       <PageHeader
         title="Surveys"
-        description="Configure external routing surveys, quotas, and targeting for your panel."
+        description="Configure external routing surveys, quotas, audience visibility, and targeting for your panel."
         help={ADMIN_PAGE_HELP.surveys}
         actions={
           <Link
             href={ROUTES.admin.surveysCreate}
-            className="h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0"
+            className="inline-flex h-11 px-5 rounded-2xl bg-brand-primary text-white items-center gap-2 font-bold hover:opacity-95 shadow-lg shadow-brand-primary/25 text-sm"
           >
-            <Plus className="w-4 h-4" />
-            Create survey
+            <Plus size={18} />
+            Create Survey
           </Link>
         }
       />
 
-      <div className="rounded-[2rem] border border-gray-200 bg-white p-5 md:p-6 shadow-sm text-gray-900">
+      <div className="p-6 md:p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm space-y-6">
         <AdminTableToolbar
           search={search}
           onSearchChange={(v) => {
             setSearch(v);
             setPage(1);
           }}
-          searchPlaceholder="Search name, code, external ID…"
+          searchPlaceholder="Search survey name, code, PID, or ext ID…"
           onExport={handleExport}
           exportDisabled={items.length === 0}
           filters={
@@ -282,6 +318,18 @@ export default function AdminPanelSurveysPage() {
                     {p.companyName}
                   </option>
                 ))}
+              </select>
+              <select
+                value={audienceFilter}
+                onChange={(e) => {
+                  setAudienceFilter(e.target.value as "" | PanelSurveyAudience);
+                  setPage(1);
+                }}
+                className={adminFilterSelectClass}
+              >
+                <option value="">All audiences</option>
+                <option value="public">Public (User Panel)</option>
+                <option value="internal">Internal / Private</option>
               </select>
               <input
                 value={country}
@@ -336,6 +384,9 @@ export default function AdminPanelSurveysPage() {
                         sortOrder={sortOrder}
                         onSort={toggleSort}
                       />
+                    </th>
+                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
+                      Audience
                     </th>
                     <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
                       Country
@@ -404,6 +455,9 @@ export default function AdminPanelSurveysPage() {
                     <tr key={row.id} className="hover:bg-gray-50/80">
                       <td className="py-3 pl-2 pr-2 max-w-[220px]">
                         <p className="font-bold text-gray-900 truncate">{row.surveyName}</p>
+                      </td>
+                      <td className="py-3 px-2">
+                        <AudienceBadge audience={row.surveyAudience} />
                       </td>
                       <td className="py-3 px-2 text-xs text-gray-600 max-w-[140px] truncate">
                         {(row.targetCountries ?? []).join(", ") || "—"}
@@ -515,11 +569,14 @@ export default function AdminPanelSurveysPage() {
                   key={row.id}
                   className="rounded-2xl border border-gray-200 bg-gray-50/80 p-4 space-y-3 text-gray-900"
                 >
-                  <div className="flex justify-between gap-2">
+                  <div className="flex justify-between items-start gap-2">
                     <div className="min-w-0">
                       <p className="font-black text-gray-900 truncate">{row.surveyName}</p>
                     </div>
-                    <StatusBadge status={row.surveyStatus} />
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <AudienceBadge audience={row.surveyAudience} />
+                      <StatusBadge status={row.surveyStatus} />
+                    </div>
                   </div>
                   <p className="text-xs text-gray-600 truncate">
                     <span className="font-black text-gray-400 uppercase mr-2">Country</span>

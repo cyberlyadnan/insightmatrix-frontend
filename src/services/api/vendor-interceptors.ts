@@ -4,15 +4,44 @@ import { ROUTES } from "@/constants/routes";
 import { isAuthProbeRequest } from "./auth-request-config";
 import { refreshVendorSession } from "./vendor-refresh-session";
 
-let refreshFlow: Promise<boolean> | null = null;
+let isRefreshingVendor = false;
+let vendorRefreshSubscribers: Array<(ok: boolean) => void> = [];
+let lastVendorRefreshSuccessTime = 0;
 
-async function refreshOnce(): Promise<boolean> {
-  if (!refreshFlow) {
-    refreshFlow = refreshVendorSession().finally(() => {
-      refreshFlow = null;
+function subscribeVendorTokenRefresh(cb: (ok: boolean) => void) {
+  vendorRefreshSubscribers.push(cb);
+}
+
+function onVendorRefreshed(ok: boolean) {
+  vendorRefreshSubscribers.forEach((cb) => cb(ok));
+  vendorRefreshSubscribers = [];
+}
+
+async function handleVendorRefreshSession(): Promise<boolean> {
+  if (isRefreshingVendor) {
+    return new Promise((resolve) => {
+      subscribeVendorTokenRefresh(resolve);
     });
   }
-  return refreshFlow;
+
+  if (Date.now() - lastVendorRefreshSuccessTime < 3000) {
+    return true;
+  }
+
+  isRefreshingVendor = true;
+  try {
+    const ok = await refreshVendorSession();
+    if (ok) {
+      lastVendorRefreshSuccessTime = Date.now();
+    }
+    onVendorRefreshed(ok);
+    return ok;
+  } catch {
+    onVendorRefreshed(false);
+    return false;
+  } finally {
+    isRefreshingVendor = false;
+  }
 }
 
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig) {
@@ -59,7 +88,7 @@ export function attachVendorInterceptors(instance: AxiosInstance) {
 
       if (
         error.response?.status !== 401 ||
-        originalRequest._retry ||
+        originalRequest?._retry ||
         !originalRequest ||
         shouldSkipRefresh(originalRequest)
       ) {
@@ -67,7 +96,7 @@ export function attachVendorInterceptors(instance: AxiosInstance) {
       }
 
       originalRequest._retry = true;
-      const ok = await refreshOnce();
+      const ok = await handleVendorRefreshSession();
       if (ok) {
         return instance(originalRequest);
       }

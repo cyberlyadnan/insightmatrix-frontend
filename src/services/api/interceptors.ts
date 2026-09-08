@@ -3,15 +3,45 @@ import { env } from "@/config";
 import { isAuthProbeRequest } from "./auth-request-config";
 import { refreshSession } from "./refresh-session";
 
-let refreshFlow: Promise<boolean> | null = null;
+let isRefreshing = false;
+let refreshSubscribers: Array<(ok: boolean) => void> = [];
+let lastRefreshSuccessTime = 0;
 
-async function refreshOnce(): Promise<boolean> {
-  if (!refreshFlow) {
-    refreshFlow = refreshSession().finally(() => {
-      refreshFlow = null;
+function subscribeTokenRefresh(cb: (ok: boolean) => void) {
+  refreshSubscribers.push(cb);
+}
+
+function onRefreshed(ok: boolean) {
+  refreshSubscribers.forEach((cb) => cb(ok));
+  refreshSubscribers = [];
+}
+
+async function handleRefreshSession(): Promise<boolean> {
+  if (isRefreshing) {
+    return new Promise((resolve) => {
+      subscribeTokenRefresh(resolve);
     });
   }
-  return refreshFlow;
+
+  // If a refresh succeeded very recently (< 3 seconds), reuse the success
+  if (Date.now() - lastRefreshSuccessTime < 3000) {
+    return true;
+  }
+
+  isRefreshing = true;
+  try {
+    const ok = await refreshSession();
+    if (ok) {
+      lastRefreshSuccessTime = Date.now();
+    }
+    onRefreshed(ok);
+    return ok;
+  } catch {
+    onRefreshed(false);
+    return false;
+  } finally {
+    isRefreshing = false;
+  }
 }
 
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig) {
@@ -59,7 +89,7 @@ export function attachInterceptors(instance: AxiosInstance) {
 
       if (
         error.response?.status !== 401 ||
-        originalRequest._retry ||
+        originalRequest?._retry ||
         !originalRequest ||
         shouldSkipRefresh(originalRequest)
       ) {
@@ -67,7 +97,7 @@ export function attachInterceptors(instance: AxiosInstance) {
       }
 
       originalRequest._retry = true;
-      const ok = await refreshOnce();
+      const ok = await handleRefreshSession();
       if (ok) {
         return instance(originalRequest);
       }

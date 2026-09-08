@@ -29,6 +29,7 @@ import {
   PANEL_QUOTA_GROUP_STATUS_LABELS,
   PANEL_GENDER_LABELS,
   PANEL_SURVEY_STATUS_LABELS,
+  type PanelSurveyAudience,
   type PanelSurveyStatus,
 } from "@/constants/panel-survey";
 import { ROUTES } from "@/constants/routes";
@@ -60,6 +61,21 @@ function StatusBadge({ status }: { status: PanelSurveyStatus }) {
       className={`inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${styles[status]}`}
     >
       {PANEL_SURVEY_STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+function AudienceBadge({ audience }: { audience?: PanelSurveyAudience }) {
+  const isPublic = !audience || audience === "public";
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+        isPublic
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+          : "bg-violet-50 text-violet-700 border border-violet-200"
+      }`}
+    >
+      {isPublic ? "🌐 Public Survey" : "🔒 Internal / Private"}
     </span>
   );
 }
@@ -155,6 +171,7 @@ export default function PanelSurveyDetailPage() {
               {survey.surveyName}
             </h1>
             <StatusBadge status={survey.surveyStatus} />
+            <AudienceBadge audience={survey.surveyAudience} />
           </div>
           <p className="text-sm font-mono text-gray-500 mt-1">{survey.surveyCode}</p>
         </div>
@@ -239,6 +256,12 @@ export default function PanelSurveyDetailPage() {
               Summary
             </h2>
             <dl className="space-y-3 text-sm">
+              <div className="flex justify-between items-center gap-4">
+                <dt className="text-gray-500">Audience</dt>
+                <dd>
+                  <AudienceBadge audience={survey.surveyAudience} />
+                </dd>
+              </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-gray-500">External ID</dt>
                 <dd className="font-mono text-gray-900 text-right break-all">

@@ -19,15 +19,19 @@ function isAuthPath(pathname: string): boolean {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get(COOKIE_KEYS.accessToken)?.value;
+  const accessToken = request.cookies.get(COOKIE_KEYS.accessToken)?.value;
+  const refreshToken = request.cookies.get(COOKIE_KEYS.refreshToken)?.value;
+  const hasMemberAuth = Boolean(accessToken || refreshToken);
 
-  const vendorToken = request.cookies.get(COOKIE_KEYS.vendorAccessToken)?.value;
+  const vendorAccessToken = request.cookies.get(COOKIE_KEYS.vendorAccessToken)?.value;
+  const vendorRefreshToken = request.cookies.get(COOKIE_KEYS.vendorRefreshToken)?.value;
+  const hasVendorAuth = Boolean(vendorAccessToken || vendorRefreshToken);
 
-  if (pathname === VENDOR_AUTH_PATH && vendorToken) {
+  if (pathname === VENDOR_AUTH_PATH && hasVendorAuth) {
     return NextResponse.redirect(new URL(ROUTES.vendor.dashboard, request.url));
   }
 
-  if (isAuthPath(pathname) && token) {
+  if (isAuthPath(pathname) && hasMemberAuth) {
     const redirectTarget =
       pathname === ROUTES.login && request.nextUrl.searchParams.get("redirect");
     const safeRedirect =
@@ -48,13 +52,13 @@ export function middleware(request: NextRequest) {
   const requiresMemberAuth = pathname.startsWith("/dashboard") || pathname.startsWith("/admin");
   const requiresVendorAuth = pathname.startsWith("/vendor") && pathname !== VENDOR_AUTH_PATH;
 
-  if (requiresMemberAuth && !token) {
+  if (requiresMemberAuth && !hasMemberAuth) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (requiresVendorAuth && !vendorToken) {
+  if (requiresVendorAuth && !hasVendorAuth) {
     const loginUrl = new URL(VENDOR_AUTH_PATH, request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);

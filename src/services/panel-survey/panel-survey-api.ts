@@ -1,6 +1,7 @@
 import { apiClient } from "@/services/api";
 import type {
   PanelQuotaGroupStatus,
+  PanelSurveyAudience,
   PanelSurveyDeviceType,
   PanelSurveyGenderTarget,
   PanelSurveyStatus,
@@ -30,6 +31,7 @@ export type PanelSurvey = {
   providerId: string;
   provider: PanelSurveyProviderSummary | null;
   surveyStatus: PanelSurveyStatus;
+  surveyAudience?: PanelSurveyAudience;
   externalSurveyUrl: string;
   supplierProjectPid: string;
   trackingParameterName: string;
@@ -124,6 +126,7 @@ export type PanelSurveyPayload = {
   externalSurveyId?: string;
   providerId: string;
   surveyStatus?: PanelSurveyStatus;
+  surveyAudience?: PanelSurveyAudience;
   externalSurveyUrl: string;
   supplierProjectPid?: string;
   trackingParameterName?: string;
@@ -186,6 +189,7 @@ export async function listPanelSurveys(params?: {
   providerId?: string;
   country?: string;
   surveyStatus?: PanelSurveyStatus | "";
+  surveyAudience?: PanelSurveyAudience | "";
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }) {
@@ -193,6 +197,7 @@ export async function listPanelSurveys(params?: {
     params: {
       ...params,
       surveyStatus: params?.surveyStatus === "" ? undefined : params?.surveyStatus,
+      surveyAudience: params?.surveyAudience === "" ? undefined : params?.surveyAudience,
       providerId: params?.providerId || undefined,
     },
   });

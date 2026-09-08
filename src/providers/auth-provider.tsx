@@ -7,10 +7,13 @@ import { useAuthHydrated } from "@/hooks/use-auth-hydrated";
 import { useAuthProfileQuery } from "@/hooks/use-auth-profile-query";
 import { useAuthStore } from "@/store/authStore";
 
-/** Hydrates Zustand user from `/users/profile` using session cookies */
+import { refreshSession } from "@/services/api/refresh-session";
+
+/** Hydrates Zustand user from `/users/profile` using session cookies and maintains session heartbeat */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const hydrated = useAuthHydrated();
+  const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const skipMemberHydration = isVendorRoute(pathname);
 
@@ -26,6 +29,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (skipMemberHydration || !hydrated || isFetching || !isFetched) return;
     if (profile) setUser(profile);
   }, [profile, isFetched, isFetching, setUser, skipMemberHydration, hydrated]);
+
+  // Proactive token refresh heartbeat every 10 minutes when logged in
+  useEffect(() => {
+    if (skipMemberHydration || !user) return;
+
+    const interval = setInterval(
+      () => {
+        if (document.visibilityState === "visible") {
+          void refreshSession();
+        }
+      },
+      10 * 60 * 1000
+    );
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void refreshSession();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [user, skipMemberHydration]);
 
   return children;
 }

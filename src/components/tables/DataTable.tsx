@@ -35,15 +35,15 @@ export function DataTable<TData, TValue>({
   getTable?.(table);
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-      <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="border-b border-gray-100 bg-gray-50/80">
+    <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+      <table className="w-full min-w-[640px] text-left text-xs text-slate-800">
+        <thead className="bg-[#091428] text-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`px-4 py-3 font-black uppercase tracking-wider text-[10px] text-gray-500 ${
+                  className={`px-3 py-2 font-extrabold uppercase tracking-wider text-[10px] text-slate-100 whitespace-nowrap ${
                     columnMeta(header.column.columnDef)?.className ?? ""
                   }`}
                 >
@@ -55,13 +55,13 @@ export function DataTable<TData, TValue>({
             </tr>
           ))}
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className="divide-y divide-slate-100">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50/80 transition-colors">
+            <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className={`px-4 py-3 text-gray-800 ${columnMeta(cell.column.columnDef)?.className ?? ""}`}
+                  className={`px-3 py-1.5 text-xs text-slate-800 align-middle whitespace-nowrap ${columnMeta(cell.column.columnDef)?.className ?? ""}`}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>

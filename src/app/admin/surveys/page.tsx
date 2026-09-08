@@ -87,17 +87,17 @@ function SortButton({
     <button
       type="button"
       onClick={() => onSort(field)}
-      className="inline-flex items-center gap-1 font-black uppercase tracking-wider text-[10px] text-gray-500 hover:text-gray-900"
+      className="inline-flex items-center gap-1 font-extrabold uppercase tracking-wider text-[10px] text-slate-200 hover:text-white transition-colors"
     >
-      {label}
+      <span>{label}</span>
       {active ? (
         sortOrder === "asc" ? (
-          <ArrowUp className="w-3 h-3 text-brand-primary" />
+          <ArrowUp className="w-3 h-3 text-blue-400" />
         ) : (
-          <ArrowDown className="w-3 h-3 text-brand-primary" />
+          <ArrowDown className="w-3 h-3 text-blue-400" />
         )
       ) : (
-        <MoreHorizontal className="w-3 h-3 opacity-40" />
+        <MoreHorizontal className="w-3 h-3 opacity-40 hover:opacity-100" />
       )}
     </button>
   );
@@ -105,14 +105,14 @@ function SortButton({
 
 function StatusBadge({ status }: { status: PanelSurveyStatus }) {
   const styles: Record<PanelSurveyStatus, string> = {
-    draft: "bg-gray-100 text-gray-700",
-    active: "bg-emerald-50 text-emerald-700",
-    paused: "bg-amber-50 text-amber-700",
-    completed: "bg-slate-100 text-slate-600",
+    draft: "bg-rose-50 text-rose-700 border-rose-200",
+    active: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    paused: "bg-amber-50 text-amber-700 border-amber-200",
+    completed: "bg-slate-100 text-slate-700 border-slate-200",
   };
   return (
     <span
-      className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${styles[status]}`}
+      className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${styles[status]}`}
     >
       {PANEL_SURVEY_STATUS_LABELS[status]}
     </span>
@@ -123,13 +123,13 @@ function AudienceBadge({ audience }: { audience?: PanelSurveyAudience }) {
   const isPublic = !audience || audience === "public";
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${
         isPublic
-          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-          : "bg-violet-50 text-violet-700 border border-violet-200"
+          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+          : "bg-violet-50 text-violet-700 border-violet-200"
       }`}
     >
-      {isPublic ? "🌐 Public" : "🔒 Internal"}
+      {isPublic ? "Public" : "Internal"}
     </span>
   );
 }
@@ -372,11 +372,11 @@ export default function AdminPanelSurveysPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="hidden xl:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[1100px] text-left text-sm text-gray-900">
-                <thead>
-                  <tr className="border-b border-gray-200 text-[10px] text-gray-600">
-                    <th className="pb-3 pl-2 pr-2">
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[700px] text-left text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="py-2 px-3">
                       <SortButton
                         label="Survey"
                         field="surveyName"
@@ -385,49 +385,22 @@ export default function AdminPanelSurveysPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
+                    <th className="py-2 px-2.5 font-extrabold uppercase tracking-wider text-slate-100 whitespace-nowrap">
                       Audience
                     </th>
-                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
-                      Country
+                    <th className="py-2 px-2.5 font-extrabold uppercase tracking-wider text-slate-100 whitespace-nowrap">
+                      Completes
                     </th>
-                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
-                      Vendors
-                    </th>
-                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
-                      Live Completes
-                    </th>
-                    <th className="pb-3 px-2 font-black uppercase tracking-wider text-gray-600">
-                      Progress
-                    </th>
-                    <th className="pb-3 px-2">
+                    <th className="py-2 px-2.5 whitespace-nowrap">
                       <SortButton
-                        label="IR %"
-                        field="incidenceRate"
-                        sortBy={sortBy}
-                        sortOrder={sortOrder}
-                        onSort={toggleSort}
-                      />
-                    </th>
-                    <th className="pb-3 px-2">
-                      <SortButton
-                        label="LOI"
-                        field="estimatedLOI"
-                        sortBy={sortBy}
-                        sortOrder={sortOrder}
-                        onSort={toggleSort}
-                      />
-                    </th>
-                    <th className="pb-3 px-2">
-                      <SortButton
-                        label="Rem. quota"
+                        label="Rem. Quota"
                         field="remainingQuota"
                         sortBy={sortBy}
                         sortOrder={sortOrder}
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-2">
+                    <th className="py-2 px-2.5 whitespace-nowrap">
                       <SortButton
                         label="Status"
                         field="surveyStatus"
@@ -436,7 +409,7 @@ export default function AdminPanelSurveysPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-2">
+                    <th className="py-2 px-2.5 whitespace-nowrap">
                       <SortButton
                         label="Created"
                         field="createdAt"
@@ -445,115 +418,112 @@ export default function AdminPanelSurveysPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 pr-2 pl-2 text-right font-black uppercase tracking-wider text-gray-600">
+                    <th className="py-2 px-3 text-right font-extrabold uppercase tracking-wider text-slate-100 whitespace-nowrap">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50/80">
-                      <td className="py-3 pl-2 pr-2 max-w-[220px]">
-                        <p className="font-bold text-gray-900 truncate">{row.surveyName}</p>
-                      </td>
-                      <td className="py-3 px-2">
-                        <AudienceBadge audience={row.surveyAudience} />
-                      </td>
-                      <td className="py-3 px-2 text-xs text-gray-600 max-w-[140px] truncate">
-                        {(row.targetCountries ?? []).join(", ") || "—"}
-                      </td>
-                      <td className="py-3 px-2 font-mono text-xs tabular-nums text-gray-900">
-                        {formatNumber(row.vendorCount ?? 0)}
-                      </td>
-                      <td className="py-3 px-2 font-mono text-xs tabular-nums text-gray-900">
-                        {formatNumber(row.liveCompletes ?? 0)}
-                      </td>
-                      <td className="py-3 px-2">
-                        <AdminProgressBar percent={surveyProgressPercent(row)} />
-                      </td>
-                      <td className="py-3 px-2 text-gray-700">
-                        {row.incidenceRate != null ? formatPercent(row.incidenceRate) : "—"}
-                      </td>
-                      <td className="py-3 px-2 text-gray-700">
-                        {row.estimatedLOI != null ? `${row.estimatedLOI}m` : "—"}
-                      </td>
-                      <td className="py-3 px-2 font-mono text-xs text-gray-900 tabular-nums">
-                        {formatNumber(row.remainingQuota ?? 0)}
-                      </td>
-                      <td className="py-3 px-2">
-                        <StatusBadge status={row.surveyStatus} />
-                      </td>
-                      <td className="py-3 px-2 text-gray-600 whitespace-nowrap text-xs">
-                        {row.createdAt ? format(new Date(row.createdAt), "MMM d, yyyy") : "—"}
-                      </td>
-                      <td className="py-3 pr-2 pl-2 text-right">
-                        <div className="inline-flex flex-wrap justify-end gap-1">
+                    <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="py-1.5 px-3 max-w-[220px]">
+                        <div className="flex items-center gap-1.5">
                           <Link
                             href={ROUTES.admin.survey(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
-                            title="View"
+                            className="font-bold text-blue-600 hover:text-blue-700 hover:underline truncate text-xs"
+                            title={row.surveyName}
                           >
-                            <Eye className="w-4 h-4" aria-hidden />
+                            {row.surveyName}
+                          </Link>
+                          <span className="text-[10px] font-mono text-slate-400 shrink-0">
+                            ({row.surveyCode})
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-1.5 px-2.5 whitespace-nowrap align-middle">
+                        <AudienceBadge audience={row.surveyAudience} />
+                      </td>
+                      <td className="py-1.5 px-2.5 font-mono text-xs tabular-nums text-slate-900 font-semibold whitespace-nowrap align-middle">
+                        {formatNumber(row.liveCompletes ?? 0)}
+                      </td>
+                      <td className="py-1.5 px-2.5 font-mono text-xs text-slate-900 tabular-nums font-bold whitespace-nowrap align-middle">
+                        {formatNumber(row.remainingQuota ?? 0)}
+                      </td>
+                      <td className="py-1.5 px-2.5 whitespace-nowrap align-middle">
+                        <StatusBadge status={row.surveyStatus} />
+                      </td>
+                      <td className="py-1.5 px-2.5 text-slate-600 whitespace-nowrap text-xs align-middle">
+                        {row.createdAt ? format(new Date(row.createdAt), "MMM d, yyyy") : "—"}
+                      </td>
+                      <td className="py-1.5 px-3 text-right align-middle whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
+                          <Link
+                            href={ROUTES.admin.survey(row.id)}
+                            className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 text-white font-bold text-[11px] hover:bg-blue-700 shadow-sm shrink-0 transition-colors"
+                            title="Open Survey"
+                          >
+                            <span>Open</span>
+                            <Eye className="w-3 h-3" aria-hidden />
                           </Link>
                           <Link
                             href={ROUTES.admin.surveyAnalytics(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shrink-0 transition-colors"
                             title="Analytics"
                           >
-                            <BarChart3 className="w-4 h-4" aria-hidden />
+                            <BarChart3 className="w-3.5 h-3.5" aria-hidden />
                           </Link>
                           <Link
                             href={ROUTES.admin.surveyEdit(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shrink-0 transition-colors"
                             title="Edit"
                           >
-                            <Pencil className="w-4 h-4" aria-hidden />
+                            <Pencil className="w-3.5 h-3.5" aria-hidden />
                           </Link>
                           <button
                             type="button"
                             title="Copy share link"
                             aria-label="Copy share link"
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:text-gray-900"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shrink-0 transition-colors"
                             onClick={() => copySurveyLink(row)}
                           >
                             {copiedSurveyId === row.id ? (
-                              <Check className="w-4 h-4 text-emerald-600" aria-hidden />
+                              <Check className="w-3.5 h-3.5 text-emerald-600" aria-hidden />
                             ) : (
-                              <Copy className="w-4 h-4" aria-hidden />
+                              <Copy className="w-3.5 h-3.5" aria-hidden />
                             )}
                           </button>
                           {row.surveyStatus === "active" ? (
                             <button
                               type="button"
                               title="Pause"
-                              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-amber-200 bg-white text-amber-700 hover:bg-amber-50"
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 shrink-0 transition-colors"
                               onClick={() =>
                                 pauseResumeMutation.mutate({ id: row.id, next: "paused" })
                               }
                               disabled={pauseResumeMutation.isPending}
                             >
-                              <Pause className="w-4 h-4" />
+                              <Pause className="w-3.5 h-3.5" />
                             </button>
                           ) : row.surveyStatus === "paused" ? (
                             <button
                               type="button"
                               title="Resume"
-                              className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50"
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shrink-0 transition-colors"
                               onClick={() =>
                                 pauseResumeMutation.mutate({ id: row.id, next: "active" })
                               }
                               disabled={pauseResumeMutation.isPending}
                             >
-                              <Play className="w-4 h-4" />
+                              <Play className="w-3.5 h-3.5" />
                             </button>
                           ) : null}
                           <button
                             type="button"
-                            title="Delete"
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-rose-200 bg-white text-rose-600 hover:bg-rose-50"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-rose-200 bg-white text-rose-600 hover:bg-rose-50 shrink-0 transition-colors"
                             onClick={() => setDeleteTarget(row)}
+                            title="Delete"
                           >
-                            <Trash2 className="w-4 h-4" aria-hidden />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

@@ -162,82 +162,96 @@ export default function AdminPrescreenListPage() {
             </Link>
           </EmptyState>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-widest text-gray-400">
-                  <th className="py-3">Title</th>
-                  <th className="py-3">Status</th>
-                  <th className="py-3">Questions</th>
-                  <th className="py-3 text-right">Submissions</th>
-                  <th className="py-3 text-right">Actions</th>
+          <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+            <table className="w-full min-w-[750px] text-xs text-slate-800">
+              <thead className="bg-[#091428] text-white">
+                <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                  <th className="px-3 py-2 whitespace-nowrap">Title</th>
+                  <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                  <th className="px-3 py-2 whitespace-nowrap">Questions</th>
+                  <th className="px-3 py-2 text-right whitespace-nowrap">Submissions</th>
+                  <th className="px-3 py-2 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50/80">
-                    <td className="py-4">
-                      <p className="font-bold text-gray-900">{item.title}</p>
-                      <p className="text-xs text-gray-500">
-                        {item.slug}
+                  <tr key={item.id} className="hover:bg-blue-50/40 transition-colors">
+                    <td className="px-3 py-1.5 max-w-[240px] align-middle">
+                      <Link
+                        href={`/admin/prescreen/edit/${item.id}`}
+                        className="font-bold text-blue-600 hover:text-blue-700 hover:underline truncate text-xs block"
+                        title={item.title}
+                      >
+                        {item.title}
+                      </Link>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] text-slate-400 font-mono">{item.slug}</span>
                         {item.isRequiredForPanel && item.status === "published" ? (
-                          <span className="ml-2 text-[10px] font-black uppercase text-emerald-700">
-                            · Active required
+                          <span className="text-[9px] font-extrabold uppercase text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-200 leading-none">
+                            Active Required
                           </span>
                         ) : item.isRequiredForPanel ? (
-                          <span className="ml-2 text-[10px] font-black uppercase text-amber-700">
-                            · Required (publish to activate)
+                          <span className="text-[9px] font-extrabold uppercase text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200 leading-none">
+                            Required (Draft)
                           </span>
                         ) : null}
-                      </p>
+                      </div>
                     </td>
-                    <td className="py-4">
-                      <span className="px-2 py-1 text-[10px] rounded-full bg-gray-100 font-black uppercase text-gray-600">
+                    <td className="px-3 py-1.5 whitespace-nowrap align-middle">
+                      <span
+                        className={`inline-flex px-2 py-0.5 text-[9px] rounded-full font-extrabold uppercase tracking-wider border leading-none ${
+                          item.status === "published"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : item.status === "archived"
+                              ? "bg-slate-100 text-slate-700 border-slate-200"
+                              : "bg-rose-50 text-rose-700 border-rose-200"
+                        }`}
+                      >
                         {item.status}
                       </span>
                     </td>
-                    <td className="py-4 text-sm text-gray-600">
+                    <td className="px-3 py-1.5 font-mono text-xs font-semibold text-slate-700 whitespace-nowrap align-middle">
                       {formatNumber(item.questions.length)}
                     </td>
-                    <td className="py-4 text-sm text-gray-900 font-bold text-right tabular-nums">
+                    <td className="px-3 py-1.5 text-xs text-slate-900 font-bold text-right tabular-nums whitespace-nowrap align-middle">
                       {formatNumber(item.submissionCount ?? 0)}
                     </td>
-                    <td className="py-4">
-                      <div className="flex justify-end gap-2">
+                    <td className="px-3 py-1.5 text-right align-middle whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
                         <Link
                           href={`/admin/prescreen/edit/${item.id}`}
-                          className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 inline-flex items-center gap-1 bg-white hover:bg-gray-50"
+                          className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 text-white font-bold text-[11px] hover:bg-blue-700 shadow-sm shrink-0 transition-colors"
                         >
                           <Eye className="w-3 h-3" />
-                          Edit
+                          <span>Edit</span>
                         </Link>
                         <button
-                          className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 inline-flex items-center gap-1 bg-white hover:bg-gray-50"
+                          className="h-7 px-2 border border-slate-200 rounded-md text-[11px] font-bold text-slate-700 inline-flex items-center gap-1 bg-white hover:bg-slate-50 shrink-0 transition-colors"
                           onClick={() => duplicateMutation.mutate(item.id)}
                         >
                           <Copy className="w-3 h-3" />
-                          Duplicate
+                          <span>Duplicate</span>
                         </button>
                         {!(item.isRequiredForPanel && item.status === "published") ? (
                           <button
                             type="button"
-                            className="h-9 px-3 border border-brand-primary/30 rounded-lg text-xs font-bold text-brand-primary bg-brand-subtle hover:bg-brand-light disabled:opacity-50"
+                            className="h-7 px-2 border border-blue-200 rounded-md text-[11px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 disabled:opacity-50 shrink-0 transition-colors"
                             disabled={setRequiredMutation.isPending}
                             onClick={() => setRequiredMutation.mutate(item.id)}
                           >
-                            Set as required
+                            Set Required
                           </button>
                         ) : null}
                         {item.status === "published" ? (
                           <button
-                            className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-white hover:bg-gray-50"
+                            className="h-7 px-2 border border-amber-200 rounded-md text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 shrink-0 transition-colors"
                             onClick={() => unpublishMutation.mutate(item.id)}
                           >
                             Unpublish
                           </button>
                         ) : (
                           <button
-                            className="h-9 px-3 border border-gray-200 rounded-lg text-xs font-bold text-gray-900 bg-white hover:bg-gray-50"
+                            className="h-7 px-2 border border-emerald-200 rounded-md text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 shrink-0 transition-colors"
                             onClick={() => publishMutation.mutate(item.id)}
                           >
                             Publish
@@ -246,10 +260,10 @@ export default function AdminPrescreenListPage() {
                         <button
                           type="button"
                           title="Delete"
-                          className="h-9 w-9 border border-rose-200 text-rose-600 rounded-lg inline-flex items-center justify-center hover:bg-rose-50"
+                          className="h-7 w-7 border border-rose-200 text-rose-600 rounded-md inline-flex items-center justify-center hover:bg-rose-50 shrink-0 transition-colors"
                           onClick={() => setDeleteTarget(item)}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </td>

@@ -158,36 +158,66 @@ export default function AdminSecurityLogsPage() {
           <EmptyState icon={Shield} />
         ) : (
           <>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={adminTableHeadClass}>
-                    <th className="px-4 py-3">Time</th>
-                    <th className="px-4 py-3">Channel</th>
-                    <th className="px-4 py-3">IP</th>
-                    <th className="px-4 py-3">Country</th>
-                    <th className="px-4 py-3">Decision</th>
-                    <th className="px-4 py-3">Reason</th>
-                    <th className="px-4 py-3">Flags</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[850px] text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Time</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Channel</th>
+                    <th className="px-3 py-2 whitespace-nowrap">IP Address</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Country</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Decision</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Reason</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Flags</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => (
-                    <tr key={row._id} className={adminTableRowClass}>
-                      <td className="px-4 py-3 text-xs whitespace-nowrap">
+                    <tr key={row._id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {row.createdAt ? format(new Date(row.createdAt), "MMM d HH:mm") : "—"}
                       </td>
-                      <td className="px-4 py-3">{row.channel}</td>
-                      <td className="px-4 py-3 font-mono text-xs">{row.ipAddress}</td>
-                      <td className="px-4 py-3">{row.country || "—"}</td>
-                      <td className="px-4 py-3 font-semibold">{row.validationDecision}</td>
-                      <td className="px-4 py-3 text-xs text-gray-600 max-w-[200px] truncate">
-                        {row.blockedReason || row.reasonCode}
+                      <td className="px-3 py-1.5 font-bold text-slate-900 capitalize whitespace-nowrap align-middle">
+                        {row.channel}
                       </td>
-                      <td className="px-4 py-3 text-xs">
-                        {row.botDetected ? "bot " : ""}
-                        {row.vpnDetected ? "vpn " : ""}
-                        {row.captchaPassed === false ? "captcha✗" : ""}
+                      <td className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 whitespace-nowrap align-middle">
+                        {row.ipAddress}
+                      </td>
+                      <td className="px-3 py-1.5 text-xs text-slate-700 whitespace-nowrap align-middle">
+                        {row.country || "—"}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
+                        <span
+                          className={`inline-flex px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded-full border leading-none ${
+                            row.validationDecision === "allow"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : row.validationDecision === "block"
+                                ? "bg-rose-50 text-rose-700 border-rose-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
+                          }`}
+                        >
+                          {row.validationDecision}
+                        </span>
+                      </td>
+                      <td
+                        className="px-3 py-1.5 text-xs text-slate-600 max-w-[200px] truncate whitespace-nowrap align-middle"
+                        title={row.blockedReason || row.reasonCode || ""}
+                      >
+                        {row.blockedReason || row.reasonCode || "—"}
+                      </td>
+                      <td className="px-3 py-1.5 text-xs font-mono text-slate-600 whitespace-nowrap align-middle">
+                        {row.botDetected ? (
+                          <span className="text-rose-600 font-bold mr-1">BOT</span>
+                        ) : null}
+                        {row.vpnDetected ? (
+                          <span className="text-amber-600 font-bold mr-1">VPN</span>
+                        ) : null}
+                        {row.captchaPassed === false ? (
+                          <span className="text-rose-600 font-bold">CAPTCHA-FAIL</span>
+                        ) : null}
+                        {!row.botDetected && !row.vpnDetected && row.captchaPassed !== false
+                          ? "—"
+                          : null}
                       </td>
                     </tr>
                   ))}

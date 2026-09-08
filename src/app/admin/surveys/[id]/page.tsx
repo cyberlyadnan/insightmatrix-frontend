@@ -75,7 +75,7 @@ function AudienceBadge({ audience }: { audience?: PanelSurveyAudience }) {
           : "bg-violet-50 text-violet-700 border border-violet-200"
       }`}
     >
-      {isPublic ? "🌐 Public Survey" : "🔒 Internal / Private"}
+      {isPublic ? "Public Survey" : "Internal / Private"}
     </span>
   );
 }
@@ -424,36 +424,53 @@ export default function PanelSurveyDetailPage() {
               <p className="text-2xl font-black text-brand-primary">{survey.remainingQuota}</p>
             </div>
           </div>
-          <div className="rounded-[2rem] border border-gray-100 bg-white overflow-hidden shadow-sm">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-100">
-                <tr className="text-left text-[10px] font-black uppercase tracking-widest text-gray-400">
-                  <th className="px-4 py-3">Group</th>
-                  <th className="px-4 py-3">Total</th>
-                  <th className="px-4 py-3">Remaining</th>
-                  <th className="px-4 py-3">Status</th>
+          <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+            <table className="w-full min-w-[600px] text-xs text-slate-800">
+              <thead className="bg-[#091428] text-white">
+                <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                  <th className="px-3 py-2 whitespace-nowrap">Group</th>
+                  <th className="px-3 py-2 whitespace-nowrap">Total Quota</th>
+                  <th className="px-3 py-2 whitespace-nowrap">Remaining</th>
+                  <th className="px-3 py-2 whitespace-nowrap">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-slate-100">
                 {(survey.dynamicQuotaGroups ?? []).length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500 text-sm">
+                    <td
+                      colSpan={4}
+                      className="px-3 py-6 text-center text-slate-500 text-xs font-medium"
+                    >
                       No quota groups configured.
                     </td>
                   </tr>
                 ) : (
                   survey.dynamicQuotaGroups.map((g) => (
-                    <tr key={g.id}>
-                      <td className="px-4 py-3">
-                        <p className="font-bold text-gray-900">{g.groupName}</p>
+                    <tr key={g.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-1.5 align-middle">
+                        <span className="font-bold text-slate-900 text-xs">{g.groupName}</span>
                         {g.groupDescription ? (
-                          <p className="text-xs text-gray-500 mt-0.5">{g.groupDescription}</p>
+                          <span className="text-[10px] text-slate-500 ml-1.5">
+                            ({g.groupDescription})
+                          </span>
                         ) : null}
                       </td>
-                      <td className="px-4 py-3 font-mono">{g.totalQuota}</td>
-                      <td className="px-4 py-3 font-mono">{g.remainingQuota}</td>
-                      <td className="px-4 py-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+                      <td className="px-3 py-1.5 font-mono text-xs font-bold text-slate-900 whitespace-nowrap align-middle">
+                        {g.totalQuota}
+                      </td>
+                      <td className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 whitespace-nowrap align-middle">
+                        {g.remainingQuota}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
+                        <span
+                          className={`inline-flex px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded-full border leading-none ${
+                            g.status === "active"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : g.status === "filled"
+                                ? "bg-rose-50 text-rose-700 border-rose-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
+                          }`}
+                        >
                           {PANEL_QUOTA_GROUP_STATUS_LABELS[g.status]}
                         </span>
                       </td>

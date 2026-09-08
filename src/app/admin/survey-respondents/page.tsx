@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Database } from "lucide-react";
+import { Database, Eye } from "lucide-react";
 
 import {
   AdminPagination,
@@ -138,48 +138,63 @@ export default function SurveyRespondentsPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={adminTableHeadClass}>
-                    <th className="px-4 py-3">Owner</th>
-                    <th className="px-4 py-3">Vendor / Survey</th>
-                    <th className="px-4 py-3">Tracking id</th>
-                    <th className="px-4 py-3">Platform token</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Created</th>
-                    <th className="px-4 py-3 text-right">View</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[850px] text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Owner</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Vendor / Survey</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Tracking ID</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Platform Token</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Created</th>
+                    <th className="px-3 py-2 text-right whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => {
                     const trackingId = resolveTrackingParticipantId(row);
                     return (
-                      <tr key={row.id} className={adminTableRowClass}>
-                        <td className="px-4 py-4 capitalize text-xs font-bold">
+                      <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                        <td className="px-3 py-1.5 capitalize text-xs font-bold text-slate-900 whitespace-nowrap align-middle">
                           {row.respondentOwnerType}
                         </td>
-                        <td className="px-4 py-4">
-                          <p className="font-medium">
+                        <td className="px-3 py-1.5 max-w-[200px] align-middle">
+                          <p
+                            className="font-bold text-slate-900 truncate text-xs"
+                            title={row.vendor?.companyName ?? row.panelSurvey?.surveyName}
+                          >
                             {row.vendor?.companyName ?? row.panelSurvey?.surveyName}
                           </p>
-                          <p className="text-xs text-gray-500">{row.panelSurvey?.surveyCode}</p>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            {row.panelSurvey?.surveyCode}
+                          </span>
                         </td>
-                        <td className="px-4 py-4 font-mono text-xs font-bold text-brand-primary">
+                        <td className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 whitespace-nowrap align-middle">
                           {trackingId || "—"}
                         </td>
-                        <td className="px-4 py-4 font-mono text-xs">{row.internalSessionToken}</td>
-                        <td className="px-4 py-4 text-xs font-semibold">{row.surveyStatus}</td>
-                        <td className="px-4 py-4 text-xs text-gray-500">
+                        <td
+                          className="px-3 py-1.5 font-mono text-xs text-slate-600 max-w-[180px] truncate whitespace-nowrap align-middle"
+                          title={row.internalSessionToken}
+                        >
+                          {row.internalSessionToken}
+                        </td>
+                        <td className="px-3 py-1.5 text-xs font-bold capitalize text-slate-800 whitespace-nowrap align-middle">
+                          {row.surveyStatus}
+                        </td>
+                        <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                           {row.createdAt ? format(new Date(row.createdAt), "MMM d, HH:mm") : "—"}
                         </td>
-                        <td className="px-4 py-4 text-right">
-                          <Link
-                            href={ROUTES.admin.surveyRespondent(row.id)}
-                            className="text-sm font-semibold text-brand-primary"
-                          >
-                            Details
-                          </Link>
+                        <td className="px-3 py-1.5 text-right align-middle whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
+                            <Link
+                              href={ROUTES.admin.surveyRespondent(row.id)}
+                              className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 text-white font-bold text-[11px] hover:bg-blue-700 shadow-sm shrink-0 transition-colors"
+                            >
+                              <span>Open</span>
+                              <Eye className="w-3 h-3" />
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     );

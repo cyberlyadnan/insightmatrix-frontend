@@ -9,10 +9,10 @@ export const VENDOR_ALLOCATION_STATUS_LABELS: Record<VendorAllocationStatus, str
 };
 
 export const VENDOR_ALLOCATION_STATUS_STYLES: Record<VendorAllocationStatus, string> = {
-  active: "bg-emerald-50 text-emerald-700",
-  paused: "bg-amber-50 text-amber-700",
-  completed: "bg-slate-100 text-slate-600",
-  closed: "bg-gray-100 text-gray-600",
+  active: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  paused: "bg-amber-50 text-amber-700 border border-amber-200",
+  completed: "bg-slate-100 text-slate-700 border border-slate-200",
+  closed: "bg-rose-50 text-rose-700 border border-rose-200",
 };
 
 export const VENDOR_RESPONDENT_SESSION_STATUSES = [

@@ -16,8 +16,10 @@ type TabId = "webhooks" | "gateway";
 function StatusPill({ ok }: { ok: boolean }) {
   return (
     <span
-      className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-        ok ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
+      className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${
+        ok
+          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+          : "bg-rose-50 text-rose-700 border-rose-200"
       }`}
     >
       {ok ? "Success" : "Failed"}
@@ -51,7 +53,7 @@ export default function AdminRoutingLogsPage() {
   ];
 
   return (
-    <div className="space-y-8 max-w-6xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-gray-900 tracking-tight">Routing logs</h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -60,38 +62,43 @@ export default function AdminRoutingLogsPage() {
       </div>
 
       <div className="flex flex-wrap gap-2 border-b border-gray-100 pb-1">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-t-xl border-b-2 transition ${
-              tab === t.id
-                ? "border-gray-900 text-gray-900"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            <t.icon className="h-4 w-4" />
-            {t.label}
-          </button>
-        ))}
+        {tabs.map((t) => {
+          const Icon = t.icon;
+          const active = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`h-11 px-5 rounded-2xl text-xs font-black uppercase tracking-widest inline-flex items-center gap-2 transition-all ${
+                active
+                  ? "bg-gray-900 text-white shadow-md shadow-gray-900/10"
+                  : "bg-white text-gray-500 border border-gray-100 hover:text-gray-900"
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {tab === "webhooks" && (
         <div className="space-y-4">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-bold text-gray-500 mr-2">Filter status:</span>
             {(["", "success", "failed"] as const).map((s) => (
               <button
                 key={s || "all"}
                 type="button"
                 onClick={() => setDeliveryFilter(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-colors ${
                   deliveryFilter === s
                     ? "bg-gray-900 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
-                {s === "" ? "All" : s}
+                {s || "All"}
               </button>
             ))}
           </div>
@@ -101,42 +108,57 @@ export default function AdminRoutingLogsPage() {
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-gray-100">
-                    <th className="px-4 py-3">Time</th>
-                    <th className="px-4 py-3">Vendor</th>
-                    <th className="px-4 py-3">Survey</th>
-                    <th className="px-4 py-3">Type</th>
-                    <th className="px-4 py-3">HTTP</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Error</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[850px] text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Time</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Vendor</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Survey</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Type</th>
+                    <th className="px-3 py-2 whitespace-nowrap">HTTP</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Error</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {(webhookQuery.data?.items ?? []).map((row) => (
-                    <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/80">
-                      <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+                    <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {row.attemptedAt
                           ? format(new Date(row.attemptedAt), "MMM d HH:mm:ss")
                           : "—"}
                       </td>
-                      <td className="px-4 py-3">
-                        <p className="font-semibold text-gray-900">
+                      <td className="px-3 py-1.5 max-w-[180px] align-middle">
+                        <p
+                          className="font-bold text-slate-900 truncate text-xs"
+                          title={row.vendorCompanyName ?? ""}
+                        >
                           {row.vendorCompanyName ?? "—"}
                         </p>
-                        <p className="text-xs text-gray-500 font-mono">{row.vendorCode}</p>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {row.vendorCode}
+                        </span>
                       </td>
-                      <td className="px-4 py-3 text-xs">
+                      <td
+                        className="px-3 py-1.5 text-xs font-medium text-slate-700 max-w-[180px] truncate whitespace-nowrap align-middle"
+                        title={row.surveyName ?? row.surveyCode ?? ""}
+                      >
                         {row.surveyName ?? row.surveyCode ?? row.panelSurveyId.slice(-6)}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs">{row.callbackType}</td>
-                      <td className="px-4 py-3 font-mono text-xs">{row.responseStatus ?? "—"}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-1.5 font-mono text-xs text-slate-600 whitespace-nowrap align-middle">
+                        {row.callbackType}
+                      </td>
+                      <td className="px-3 py-1.5 font-mono text-xs font-bold text-slate-800 whitespace-nowrap align-middle">
+                        {row.responseStatus ?? "—"}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                         <StatusPill ok={row.deliveryStatus === "success"} />
                       </td>
-                      <td className="px-4 py-3 text-xs text-rose-600 max-w-[200px] truncate">
+                      <td
+                        className="px-3 py-1.5 text-xs text-rose-600 font-medium max-w-[200px] truncate whitespace-nowrap align-middle"
+                        title={row.errorMessage || ""}
+                      >
                         {row.errorMessage || "—"}
                       </td>
                     </tr>
@@ -144,9 +166,7 @@ export default function AdminRoutingLogsPage() {
                 </tbody>
               </table>
               {(webhookQuery.data?.items?.length ?? 0) === 0 && (
-                <p className="text-center text-sm text-gray-500 py-12">
-                  No webhook deliveries yet.
-                </p>
+                <p className="text-center text-xs text-gray-500 py-8">No webhook deliveries yet.</p>
               )}
             </div>
           )}
@@ -160,33 +180,43 @@ export default function AdminRoutingLogsPage() {
               <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-[10px] font-black uppercase tracking-widest text-gray-500 border-b border-gray-100">
-                    <th className="px-4 py-3">Time</th>
-                    <th className="px-4 py-3">Channel</th>
-                    <th className="px-4 py-3">Action</th>
-                    <th className="px-4 py-3">Result</th>
-                    <th className="px-4 py-3">Session</th>
-                    <th className="px-4 py-3">Reason</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[750px] text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Time</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Channel</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Action</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Result</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Session</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Reason</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {(gatewayQuery.data?.items ?? []).map((row) => (
-                    <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/80">
-                      <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
+                    <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {row.createdAt ? format(new Date(row.createdAt), "MMM d HH:mm:ss") : "—"}
                       </td>
-                      <td className="px-4 py-3 capitalize text-xs font-bold">{row.channel}</td>
-                      <td className="px-4 py-3 font-mono text-xs">{row.action}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-1.5 capitalize text-xs font-bold text-slate-900 whitespace-nowrap align-middle">
+                        {row.channel}
+                      </td>
+                      <td className="px-3 py-1.5 font-mono text-xs text-slate-700 whitespace-nowrap align-middle">
+                        {row.action}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                         <StatusPill ok={row.success} />
                       </td>
-                      <td className="px-4 py-3 font-mono text-[10px] text-gray-500 max-w-[120px] truncate">
+                      <td
+                        className="px-3 py-1.5 font-mono text-[10px] text-slate-500 max-w-[140px] truncate whitespace-nowrap align-middle"
+                        title={row.sessionToken || ""}
+                      >
                         {row.sessionToken || "—"}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-600 max-w-[180px] truncate">
+                      <td
+                        className="px-3 py-1.5 text-xs text-slate-600 max-w-[180px] truncate whitespace-nowrap align-middle"
+                        title={row.failureReason || ""}
+                      >
                         {row.failureReason || "—"}
                       </td>
                     </tr>
@@ -194,7 +224,7 @@ export default function AdminRoutingLogsPage() {
                 </tbody>
               </table>
               {(gatewayQuery.data?.items?.length ?? 0) === 0 && (
-                <p className="text-center text-sm text-gray-500 py-12">No gateway events yet.</p>
+                <p className="text-center text-xs text-gray-500 py-8">No gateway events yet.</p>
               )}
             </div>
           )}

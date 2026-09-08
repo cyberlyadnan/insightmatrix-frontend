@@ -61,17 +61,17 @@ function SortButton({
     <button
       type="button"
       onClick={() => onSort(field)}
-      className="inline-flex items-center gap-1 font-black uppercase tracking-wider text-[10px] text-gray-500 hover:text-gray-900"
+      className="inline-flex items-center gap-1 font-extrabold uppercase tracking-wider text-[10px] text-slate-200 hover:text-white transition-colors"
     >
-      {label}
+      <span>{label}</span>
       {active ? (
         sortOrder === "asc" ? (
-          <ArrowUp className="w-3 h-3 text-brand-primary" />
+          <ArrowUp className="w-3 h-3 text-blue-400 font-bold" />
         ) : (
-          <ArrowDown className="w-3 h-3 text-brand-primary" />
+          <ArrowDown className="w-3 h-3 text-blue-400 font-bold" />
         )
       ) : (
-        <MoreHorizontal className="w-3 h-3 opacity-40" />
+        <MoreHorizontal className="w-3 h-3 opacity-40 hover:opacity-100" />
       )}
     </button>
   );
@@ -81,8 +81,10 @@ function StatusBadge({ status }: { status: SurveyCompanyStatus }) {
   const active = status === "active";
   return (
     <span
-      className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-        active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-600"
+      className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${
+        active
+          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+          : "bg-rose-50 text-rose-700 border-rose-200"
       }`}
     >
       {active ? "Active" : "Inactive"}
@@ -232,11 +234,11 @@ export default function AdminSurveyCompaniesPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="hidden lg:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[720px] text-left">
-                <thead>
-                  <tr className="border-b border-gray-100 text-[10px] text-gray-400">
-                    <th className="pb-3 pl-2 pr-4">
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[720px] text-left text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="py-2 px-3">
                       <SortButton
                         label="Company"
                         field="companyName"
@@ -245,7 +247,7 @@ export default function AdminSurveyCompaniesPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-4">
+                    <th className="py-2 px-3">
                       <SortButton
                         label="Code"
                         field="companyCode"
@@ -254,7 +256,7 @@ export default function AdminSurveyCompaniesPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-4">
+                    <th className="py-2 px-3">
                       <SortButton
                         label="Type"
                         field="providerType"
@@ -263,7 +265,7 @@ export default function AdminSurveyCompaniesPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-4">
+                    <th className="py-2 px-3">
                       <SortButton
                         label="Status"
                         field="status"
@@ -272,7 +274,7 @@ export default function AdminSurveyCompaniesPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 px-4">
+                    <th className="py-2 px-3">
                       <SortButton
                         label="Created"
                         field="createdAt"
@@ -281,47 +283,56 @@ export default function AdminSurveyCompaniesPage() {
                         onSort={toggleSort}
                       />
                     </th>
-                    <th className="pb-3 pr-2 pl-4 text-right">Actions</th>
+                    <th className="py-2 px-3 text-right font-extrabold uppercase tracking-wider text-slate-100 whitespace-nowrap">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => (
-                    <tr key={row.id} className="hover:bg-gray-50/80 transition-colors">
-                      <td className="py-4 pl-2 pr-4">
-                        <p className="font-bold text-gray-900">{row.companyName}</p>
+                    <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="py-1.5 px-3 max-w-[220px]">
+                        <Link
+                          href={ROUTES.admin.company(row.id)}
+                          className="font-bold text-blue-600 hover:text-blue-700 hover:underline truncate text-xs block"
+                          title={row.companyName}
+                        >
+                          {row.companyName}
+                        </Link>
                       </td>
-                      <td className="py-4 px-4 font-mono text-xs text-gray-700">
+                      <td className="py-1.5 px-3 font-mono text-xs font-bold text-slate-700 whitespace-nowrap align-middle">
                         {row.companyCode}
                       </td>
-                      <td className="py-4 px-4 text-xs font-medium text-gray-700">
+                      <td className="py-1.5 px-3 text-xs font-semibold text-slate-600 whitespace-nowrap align-middle">
                         {SURVEY_PROVIDER_LABELS[row.providerType]}
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-1.5 px-3 whitespace-nowrap align-middle">
                         <StatusBadge status={row.status} />
                       </td>
-                      <td className="py-4 px-4 text-sm text-gray-600 whitespace-nowrap">
+                      <td className="py-1.5 px-3 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {row.createdAt ? format(new Date(row.createdAt), "MMM d, yyyy") : "—"}
                       </td>
-                      <td className="py-4 pr-2 pl-4 text-right">
-                        <div className="inline-flex flex-wrap justify-end gap-1">
+                      <td className="py-1.5 px-3 text-right align-middle whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
                           <Link
                             href={ROUTES.admin.company(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
-                            title="View"
+                            className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 text-white font-bold text-[11px] hover:bg-blue-700 shadow-sm shrink-0 transition-colors"
+                            title="Open Provider"
                           >
-                            <Eye className="w-4 h-4" />
+                            <span>Open</span>
+                            <Eye className="w-3 h-3" />
                           </Link>
                           <Link
                             href={ROUTES.admin.companyEdit(row.id)}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shrink-0 transition-colors"
                             title="Edit"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-3.5 h-3.5" />
                           </Link>
                           <button
                             type="button"
                             title={row.status === "active" ? "Disable" : "Enable"}
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shrink-0 transition-colors"
                             onClick={() =>
                               statusMutation.mutate({
                                 id: row.id,
@@ -330,15 +341,15 @@ export default function AdminSurveyCompaniesPage() {
                             }
                             disabled={statusMutation.isPending}
                           >
-                            <Power className="w-4 h-4" />
+                            <Power className="w-3.5 h-3.5" />
                           </button>
                           <button
                             type="button"
                             title="Delete"
-                            className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-rose-200 text-rose-600 hover:bg-rose-50 shrink-0 transition-colors"
                             onClick={() => setDeleteTarget(row)}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

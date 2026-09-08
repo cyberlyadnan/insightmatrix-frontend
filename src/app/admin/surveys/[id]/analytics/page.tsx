@@ -214,40 +214,60 @@ export default function PanelSurveyAnalyticsPage() {
         <h2 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">
           Quota segments
         </h2>
-        <div className="rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden overflow-x-auto">
-          <table className="w-full min-w-[920px] text-sm text-left">
-            <thead>
-              <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-50/80">
-                <th className="py-3 px-4">Segment</th>
-                <th className="py-3 px-4">Total cap</th>
-                <th className="py-3 px-4">Remaining</th>
-                <th className="py-3 px-4">Filled slots</th>
-                <th className="py-3 px-4">Completes</th>
-                <th className="py-3 px-4">Terminated</th>
-                <th className="py-3 px-4">Screen-outs</th>
-                <th className="py-3 px-4">Other events</th>
+        <div className="rounded-xl border border-slate-200/90 bg-white shadow-sm overflow-hidden overflow-x-auto custom-scrollbar">
+          <table className="w-full min-w-[920px] text-xs text-left text-slate-800">
+            <thead className="bg-[#091428] text-white">
+              <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                <th className="py-2 px-3 whitespace-nowrap">Segment</th>
+                <th className="py-2 px-3 whitespace-nowrap">Total Cap</th>
+                <th className="py-2 px-3 whitespace-nowrap">Remaining</th>
+                <th className="py-2 px-3 whitespace-nowrap">Filled Slots</th>
+                <th className="py-2 px-3 whitespace-nowrap">Completes</th>
+                <th className="py-2 px-3 whitespace-nowrap">Terminated</th>
+                <th className="py-2 px-3 whitespace-nowrap">Screen-Outs</th>
+                <th className="py-2 px-3 whitespace-nowrap">Other Events</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-100">
               {data.quotaGroups.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 px-4 text-center text-gray-500">
+                  <td
+                    colSpan={8}
+                    className="py-6 px-3 text-center text-slate-500 font-medium text-xs"
+                  >
                     No quota groups — configure segments on the survey edit form.
                   </td>
                 </tr>
               ) : (
                 data.quotaGroups.map((row) => (
-                  <tr key={row.groupId || row.groupName} className="hover:bg-gray-50/80">
-                    <td className="py-3 px-4 font-bold text-gray-900">{row.groupName || "—"}</td>
-                    <td className="py-3 px-4 font-mono tabular-nums">{row.totalQuota}</td>
-                    <td className="py-3 px-4 font-mono tabular-nums">{row.remainingQuota}</td>
-                    <td className="py-3 px-4 font-mono tabular-nums text-brand-primary font-bold">
+                  <tr
+                    key={row.groupId || row.groupName}
+                    className="hover:bg-blue-50/40 transition-colors"
+                  >
+                    <td className="py-1.5 px-3 font-bold text-slate-900 whitespace-nowrap align-middle">
+                      {row.groupName || "—"}
+                    </td>
+                    <td className="py-1.5 px-3 font-mono font-semibold text-slate-900 tabular-nums whitespace-nowrap align-middle">
+                      {row.totalQuota}
+                    </td>
+                    <td className="py-1.5 px-3 font-mono font-bold text-blue-600 tabular-nums whitespace-nowrap align-middle">
+                      {row.remainingQuota}
+                    </td>
+                    <td className="py-1.5 px-3 font-mono font-bold text-emerald-700 tabular-nums whitespace-nowrap align-middle">
                       {row.filledSlots}
                     </td>
-                    <td className="py-3 px-4 font-mono tabular-nums">{row.completes}</td>
-                    <td className="py-3 px-4 font-mono tabular-nums">{row.terminates}</td>
-                    <td className="py-3 px-4 font-mono tabular-nums">{row.screenouts}</td>
-                    <td className="py-3 px-4 font-mono tabular-nums">{row.otherRoutingEvents}</td>
+                    <td className="py-1.5 px-3 font-mono font-semibold text-slate-800 tabular-nums whitespace-nowrap align-middle">
+                      {row.completes}
+                    </td>
+                    <td className="py-1.5 px-3 font-mono text-slate-600 tabular-nums whitespace-nowrap align-middle">
+                      {row.terminates}
+                    </td>
+                    <td className="py-1.5 px-3 font-mono text-slate-600 tabular-nums whitespace-nowrap align-middle">
+                      {row.screenouts}
+                    </td>
+                    <td className="py-1.5 px-3 font-mono text-slate-600 tabular-nums whitespace-nowrap align-middle">
+                      {row.otherRoutingEvents}
+                    </td>
                   </tr>
                 ))
               )}
@@ -260,37 +280,48 @@ export default function PanelSurveyAnalyticsPage() {
         <h2 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">
           Recent activity
         </h2>
-        <div className="rounded-[2rem] border border-gray-100 bg-white shadow-sm overflow-hidden overflow-x-auto">
-          <table className="w-full min-w-[720px] text-sm">
-            <thead>
-              <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400 bg-gray-50/80">
-                <th className="text-left py-3 px-4">When</th>
-                <th className="text-left py-3 px-4">Outcome</th>
-                <th className="text-left py-3 px-4">Segment</th>
-                <th className="text-left py-3 px-4">Respondent ref</th>
+        <div className="rounded-xl border border-slate-200/90 bg-white shadow-sm overflow-hidden overflow-x-auto custom-scrollbar">
+          <table className="w-full min-w-[720px] text-xs text-slate-800">
+            <thead className="bg-[#091428] text-white">
+              <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                <th className="text-left py-2 px-3 whitespace-nowrap">When</th>
+                <th className="text-left py-2 px-3 whitespace-nowrap">Outcome</th>
+                <th className="text-left py-2 px-3 whitespace-nowrap">Segment</th>
+                <th className="text-left py-2 px-3 whitespace-nowrap">Respondent Ref</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-slate-100">
               {data.recentEvents.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-10 px-4 text-center text-gray-500">
+                  <td
+                    colSpan={4}
+                    className="py-6 px-3 text-center text-slate-500 font-medium text-xs"
+                  >
                     No routing events yet. Completes and terminations will appear here once
                     callbacks are wired.
                   </td>
                 </tr>
               ) : (
                 data.recentEvents.map((ev, i) => (
-                  <tr key={`${ev.createdAt}-${i}`}>
-                    <td className="py-3 px-4 text-gray-600 whitespace-nowrap text-xs">
+                  <tr
+                    key={`${ev.createdAt}-${i}`}
+                    className="hover:bg-blue-50/40 transition-colors"
+                  >
+                    <td className="py-1.5 px-3 text-slate-600 whitespace-nowrap text-xs align-middle">
                       {ev.createdAt ? new Date(ev.createdAt).toLocaleString() : "—"}
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gray-100 text-gray-800">
+                    <td className="py-1.5 px-3 whitespace-nowrap align-middle">
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-200 leading-none">
                         {PANEL_ROUTING_EVENT_LABELS[ev.eventType]}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-gray-700">{ev.quotaGroupName || "—"}</td>
-                    <td className="py-3 px-4 font-mono text-xs text-gray-600 break-all max-w-[280px]">
+                    <td className="py-1.5 px-3 font-semibold text-slate-800 whitespace-nowrap align-middle">
+                      {ev.quotaGroupName || "—"}
+                    </td>
+                    <td
+                      className="py-1.5 px-3 font-mono text-xs text-blue-600 font-bold whitespace-nowrap truncate max-w-[280px] align-middle"
+                      title={ev.supplierParticipantRef || ""}
+                    >
                       {ev.supplierParticipantRef || "—"}
                     </td>
                   </tr>

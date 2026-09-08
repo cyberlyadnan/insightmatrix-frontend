@@ -164,35 +164,49 @@ export default function AdminPanelBookPage() {
           <p className="py-12 text-center text-sm text-gray-500">No submissions yet.</p>
         ) : (
           <>
-            <div className="-mx-2 overflow-x-auto">
-              <table className="w-full min-w-[900px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-gray-200 text-[10px] font-black uppercase tracking-wider text-gray-500">
-                    <th className="pb-3 pl-2">Date</th>
-                    <th className="pb-3 px-2">Name</th>
-                    <th className="pb-3 px-2">Work email</th>
-                    <th className="pb-3 px-2">Company</th>
-                    <th className="pb-3 px-2">Type</th>
-                    <th className="pb-3 px-2">Job title</th>
-                    <th className="pb-3 pr-2">Country</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[900px] text-left text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="py-2 px-3 whitespace-nowrap">Date</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Name</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Work Email</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Company</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Type</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Job Title</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Country</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row: PanelBookLeadRow) => (
-                    <tr key={row.id} className="hover:bg-gray-50/80">
-                      <td className="whitespace-nowrap py-3 pl-2 text-xs text-gray-500">
+                    <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="whitespace-nowrap py-1.5 px-3 text-xs text-slate-500 align-middle">
                         {row.createdAt ? format(new Date(row.createdAt), "MMM d, yyyy HH:mm") : "—"}
                       </td>
-                      <td className="py-3 px-2 font-semibold">
+                      <td className="py-1.5 px-3 font-bold text-slate-900 whitespace-nowrap align-middle">
                         {row.firstName} {row.lastName}
                       </td>
-                      <td className="py-3 px-2 text-gray-700">{row.workEmail}</td>
-                      <td className="py-3 px-2">{row.companyName}</td>
-                      <td className="py-3 px-2 text-xs text-gray-600">
+                      <td className="py-1.5 px-3 text-blue-600 font-medium whitespace-nowrap align-middle">
+                        {row.workEmail}
+                      </td>
+                      <td
+                        className="py-1.5 px-3 font-bold text-slate-800 max-w-[180px] truncate whitespace-nowrap align-middle"
+                        title={row.companyName}
+                      >
+                        {row.companyName}
+                      </td>
+                      <td className="py-1.5 px-3 text-xs text-slate-600 font-semibold whitespace-nowrap align-middle">
                         {PANEL_BOOK_ORG_LABELS[row.organizationType]}
                       </td>
-                      <td className="max-w-[180px] truncate py-3 px-2">{row.jobTitle}</td>
-                      <td className="py-3 pr-2 font-mono text-xs">{row.country}</td>
+                      <td
+                        className="max-w-[180px] truncate py-1.5 px-3 text-slate-700 whitespace-nowrap align-middle"
+                        title={row.jobTitle}
+                      >
+                        {row.jobTitle}
+                      </td>
+                      <td className="py-1.5 px-3 font-mono text-xs font-bold text-slate-700 whitespace-nowrap align-middle">
+                        {row.country}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -24,17 +24,17 @@ import { downloadCsv } from "@/utils/download-csv";
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    started: "bg-slate-100 text-slate-600",
-    redirected: "bg-blue-50 text-blue-700",
-    complete: "bg-emerald-50 text-emerald-700",
-    terminate: "bg-amber-50 text-amber-800",
-    quota_full: "bg-orange-50 text-orange-800",
-    quality_reject: "bg-rose-50 text-rose-700",
+    started: "bg-slate-100 text-slate-700 border-slate-200",
+    redirected: "bg-blue-50 text-blue-700 border-blue-200",
+    complete: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    terminate: "bg-amber-50 text-amber-700 border-amber-200",
+    quota_full: "bg-orange-50 text-orange-700 border-orange-200",
+    quality_reject: "bg-rose-50 text-rose-700 border-rose-200",
   };
   return (
     <span
-      className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-        styles[status] ?? "bg-gray-100 text-gray-600"
+      className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${
+        styles[status] ?? "bg-slate-100 text-slate-700 border-slate-200"
       }`}
     >
       {status.replace("_", " ")}
@@ -162,51 +162,70 @@ export default function VendorRespondentTrackingPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className={adminTableHeadClass}>
-                    <th className="px-4 py-3">Vendor</th>
-                    <th className="px-4 py-3">Survey</th>
-                    <th className="px-4 py-3">Vendor toid</th>
-                    <th className="px-4 py-3">Internal token</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Callback</th>
-                    <th className="px-4 py-3">Started</th>
-                    <th className="px-4 py-3">Completed</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[900px] text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Vendor</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Survey</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Vendor TOID</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Internal Token</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Callback</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Started</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Completed</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => (
-                    <tr key={row.id} className={adminTableRowClass}>
-                      <td className="px-4 py-4">
-                        <p className="font-semibold text-gray-900">{row.vendor?.companyName}</p>
-                        <p className="text-xs text-gray-500">{row.vendor?.vendorCode}</p>
-                      </td>
-                      <td className="px-4 py-4">
-                        <p className="font-medium line-clamp-1">{row.panelSurvey?.surveyName}</p>
-                        <p className="text-xs text-gray-500 font-mono">
-                          {row.allocation?.routingSlug}
+                    <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-1.5 max-w-[180px] align-middle">
+                        <p
+                          className="font-bold text-slate-900 truncate text-xs"
+                          title={row.vendor?.companyName}
+                        >
+                          {row.vendor?.companyName}
                         </p>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {row.vendor?.vendorCode}
+                        </span>
                       </td>
-                      <td className="px-4 py-4 font-mono text-xs font-bold text-brand-primary">
+                      <td className="px-3 py-1.5 max-w-[200px] align-middle">
+                        <p
+                          className="font-bold text-slate-900 truncate text-xs"
+                          title={row.panelSurvey?.surveyName}
+                        >
+                          {row.panelSurvey?.surveyName}
+                        </p>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {row.allocation?.routingSlug}
+                        </span>
+                      </td>
+                      <td className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 whitespace-nowrap align-middle">
                         {row.vendorRespondentToid || "—"}
                       </td>
-                      <td className="px-4 py-4 font-mono text-xs">{row.internalSessionToken}</td>
-                      <td className="px-4 py-4">
+                      <td
+                        className="px-3 py-1.5 font-mono text-xs text-slate-600 max-w-[180px] truncate whitespace-nowrap align-middle"
+                        title={row.internalSessionToken}
+                      >
+                        {row.internalSessionToken}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                         <StatusBadge status={row.status} />
                       </td>
-                      <td className="px-4 py-4">
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                         {row.callbackForwarded ? (
-                          <span className="text-xs font-semibold text-emerald-700">Yes</span>
+                          <span className="inline-flex px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Yes
+                          </span>
                         ) : (
-                          <span className="text-xs text-gray-400">No</span>
+                          <span className="text-xs text-slate-400 font-medium">No</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 text-xs text-gray-500 whitespace-nowrap">
+                      <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {row.startedAt ? format(new Date(row.startedAt), "MMM d, HH:mm") : "—"}
                       </td>
-                      <td className="px-4 py-4 text-xs text-gray-500 whitespace-nowrap">
+                      <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {row.completedAt ? format(new Date(row.completedAt), "MMM d, HH:mm") : "—"}
                       </td>
                     </tr>

@@ -445,44 +445,52 @@ export default function AdminCompanyPaymentsPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="hidden xl:block overflow-x-auto -mx-2">
-              <table className="w-full min-w-[1000px] text-left text-sm text-gray-900">
-                <thead>
-                  <tr className="border-b border-gray-200 text-[10px] font-black uppercase tracking-wider text-gray-600">
-                    <th className="pb-3 pl-2">Invoice</th>
-                    <th className="pb-3 px-2">Company</th>
-                    <th className="pb-3 px-2">Survey</th>
-                    <th className="pb-3 px-2">Source</th>
-                    <th className="pb-3 px-2 text-right">Subtotal</th>
-                    <th className="pb-3 px-2 text-right">Tax %</th>
-                    <th className="pb-3 px-2 text-right">Total</th>
-                    <th className="pb-3 px-2">Status</th>
-                    <th className="pb-3 pr-2 text-right">Actions</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[1000px] text-left text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="py-2 px-3 whitespace-nowrap">Invoice</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Company</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Survey</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Source</th>
+                    <th className="py-2 px-3 text-right whitespace-nowrap">Subtotal</th>
+                    <th className="py-2 px-3 text-right whitespace-nowrap">Tax %</th>
+                    <th className="py-2 px-3 text-right whitespace-nowrap">Total</th>
+                    <th className="py-2 px-3 whitespace-nowrap">Status</th>
+                    <th className="py-2 px-3 text-right whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => (
-                    <tr key={paymentId(row)} className="hover:bg-gray-50/80">
-                      <td className="py-3 pl-2 font-mono text-xs font-bold">{row.invoiceNumber}</td>
-                      <td className="py-3 px-2 text-sm font-semibold">
+                    <tr key={paymentId(row)} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="py-1.5 px-3 font-mono text-xs font-bold text-blue-600 whitespace-nowrap align-middle">
+                        {row.invoiceNumber}
+                      </td>
+                      <td
+                        className="py-1.5 px-3 text-xs font-bold text-slate-900 max-w-[180px] truncate whitespace-nowrap align-middle"
+                        title={companyLabel(row.surveyCompanyId)}
+                      >
                         {companyLabel(row.surveyCompanyId)}
                       </td>
-                      <td className="py-3 px-2 text-sm max-w-[200px] truncate">
+                      <td
+                        className="py-1.5 px-3 text-xs max-w-[200px] truncate text-slate-700 whitespace-nowrap align-middle"
+                        title={surveyLabel(row.panelSurveyId)}
+                      >
                         {surveyLabel(row.panelSurveyId)}
                       </td>
-                      <td className="py-3 px-2 text-xs text-gray-600">
+                      <td className="py-1.5 px-3 text-xs font-semibold capitalize text-slate-600 whitespace-nowrap align-middle">
                         {row.source === "manual" ? "Manual" : "Auto"}
                       </td>
-                      <td className="py-3 px-2 text-right tabular-nums">
+                      <td className="py-1.5 px-3 text-right tabular-nums text-slate-700 font-mono text-xs whitespace-nowrap align-middle">
                         {formatCurrency(row.subtotalAmount, row.currency || "INR")}
                       </td>
-                      <td className="py-3 px-2 text-right tabular-nums">
+                      <td className="py-1.5 px-3 text-right tabular-nums text-slate-700 font-mono text-xs whitespace-nowrap align-middle">
                         {formatPercent(row.taxPercent)}
                       </td>
-                      <td className="py-3 px-2 text-right font-bold tabular-nums">
+                      <td className="py-1.5 px-3 text-right font-bold tabular-nums text-emerald-700 text-xs whitespace-nowrap align-middle">
                         {formatCurrency(row.totalAmount, row.currency || "INR")}
                       </td>
-                      <td className="py-3 px-2">
+                      <td className="py-1.5 px-3 whitespace-nowrap align-middle">
                         <select
                           value={row.status}
                           disabled={statusMutation.isPending}
@@ -492,7 +500,7 @@ export default function AdminCompanyPaymentsPage() {
                               status: e.target.value as CompanyPaymentStatus,
                             })
                           }
-                          className="h-9 rounded-lg border border-gray-200 px-2 text-xs font-bold bg-white"
+                          className="h-7 rounded-md border border-slate-200 px-2 text-[10px] font-extrabold uppercase tracking-wider bg-white focus:ring-2 focus:ring-blue-500"
                         >
                           {STATUS_OPTIONS.map((s) => (
                             <option key={s} value={s}>
@@ -501,20 +509,22 @@ export default function AdminCompanyPaymentsPage() {
                           ))}
                         </select>
                       </td>
-                      <td className="py-3 pr-2 text-right">
-                        <button
-                          type="button"
-                          disabled={downloadingId === paymentId(row)}
-                          onClick={() => onDownloadInvoice(row)}
-                          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-gray-200 bg-white text-xs font-bold text-gray-900 hover:bg-gray-50 disabled:opacity-50"
-                        >
-                          {downloadingId === paymentId(row) ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Download className="w-3.5 h-3.5" />
-                          )}
-                          PDF
-                        </button>
+                      <td className="py-1.5 px-3 text-right align-middle whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
+                          <button
+                            type="button"
+                            disabled={downloadingId === paymentId(row)}
+                            onClick={() => onDownloadInvoice(row)}
+                            className="inline-flex items-center gap-1 h-7 px-2 rounded-md bg-blue-600 text-white text-[11px] font-bold hover:bg-blue-700 shadow-sm shrink-0 transition-colors disabled:opacity-50"
+                          >
+                            {downloadingId === paymentId(row) ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Download className="w-3 h-3" />
+                            )}
+                            PDF
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

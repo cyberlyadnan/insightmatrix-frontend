@@ -183,7 +183,7 @@ export default function AdminVendorAllocationsPage() {
                   setSurveyId(e.target.value);
                   setPage(1);
                 }}
-                className={`${adminFilterSelectClass} min-w-[180px]`}
+                className={`${adminFilterSelectClass} max-w-[200px] truncate`}
               >
                 <option value="">All surveys</option>
                 {(surveysData?.items ?? []).map((s) => (
@@ -222,116 +222,102 @@ export default function AdminVendorAllocationsPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full min-w-[1100px] text-sm">
-                <thead>
-                  <tr className={adminTableHeadClass}>
-                    <th className="px-4 py-3">Ref</th>
-                    <th className="px-4 py-3">Survey</th>
-                    <th className="px-4 py-3">Vendor</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Progress</th>
-                    <th className="px-4 py-3">CPI</th>
-                    <th className="px-4 py-3">Revenue</th>
-                    <th className="px-4 py-3">Cost</th>
-                    <th className="px-4 py-3">Metrics</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[750px] text-xs text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Ref</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Survey</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Vendor</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Progress</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Revenue</th>
+                    <th className="px-3 py-2 text-right whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {items.map((row) => {
                     const revenue = (row.completedCount ?? 0) * (row.clientCpi ?? 0);
-                    const cost = (row.completedCount ?? 0) * (row.vendorCpi ?? 0);
                     return (
-                      <tr key={row.id} className={adminTableRowClass}>
+                      <tr key={row.id} className="hover:bg-blue-50/40 transition-colors">
                         <td
-                          className="px-4 py-4 font-mono text-xs font-bold"
+                          className="px-3 py-1.5 font-mono text-xs font-bold whitespace-nowrap align-middle"
                           title={row.routingSlug}
                         >
-                          {row.allocationCode}
+                          <Link
+                            href={ROUTES.admin.vendorAllocation(row.id)}
+                            className="text-blue-600 hover:text-blue-700 hover:underline"
+                          >
+                            {row.allocationCode}
+                          </Link>
                         </td>
-                        <td className="px-4 py-4">
-                          <p className="font-semibold text-gray-900 line-clamp-1">
+                        <td className="px-3 py-1.5 max-w-[200px] align-middle">
+                          <p
+                            className="font-bold text-slate-900 truncate text-xs"
+                            title={row.panelSurvey?.surveyName}
+                          >
                             {row.panelSurvey?.surveyName ?? "—"}
                           </p>
-                          <p className="text-xs text-gray-500">{row.panelSurvey?.surveyCode}</p>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            {row.panelSurvey?.surveyCode}
+                          </span>
                         </td>
-                        <td className="px-4 py-4">
-                          <p className="font-semibold">{row.vendor?.companyName ?? "—"}</p>
-                          <p className="text-xs text-gray-500 font-mono">
-                            {row.vendor?.vendorCode}
+                        <td className="px-3 py-1.5 max-w-[160px] align-middle">
+                          <p
+                            className="font-bold text-slate-900 truncate text-xs"
+                            title={row.vendor?.companyName}
+                          >
+                            {row.vendor?.companyName ?? "—"}
                           </p>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            {row.vendor?.vendorCode}
+                          </span>
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                           <AllocationStatusBadge status={row.status} />
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                           <AllocationQuotaBar
                             completed={row.completedCount}
                             allocated={row.allocatedQuota}
                           />
-                          <p className="text-[10px] text-gray-400 mt-1">
-                            {formatNumber(row.liveRemainingQuota)} remaining
-                          </p>
                         </td>
-                        <td className="px-4 py-4 text-xs text-gray-700 whitespace-nowrap">
-                          <p>V {formatCurrency(row.vendorCpi ?? 0)}</p>
-                          <p>C {formatCurrency(row.clientCpi ?? 0)}</p>
-                        </td>
-                        <td className="px-4 py-4 text-sm font-semibold tabular-nums text-emerald-700">
+                        <td className="px-3 py-1.5 text-xs font-bold tabular-nums text-emerald-700 whitespace-nowrap align-middle">
                           {formatCurrency(revenue)}
                         </td>
-                        <td className="px-4 py-4 text-sm font-semibold tabular-nums text-gray-800">
-                          {formatCurrency(cost)}
-                        </td>
-                        <td className="px-4 py-4 text-xs text-gray-600">
-                          <p>
-                            CR {formatPercent(row.conversionRate)} · IR{" "}
-                            {formatPercent(row.incidenceRate)}
-                          </p>
-                          <p>
-                            S {formatNumber(row.startedCount)} · C{" "}
-                            {formatNumber(row.completedCount)} · T{" "}
-                            {formatNumber(row.terminateCount)}
-                          </p>
-                        </td>
-                        <td className="px-4 py-4">
-                          <div className="flex justify-end gap-1">
+                        <td className="px-3 py-1.5 text-right align-middle whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
                             <Link
                               href={ROUTES.admin.vendorAllocation(row.id)}
-                              className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
-                              title="View details"
+                              className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 text-white font-bold text-[11px] hover:bg-blue-700 shadow-sm shrink-0 transition-colors"
+                              title="Open Allocation"
                             >
-                              <Eye className="h-4 w-4" />
+                              <span>Open</span>
+                              <Eye className="h-3 w-3" />
                             </Link>
                             <button
                               type="button"
                               onClick={() => copyRoutingLink(row.routingLink, row.id)}
-                              className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shrink-0 transition-colors"
                               title="Copy vendor routing link"
                               aria-label="Copy vendor routing link"
                             >
                               {copiedAllocationId === row.id ? (
-                                <Check className="h-4 w-4 text-emerald-600" />
+                                <Check className="h-3.5 w-3.5 text-emerald-600" />
                               ) : (
-                                <Copy className="h-4 w-4" />
+                                <Copy className="h-3.5 w-3.5" />
                               )}
                             </button>
                             <a
                               href={row.routingLink}
                               target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2 rounded-lg hover:bg-brand-subtle text-brand-primary"
-                              title="Open routing link"
+                              rel="noreferrer"
+                              className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shrink-0 transition-colors"
+                              title="Test routing link (needs toid)"
                             >
-                              <Link2 className="h-4 w-4" />
+                              <Link2 className="h-3.5 w-3.5" />
                             </a>
                           </div>
-                          {row.updatedAt ? (
-                            <p className="text-[10px] text-gray-400 text-right mt-1">
-                              {format(new Date(row.updatedAt), "MMM d, yyyy")}
-                            </p>
-                          ) : null}
                         </td>
                       </tr>
                     );

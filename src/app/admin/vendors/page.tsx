@@ -38,13 +38,13 @@ const STATUS_OPTIONS: { value: VendorStatus | ""; label: string }[] = [
 
 function StatusBadge({ status }: { status: VendorStatus }) {
   const styles: Record<VendorStatus, string> = {
-    active: "bg-emerald-50 text-emerald-700",
-    paused: "bg-amber-50 text-amber-800",
-    suspended: "bg-rose-50 text-rose-700",
+    active: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    paused: "bg-amber-50 text-amber-700 border-amber-200",
+    suspended: "bg-rose-50 text-rose-700 border-rose-200",
   };
   return (
     <span
-      className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${styles[status]}`}
+      className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${styles[status]}`}
     >
       {status}
     </span>
@@ -163,54 +163,69 @@ export default function AdminVendorsPage() {
           </EmptyState>
         ) : (
           <>
-            <div className="overflow-x-auto -mx-2">
-              <table className="w-full min-w-[720px] text-sm text-left">
-                <thead>
-                  <tr className="border-b border-gray-100 text-left text-[10px] font-black uppercase tracking-widest text-gray-400">
-                    <th className="px-4 py-3">Code</th>
-                    <th className="px-4 py-3">Company</th>
-                    <th className="px-4 py-3">Email</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Completes</th>
-                    <th className="px-4 py-3">Created</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
+            <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+              <table className="w-full min-w-[720px] text-xs text-left text-slate-800">
+                <thead className="bg-[#091428] text-white">
+                  <tr className="text-left text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                    <th className="px-3 py-2 whitespace-nowrap">Code</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Company</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Email</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Completes</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Created</th>
+                    <th className="px-3 py-2 text-right whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {items.map((v) => (
-                    <tr key={v.id} className="border-b border-gray-50 hover:bg-gray-50/80">
-                      <td className="px-4 py-3 font-mono text-xs font-bold text-brand-primary">
-                        {v.vendorCode}
+                    <tr key={v.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
+                        <Link
+                          href={ROUTES.admin.vendor(v.id)}
+                          className="font-mono text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                        >
+                          {v.vendorCode}
+                        </Link>
                       </td>
-                      <td className="px-4 py-3 font-semibold text-gray-900">{v.companyName}</td>
-                      <td className="px-4 py-3 text-gray-600">{v.email}</td>
-                      <td className="px-4 py-3">
+                      <td
+                        className="px-3 py-1.5 font-bold text-slate-900 whitespace-nowrap align-middle max-w-[200px] truncate"
+                        title={v.companyName}
+                      >
+                        {v.companyName}
+                      </td>
+                      <td className="px-3 py-1.5 text-slate-600 text-xs whitespace-nowrap align-middle">
+                        {v.email}
+                      </td>
+                      <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                         <StatusBadge status={v.status} />
                       </td>
-                      <td className="px-4 py-3 tabular-nums">{formatNumber(v.totalCompletes)}</td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-3 py-1.5 font-mono text-xs tabular-nums font-semibold text-slate-900 whitespace-nowrap align-middle">
+                        {formatNumber(v.totalCompletes)}
+                      </td>
+                      <td className="px-3 py-1.5 text-xs text-slate-500 whitespace-nowrap align-middle">
                         {v.createdAt ? format(new Date(v.createdAt), "MMM d, yyyy") : "—"}
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-1">
+                      <td className="px-3 py-1.5 text-right align-middle whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
                           <Link
                             href={ROUTES.admin.vendor(v.id)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50"
-                            title="View"
+                            className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-blue-600 text-white font-bold text-[11px] hover:bg-blue-700 shadow-sm shrink-0 transition-colors"
+                            title="Open Vendor"
                           >
-                            <Eye className="w-4 h-4" />
+                            <span>Open</span>
+                            <Eye className="w-3 h-3" />
                           </Link>
                           <Link
                             href={ROUTES.admin.vendorEdit(v.id)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 shrink-0 transition-colors"
                             title="Edit"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-3.5 h-3.5" />
                           </Link>
                           {v.status !== "active" ? (
                             <button
                               type="button"
-                              className="h-8 px-2.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50"
+                              className="h-7 px-2 rounded-md border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px] font-bold hover:bg-emerald-100 shrink-0 transition-colors"
                               onClick={() => statusMutation.mutate({ id: v.id, status: "active" })}
                             >
                               Activate
@@ -218,7 +233,7 @@ export default function AdminVendorsPage() {
                           ) : (
                             <button
                               type="button"
-                              className="h-8 px-2.5 rounded-lg border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50"
+                              className="h-7 px-2 rounded-md border border-amber-200 bg-amber-50 text-amber-700 text-[11px] font-bold hover:bg-amber-100 shrink-0 transition-colors"
                               onClick={() => statusMutation.mutate({ id: v.id, status: "paused" })}
                             >
                               Pause
@@ -226,11 +241,11 @@ export default function AdminVendorsPage() {
                           )}
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-100 text-rose-600 hover:bg-rose-50"
+                            className="h-7 w-7 inline-flex items-center justify-center rounded-md border border-rose-200 text-rose-600 hover:bg-rose-50 shrink-0 transition-colors"
                             onClick={() => setDeleteTarget(v)}
                             title="Delete"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </td>

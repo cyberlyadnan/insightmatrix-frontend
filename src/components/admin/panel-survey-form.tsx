@@ -461,9 +461,7 @@ export function PanelSurveyForm({
                         />
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-black text-gray-900">
-                              🌐 Public Survey
-                            </span>
+                            <span className="text-sm font-black text-gray-900">Public Survey</span>
                             <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-full bg-emerald-100 text-emerald-800">
                               User Panel
                             </span>
@@ -493,7 +491,7 @@ export function PanelSurveyForm({
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-black text-gray-900">
-                              🔒 Internal / Private
+                              Internal / Private
                             </span>
                             <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-wider rounded-full bg-violet-100 text-violet-800">
                               Restricted

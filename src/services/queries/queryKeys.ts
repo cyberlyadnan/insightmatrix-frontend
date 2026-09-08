@@ -25,6 +25,7 @@ export const queryKeys = {
   admin: {
     overview: ["admin", "overview"] as const,
     deletionRequests: ["admin", "deletion-requests"] as const,
+    emailStatus: ["admin", "email-status"] as const,
   },
   prescreens: {
     all: ["prescreens"] as const,

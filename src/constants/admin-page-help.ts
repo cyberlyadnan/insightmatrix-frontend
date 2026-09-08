@@ -58,6 +58,13 @@ export const ADMIN_PAGE_HELP = {
     actions: "Review block rates, bot signals, and recent security events.",
     tips: "Investigate spikes in block rate before adjusting allowlists or routing rules.",
   },
+  emailDelivery: {
+    title: "Email delivery",
+    about:
+      "Check SMTP connectivity and send a test message using the same mailer as password reset.",
+    actions: "Recheck status, send a test email, and confirm App Password credentials.",
+    tips: "Gmail rejects normal passwords — use a Google App Password, then restart the API after updating .env.",
+  },
   companyPayments: {
     title: "Company Payments",
     about: "Track supplier billing invoices generated from routing surveys.",

@@ -29,6 +29,7 @@ import {
   Users,
   Shield,
   Layers,
+  Mail,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -89,6 +90,7 @@ const sidebarSections: SidebarSection[] = [
       { name: "Company Payments", icon: Receipt, href: "/admin/company-payments" },
       { name: "Queries", icon: MessageSquare, href: "/admin/queries" },
       { name: "Security Logs", icon: Shield, href: "/admin/security-logs" },
+      { name: "Email Delivery", icon: Mail, href: "/admin/email" },
       { name: "Settings", icon: Settings, href: "/admin/settings" },
     ],
   },

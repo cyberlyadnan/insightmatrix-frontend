@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import {
   AlertCircle,
   Building2,
   Check,
   CheckSquare,
   ChevronDown,
-  ExternalLink,
   Search,
   SlidersHorizontal,
   X,
@@ -68,7 +66,6 @@ export function SurveySearchSelect({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -185,16 +182,6 @@ export function SurveySearchSelect({
     e?.stopPropagation();
     if (locked || disabled) return;
     onChange([], []);
-  };
-
-  // Remove individual selected survey
-  const handleRemoveSurvey = (idToRemove: string) => {
-    if (locked || disabled) return;
-    const next = values.filter((id) => id !== idToRemove);
-    onChange(
-      next,
-      surveys.filter((s) => next.includes(s.id))
-    );
   };
 
   return (
@@ -498,96 +485,6 @@ export function SurveySearchSelect({
               Done Selecting
             </button>
           </div>
-        </div>
-      )}
-
-      {/* Selected Surveys: Collapsible by Default, Fixed Height with Internal Scroll */}
-      {selectedSurveys.length > 0 && (
-        <div className="mt-2 rounded-xl border border-indigo-100 bg-white shadow-2xs overflow-hidden transition-all">
-          {/* Collapsible Bar Header */}
-          <div className="px-3 py-2 bg-indigo-50/40 border-b border-indigo-50 flex items-center justify-between gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => setIsExpanded((prev) => !prev)}
-              className="flex items-center gap-2 font-semibold text-indigo-950 hover:text-indigo-700 transition"
-            >
-              <span className="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-600 text-white text-[11px] font-bold">
-                {selectedSurveys.length}
-              </span>
-              <span>
-                {selectedSurveys.length} {selectedSurveys.length === 1 ? "survey" : "surveys"}{" "}
-                selected for allocation
-              </span>
-              <span className="text-indigo-500 font-normal hover:underline ml-0.5">
-                {isExpanded ? "(click to collapse)" : "(click to view / edit list)"}
-              </span>
-              <ChevronDown
-                className={cn(
-                  "h-3.5 w-3.5 text-indigo-500 transition-transform duration-200",
-                  isExpanded && "rotate-180"
-                )}
-              />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleClearAll()}
-              className="text-[11px] font-semibold text-rose-600 hover:text-rose-800 hover:underline shrink-0"
-            >
-              Remove all
-            </button>
-          </div>
-
-          {/* Expandable Body: Fixed Height with Internal Scroll */}
-          {isExpanded && (
-            <div className="p-2 space-y-1">
-              <div className="divide-y divide-gray-100 border border-gray-100 rounded-lg max-h-40 overflow-y-auto bg-gray-50/30">
-                {selectedSurveys.map((survey) => (
-                  <div
-                    key={survey.id}
-                    className="flex items-center justify-between gap-2 px-2.5 py-1.5 text-xs hover:bg-white transition"
-                  >
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-200 shrink-0">
-                        {survey.surveyCode}
-                      </span>
-                      <span className="font-medium text-gray-800 truncate">
-                        {survey.surveyName}
-                      </span>
-                      <span className="text-gray-300 hidden sm:inline text-[11px]">·</span>
-                      <span className="text-gray-500 hidden sm:inline truncate text-[11px]">
-                        {survey.provider?.companyName || "Internal"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-emerald-700 font-semibold text-[11px] bg-emerald-50 px-1.5 py-0.2 rounded">
-                        {survey.remainingQuota ?? 0} rem
-                      </span>
-                      <Link
-                        href={`/admin/surveys/${survey.id}`}
-                        target="_blank"
-                        className="text-gray-400 hover:text-indigo-600 transition p-0.5"
-                        title="View Survey"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </Link>
-                      {!locked && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSurvey(survey.id)}
-                          className="text-gray-400 hover:text-rose-600 p-0.5 rounded transition"
-                          title="Remove survey"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

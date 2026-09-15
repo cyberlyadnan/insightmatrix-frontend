@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import {
   AlertCircle,
   Building2,
   Check,
   ChevronDown,
-  ExternalLink,
   Mail,
   Search,
   SlidersHorizontal,
@@ -442,69 +440,6 @@ export function VendorSearchSelect({
               Showing {filteredVendors.length} of {vendors.length} vendors
             </span>
             <span className="text-gray-400 text-[11px]">Click any vendor to select</span>
-          </div>
-        </div>
-      )}
-
-      {/* Selected Vendor Detail Card Preview */}
-      {selectedVendor && (
-        <div className="mt-3 rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50/40 via-white to-slate-50/40 p-4 shadow-xs space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-teal-600 mb-0.5">
-                Selected Vendor Partner
-              </p>
-              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                {selectedVendor.companyName}
-                <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200 shadow-2xs">
-                  {selectedVendor.vendorCode}
-                </span>
-              </h3>
-            </div>
-            <Link
-              href={`/admin/vendors/${selectedVendor.id}`}
-              target="_blank"
-              className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 hover:text-teal-900 bg-white px-2.5 py-1 rounded-lg border border-teal-200/70 shadow-2xs hover:shadow-xs transition"
-            >
-              <span>View Vendor</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 text-xs">
-            <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-gray-400 block">
-                Contact Person
-              </span>
-              <span className="font-semibold text-gray-800 mt-0.5 block truncate">
-                {selectedVendor.contactPerson || "Not specified"}
-              </span>
-            </div>
-
-            <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-gray-400 block">Email</span>
-              <span className="font-medium text-gray-700 mt-0.5 block truncate">
-                {selectedVendor.email || "—"}
-              </span>
-            </div>
-
-            <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-gray-400 block">
-                Total Completes
-              </span>
-              <span className="font-bold text-gray-900 mt-0.5 block text-sm">
-                {(selectedVendor.totalCompletes ?? 0).toLocaleString()}
-              </span>
-            </div>
-
-            <div className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-2xs">
-              <span className="text-[10px] uppercase font-bold text-gray-400 block">
-                Account Status
-              </span>
-              <span className="font-semibold text-gray-800 mt-0.5 block capitalize">
-                {selectedVendor.status || "Active"}
-              </span>
-            </div>
           </div>
         </div>
       )}

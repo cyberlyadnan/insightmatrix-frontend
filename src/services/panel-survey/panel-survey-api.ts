@@ -26,6 +26,7 @@ export type PanelSurveyQuotaGroup = {
 export type PanelSurvey = {
   id: string;
   surveyName: string;
+  publicSurveyName?: string;
   surveyCode: string;
   externalSurveyId: string;
   providerId: string;
@@ -73,6 +74,8 @@ export type PanelSurvey = {
 export type PanelSurveyPublic = {
   id: string;
   surveyName: string;
+  publicSurveyName?: string;
+  incidenceRate: number | null;
   estimatedLOI: number | null;
   payoutToUser: number | null;
   targetCountries: string[];
@@ -122,6 +125,7 @@ export type PanelSurveyAnalytics = {
 
 export type PanelSurveyPayload = {
   surveyName: string;
+  publicSurveyName?: string;
   surveyCode: string;
   externalSurveyId?: string;
   providerId: string;

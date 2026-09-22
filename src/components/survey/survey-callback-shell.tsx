@@ -50,7 +50,7 @@ const INSIGHT_HIGHLIGHTS = [
   {
     icon: ShieldCheck,
     title: "Secure routing",
-    description: "Encrypted supplier callbacks keep every session traceable and compliant.",
+    description: "Encrypted survey verification keeps every session traceable and compliant.",
   },
 ] as const;
 
@@ -183,7 +183,7 @@ export function SurveyCallbackShell({
             <div className="flex min-w-0 flex-col gap-2">
               <ImxLogo href="/" size="lg" surface="light" priority />
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Panel routing · secure supplier callback
+                Panel routing · secure survey verification
               </p>
             </div>
             {badge ? (
@@ -203,7 +203,7 @@ export function SurveyCallbackShell({
 
         <footer className="border-t border-border/80 bg-white/60 px-4 py-5 text-center backdrop-blur-sm sm:px-8">
           <p className="text-[11px] font-medium leading-relaxed text-muted-foreground sm:text-xs">
-            © {new Date().getFullYear()} InsightMatrix Global · Secure supplier callback endpoint
+            © {new Date().getFullYear()} InsightMatrix Global · Secure verification endpoint
           </p>
         </footer>
       </div>

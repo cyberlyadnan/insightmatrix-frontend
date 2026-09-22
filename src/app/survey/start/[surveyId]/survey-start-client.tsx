@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Clock, Gift, Loader2, MapPin, Rocket } from "lucide-react";
+import { Building2, Clock, Gift, Loader2, MapPin, Percent, Rocket } from "lucide-react";
 
 import { PANEL_SURVEY_STATUS_LABELS } from "@/constants/panel-survey";
 import {
@@ -342,16 +342,16 @@ export function SurveyStartClient() {
           {PANEL_SURVEY_STATUS_LABELS[data.surveyStatus]}
         </div>
         <h1 className="text-2xl md:text-3xl font-black tracking-tight leading-tight mb-6">
-          {data.surveyName}
+          {data.publicSurveyName || data.surveyName}
         </h1>
 
         {attemptToken ? (
           <p className="text-xs text-gray-400 mb-6 font-mono break-all">
-            Session ready. Supplier redirect will include{" "}
+            Session ready. Tracking parameter{" "}
             <span className="text-brand-primary font-bold">
               {data.trackingParameterName ?? "toid"}
             </span>
-            <span className="text-gray-500">=…</span>
+            <span className="text-gray-500">=verified</span>
           </p>
         ) : null}
 
@@ -377,6 +377,17 @@ export function SurveyStartClient() {
             </span>
           </li>
           <li className="flex items-start gap-3">
+            <Percent className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
+            <span>
+              <span className="font-black text-white block text-xs uppercase tracking-widest mb-0.5">
+                Incidence Rate (IR)
+              </span>
+              {data.incidenceRate != null && !Number.isNaN(data.incidenceRate)
+                ? `${data.incidenceRate}%`
+                : "General population"}
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
             <span>
               <span className="font-black text-white block text-xs uppercase tracking-widest mb-0.5">
@@ -389,9 +400,9 @@ export function SurveyStartClient() {
             <Building2 className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
             <span>
               <span className="font-black text-white block text-xs uppercase tracking-widest mb-0.5">
-                Provider
+                Survey Provider
               </span>
-              {data.providerName ?? "Partner"} {data.providerCode ? `(${data.providerCode})` : ""}
+              InsightMatrix
             </span>
           </li>
         </ul>
@@ -408,8 +419,8 @@ export function SurveyStartClient() {
         </button>
 
         <p className="text-[11px] text-gray-500 text-center mt-6 leading-relaxed">
-          You will be sent to the partner survey host. Your session is tracked automatically for
-          completion matching when integrations are enabled.
+          You will be connected to your InsightMatrix research study session. Your session is
+          tracked automatically for completion matching when integrations are enabled.
         </p>
       </div>
     </div>

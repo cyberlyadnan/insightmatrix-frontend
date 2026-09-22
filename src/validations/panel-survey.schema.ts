@@ -38,7 +38,8 @@ const quotaRowSchema = z.object({
 });
 
 const panelSurveyFormSchemaBase = z.object({
-  surveyName: z.string().min(2).max(300),
+  surveyName: z.string().trim().min(2, "Name required").max(300),
+  publicSurveyName: z.string().max(300),
   surveyCode: z
     .string()
     .min(2)
@@ -119,6 +120,7 @@ function isoToDatetimeLocal(iso: string): string {
 
 export const emptyPanelSurveyFormValues: PanelSurveyFormValues = {
   surveyName: "",
+  publicSurveyName: "",
   surveyCode: "",
   externalSurveyId: "",
   providerId: "",
@@ -156,6 +158,7 @@ export const emptyPanelSurveyFormValues: PanelSurveyFormValues = {
 export function panelSurveyToFormValues(s: PanelSurvey): PanelSurveyFormValues {
   return {
     surveyName: s.surveyName,
+    publicSurveyName: s.publicSurveyName ?? "",
     surveyCode: s.surveyCode,
     externalSurveyId: s.externalSurveyId ?? "",
     providerId: s.providerId,
@@ -249,6 +252,7 @@ export function panelSurveyFormToPayload(values: PanelSurveyFormValues) {
 
   return {
     surveyName: values.surveyName.trim(),
+    publicSurveyName: values.publicSurveyName.trim() || undefined,
     surveyCode: values.surveyCode.trim().toUpperCase(),
     externalSurveyId: values.externalSurveyId.trim() || undefined,
     providerId: values.providerId,

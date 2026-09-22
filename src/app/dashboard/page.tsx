@@ -321,11 +321,10 @@ export default function DashboardHome() {
                             <Clock size={10} />{" "}
                             {survey.estimatedLOI ? `${survey.estimatedLOI}m` : "10m"}
                           </span>
-                          {survey.provider?.companyName && (
-                            <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1 truncate">
-                              <Building2 size={10} /> {survey.provider.companyName}
-                            </span>
-                          )}
+                          <span className="text-[10px] font-bold text-gray-400 flex items-center gap-1 truncate">
+                            <Building2 size={10} />{" "}
+                            {survey.provider?.companyName || "InsightMatrix"}
+                          </span>
                         </div>
                         <h3 className="text-xs sm:text-sm font-black text-gray-900 group-hover:text-brand-primary transition-colors truncate max-w-md">
                           {survey.surveyName}

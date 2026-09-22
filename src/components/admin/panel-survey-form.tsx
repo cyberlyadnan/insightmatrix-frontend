@@ -378,15 +378,40 @@ export function PanelSurveyForm({
                 name="surveyName"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel className="font-bold text-gray-700">Survey name</FormLabel>
+                    <FormLabel className="font-bold text-gray-700">Internal Survey Name</FormLabel>
                     <FormControl>
                       <Input
                         className="rounded-xl h-11 border-gray-200"
-                        placeholder="Study title"
+                        placeholder="Study title (internal admin reference)"
                         {...field}
                       />
                     </FormControl>
-                    <p className="text-xs text-gray-500">Must be unique across all surveys.</p>
+                    <p className="text-xs text-gray-500">
+                      Internal name for management and invoicing. Must be unique.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="publicSurveyName"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel className="font-bold text-gray-700">
+                      Public Survey Name (Participant & Member Face)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="rounded-xl h-11 border-gray-200"
+                        placeholder="e.g. InsightMatrix Survey #CODE (automatically generated if empty)"
+                        {...field}
+                      />
+                    </FormControl>
+                    <p className="text-xs text-gray-500">
+                      Public name visible to respondents on the landing page and member portal.
+                      Defaults automatically to &ldquo;InsightMatrix Survey #[CODE]&rdquo;.
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}

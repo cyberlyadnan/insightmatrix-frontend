@@ -17,6 +17,7 @@ import {
   Search,
   RefreshCw,
   Globe,
+  Percent,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -250,10 +251,16 @@ export default function PanelSurveys() {
                           : "Time varies"}
                       </span>
                     </div>
-                    {survey.provider?.companyName && (
+                    <div className="flex items-center gap-1.5 text-slate-600 truncate">
+                      <Building2 size={12} className="text-brand-primary shrink-0" />
+                      <span className="text-[11px] truncate">
+                        {survey.provider?.companyName || "InsightMatrix"}
+                      </span>
+                    </div>
+                    {survey.incidenceRate != null && !Number.isNaN(survey.incidenceRate) && (
                       <div className="flex items-center gap-1.5 text-slate-600 truncate">
-                        <Building2 size={12} className="text-brand-primary shrink-0" />
-                        <span className="text-[11px] truncate">{survey.provider.companyName}</span>
+                        <Percent size={12} className="text-brand-primary shrink-0" />
+                        <span className="text-[11px] truncate">IR: {survey.incidenceRate}%</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1.5 text-slate-400 text-[10px]">

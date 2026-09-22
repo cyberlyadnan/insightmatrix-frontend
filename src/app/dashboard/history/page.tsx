@@ -138,12 +138,10 @@ function AttemptRow({ item }: { item: MemberSurveyHistoryItem }) {
           </h3>
 
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-500 font-medium">
-            {item.providerName ? (
-              <span className="inline-flex items-center gap-1">
-                <Building2 size={12} className="text-gray-400" />
-                {item.providerName}
-              </span>
-            ) : null}
+            <span className="inline-flex items-center gap-1">
+              <Building2 size={12} className="text-gray-400" />
+              {item.providerName || "InsightMatrix"}
+            </span>
             {item.estimatedLOI != null ? (
               <span className="inline-flex items-center gap-1">
                 <Clock size={12} className="text-gray-400" />~{item.estimatedLOI} min

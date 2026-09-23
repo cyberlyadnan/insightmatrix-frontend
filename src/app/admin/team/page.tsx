@@ -29,7 +29,7 @@ export default function AdminTeamPage() {
   const qc = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearch = useDeferredValue(searchQuery);
-  const [roleFilter, setRoleFilter] = useState<"" | "admin" | "user" | "survey_manager">("admin");
+  const [roleFilter, setRoleFilter] = useState<"" | "admin" | "user">("admin");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AdminUserListItem | null>(null);
 
@@ -101,13 +101,10 @@ export default function AdminTeamPage() {
 
           <select
             value={roleFilter}
-            onChange={(e) =>
-              setRoleFilter(e.target.value as "" | "admin" | "user" | "survey_manager")
-            }
+            onChange={(e) => setRoleFilter(e.target.value as "" | "admin" | "user")}
             className="px-4 py-3 bg-white border border-gray-200 text-gray-700 font-bold text-xs rounded-2xl focus:outline-none focus:border-brand-primary"
           >
             <option value="admin">Administrators</option>
-            <option value="survey_manager">Survey Managers</option>
             <option value="user">Panel Members</option>
             <option value="">All Account Roles</option>
           </select>

@@ -231,7 +231,6 @@ export function CreateUserModal({
                 >
                   <option value="user">Panel Member (User)</option>
                   <option value="admin">Administrator (Admin)</option>
-                  <option value="survey_manager">Survey Manager</option>
                 </select>
               </div>
 

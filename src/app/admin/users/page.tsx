@@ -161,7 +161,6 @@ export default function AdminUsersPage() {
               <option value="">All roles</option>
               <option value="user">Panel members</option>
               <option value="admin">Admins</option>
-              <option value="survey_manager">Survey managers</option>
             </select>
             <select
               className={adminFilterSelectClass}

@@ -101,6 +101,20 @@ export async function getUser(id: string): Promise<AdminUserDetail> {
   return data.data;
 }
 
+export type CreateUserPayload = {
+  fullName: string;
+  email: string;
+  password: string;
+  role?: UserRole;
+  status?: string;
+  isVerified?: boolean;
+};
+
+export async function createUser(payload: CreateUserPayload): Promise<AuthUser> {
+  const { data } = await apiClient.post<ApiEnvelope<AuthUser>>("/users", payload);
+  return data.data;
+}
+
 export async function updateUser(
   id: string,
   payload: { fullName?: string; role?: UserRole; status?: string }

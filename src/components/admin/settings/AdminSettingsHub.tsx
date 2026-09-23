@@ -29,12 +29,18 @@ import {
   LifeBuoy,
   Link2,
   Terminal,
+  Lock,
+  KeyRound,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   getSiteSettings,
   updateSiteSettings,
   type SiteSettingsRecord,
 } from "@/services/services-cms/services-cms-api";
+import { changePasswordRequest } from "@/services/auth";
+import { parseApiError } from "@/services/api/errors";
 import { queryKeys } from "@/services/queries/queryKeys";
 import { SURVEY_CALLBACK_CONFIG } from "@/constants/survey-callback";
 import {
@@ -96,6 +102,138 @@ function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) 
         </>
       )}
     </button>
+  );
+}
+
+function AdminPasswordFormCard() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentPassword || !newPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("New password must be at least 8 characters");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await changePasswordRequest({ currentPassword, newPassword });
+      toast.success("Password updated successfully!", {
+        description: "Your admin account credentials have been updated.",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      const errorMsg = parseApiError(err);
+      toast.error("Failed to change password", {
+        description: errorMsg,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-xs space-y-4 md:col-span-2">
+      <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 border border-amber-100 text-amber-600">
+            <KeyRound className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-gray-900">Change Admin Account Password</h4>
+            <p className="text-xs text-gray-500">
+              Update your personal administrator login credentials
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-3 pt-2">
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-gray-700">Current Password</label>
+          <div className="relative">
+            <input
+              type={showCurrent ? "text" : "password"}
+              required
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setShowCurrent(!showCurrent)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showCurrent ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-gray-700">New Password</label>
+          <div className="relative">
+            <input
+              type={showNew ? "text" : "password"}
+              required
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="At least 8 characters"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setShowNew(!showNew)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showNew ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-semibold text-gray-700">Confirm New Password</label>
+          <input
+            type={showNew ? "text" : "password"}
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Re-enter new password"
+            className="w-full px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+          />
+        </div>
+
+        <div className="md:col-span-3 flex justify-end pt-2">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-white text-xs font-bold transition-all shadow-sm active:scale-95 disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Lock className="w-3.5 h-3.5" />
+            )}
+            <span>Update Password</span>
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -1516,6 +1654,9 @@ function SettingsFormView({
             transition={{ duration: 0.2 }}
             className="grid gap-6 md:grid-cols-2"
           >
+            {/* Change Admin Password Card */}
+            <AdminPasswordFormCard />
+
             {/* Notifications Policy */}
             <div className="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-xs space-y-4 flex flex-col justify-between">
               <div className="space-y-3">

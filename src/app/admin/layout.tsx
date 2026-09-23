@@ -78,6 +78,7 @@ const sidebarSections: SidebarSection[] = [
     title: "Panel & Data",
     items: [
       { name: "Panel Users", icon: User, href: "/admin/users" },
+      { name: "Team & Admins", icon: Users, href: "/admin/team" },
       { name: "Survey Respondents", icon: Users, href: "/admin/survey-respondents" },
       { name: "Respondent Analytics", icon: Activity, href: "/admin/respondent-analytics" },
       { name: "Export Center", icon: Share2, href: "/admin/respondent-exports" },

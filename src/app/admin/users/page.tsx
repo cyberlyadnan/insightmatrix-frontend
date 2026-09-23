@@ -4,11 +4,12 @@ import { useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Eye, Trash2, UserRound } from "lucide-react";
+import { Eye, Trash2, UserPlus, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
+import { CreateUserModal } from "@/components/admin/CreateUserModal";
 import {
   AdminPagination,
   AdminTableSkeleton,
@@ -67,6 +68,7 @@ export default function AdminUsersPage() {
   const [prescreen, setPrescreen] = useState<"" | "complete" | "incomplete">("");
   const [verified, setVerified] = useState<"" | "true" | "false">("");
   const [deleteTarget, setDeleteTarget] = useState<AdminUserListItem | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
@@ -121,11 +123,21 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-8 text-gray-900">
-      <PageHeader
-        title="Panel Users"
-        description="Registered accounts with profile status and demographic prescreen progress."
-        help={ADMIN_PAGE_HELP.users}
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PageHeader
+          title="Panel Users"
+          description="Registered accounts with profile status and demographic prescreen progress."
+          help={ADMIN_PAGE_HELP.users}
+        />
+        <button
+          type="button"
+          onClick={() => setIsCreateModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gray-900 hover:bg-brand-primary text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-md transition-all active:scale-95 shrink-0"
+        >
+          <UserPlus size={16} />
+          <span>Add User / Member</span>
+        </button>
+      </div>
 
       <AdminTableToolbar
         search={search}
@@ -320,6 +332,12 @@ export default function AdminUsersPage() {
         onConfirm={() => {
           if (deleteTarget) deleteMutation.mutate(deleteTarget.id);
         }}
+      />
+
+      <CreateUserModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        defaultRole="user"
       />
     </div>
   );

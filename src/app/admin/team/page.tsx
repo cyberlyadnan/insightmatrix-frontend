@@ -14,11 +14,13 @@ import {
   RefreshCw,
   AlertCircle,
   UserRound,
+  KeyRound,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
 import { CreateUserModal } from "@/components/admin/CreateUserModal";
+import { ChangePasswordModal } from "@/components/admin/ChangePasswordModal";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
@@ -31,6 +33,7 @@ export default function AdminTeamPage() {
   const deferredSearch = useDeferredValue(searchQuery);
   const [roleFilter, setRoleFilter] = useState<"" | "admin" | "user">("admin");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AdminUserListItem | null>(null);
 
   const { data, isLoading } = useQuery({
@@ -111,6 +114,15 @@ export default function AdminTeamPage() {
 
           <button
             type="button"
+            onClick={() => setIsPasswordModalOpen(true)}
+            className="px-4 py-3 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs rounded-2xl border border-amber-200/80 transition-all flex items-center justify-center gap-2 whitespace-nowrap active:scale-95"
+            title="Change Admin Password"
+          >
+            <KeyRound size={16} /> Change Password
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsCreateModalOpen(true)}
             className="px-6 py-3 bg-gray-900 hover:bg-brand-primary text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center justify-center gap-2 whitespace-nowrap shadow-xl shadow-gray-200/50 active:scale-95"
           >
@@ -182,14 +194,24 @@ export default function AdminTeamPage() {
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setDeleteTarget(member)}
-                    className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                    title="Delete team member"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsPasswordModalOpen(true)}
+                      className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors"
+                      title="Change Password"
+                    >
+                      <KeyRound size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(member)}
+                      className="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                      title="Delete team member"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Email & Status */}
@@ -243,6 +265,11 @@ export default function AdminTeamPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         defaultRole="admin"
+      />
+
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
       />
 
       <ConfirmDialog

@@ -60,7 +60,8 @@ export default function ResearchProcessSection() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-white/5 flex items-center gap-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Stage {idx + 1} of 5
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-primary" /> Stage {idx + 1} of
+                  5
                 </div>
               </div>
             );

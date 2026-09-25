@@ -76,7 +76,7 @@ export default function QualitySection() {
         {/* Quality Guarantee Banner */}
         <div className="mt-20 p-8 sm:p-10 rounded-[2.5rem] bg-gradient-to-r from-brand-dark via-brand-accent1 to-brand-dark text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-brand-dark/20">
           <div className="flex items-center gap-5 text-center md:text-left">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/10">
+            <div className="w-16 h-16 rounded-2xl bg-brand-primary/20 border border-brand-primary/30 text-brand-light flex items-center justify-center shrink-0 shadow-lg shadow-brand-primary/10">
               <ShieldCheck className="w-8 h-8" />
             </div>
             <div>
@@ -89,7 +89,7 @@ export default function QualitySection() {
             </div>
           </div>
           <div className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/10 text-xs font-black uppercase tracking-wider text-white border border-white/20 backdrop-blur-md">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> ISO Quality Aligned
+            <CheckCircle2 className="w-4 h-4 text-brand-light" /> ISO Quality Aligned
           </div>
         </div>
       </div>

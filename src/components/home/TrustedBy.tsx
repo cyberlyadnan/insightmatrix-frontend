@@ -86,7 +86,7 @@ function Card({
           <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
             <div className="flex gap-1">
               {[...Array(rating || 5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-green-400 text-green-400" />
+                <Star key={i} className="w-3.5 h-3.5 fill-brand-primary text-brand-primary" />
               ))}
             </div>
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -100,17 +100,17 @@ function Card({
         <>
           <div className="mb-8 p-3 rounded-2xl bg-gray-50 inline-block">
             <span className="text-xl font-black tracking-tighter flex items-center gap-2">
-              <span className="w-8 h-8 rounded-lg bg-red-600 flex-shrink-0" />
+              <span className="w-8 h-8 rounded-lg bg-brand-primary flex-shrink-0" />
               <span className="text-gray-900">{logoText}</span>
             </span>
           </div>
           <h4 className="text-xl font-extrabold text-gray-900 mb-4 leading-tight">{title}</h4>
           <p className="text-gray-500 text-sm leading-relaxed mb-8">{content}</p>
           <div className="mt-auto flex items-center justify-between">
-            <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest px-3 py-1 bg-blue-50 rounded-full">
+            <span className="text-[10px] font-bold text-brand-primary uppercase tracking-widest px-3 py-1 bg-brand-subtle rounded-full">
               Partnership
             </span>
-            <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-blue-500 group-hover:border-blue-500 group-hover:text-white transition-all">
+            <div className="w-8 h-8 rounded-full border border-gray-100 flex items-center justify-center group-hover:bg-brand-primary group-hover:border-brand-primary group-hover:text-white transition-all">
               <ChevronRight className="w-4 h-4" />
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function TrustedBy() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-6">
-            Trusted by the world
+            Trusted by global leaders
           </h2>
           <p className="text-xl text-gray-500 leading-relaxed font-medium">
             InsightMatrix solutions help the world{"'"}s most recognized brands, media owners and
@@ -142,7 +142,7 @@ export default function TrustedBy() {
           <Card
             type="case-study"
             logoText="HAVAS"
-            logoColor="text-red-600"
+            logoColor="text-brand-primary"
             content="InsightMatrix has a global reach and connected data capabilities which has enabled us to integrate their data at a respondent level into our platform."
             author="Dan Hagen"
             authorTitle="Global Chief Data & Technology Officer, Havas Media Network"
@@ -172,7 +172,7 @@ export default function TrustedBy() {
           <Card
             type="logo"
             logoText="TikTok"
-            logoColor="text-black"
+            logoColor="text-brand-dark"
             subtitle="Engaging Young Audiences"
             className="bg-white"
           />
@@ -181,7 +181,7 @@ export default function TrustedBy() {
           <Card
             type="case-study"
             logoText="Coca-Cola"
-            logoColor="text-red-700"
+            logoColor="text-brand-primary"
             content="The real-time tracking of consumer sentiment allows us to adjust our marketing strategies in days, not months. The depth of insight is unparalleled."
             author="Sarah Chen"
             authorTitle="VP of Global Insights, Coca-Cola"

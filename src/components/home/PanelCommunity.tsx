@@ -113,7 +113,7 @@ export default function PanelCommunity() {
                   <span className="text-white text-xs font-semibold">Excellent</span>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-green-400 text-green-400" />
+                      <Star key={i} className="w-4 h-4 fill-brand-light text-brand-light" />
                     ))}
                   </div>
                   <span className="text-gray-500 text-xs">100k+ reviews on Trustpilot</span>
@@ -162,11 +162,13 @@ export default function PanelCommunity() {
                       <div className="grid grid-cols-2 gap-2.5">
                         <div className="bg-white rounded-2xl p-3 shadow-sm">
                           <div className="flex items-center gap-1 mb-1">
-                            <TrendingUp className="w-3 h-3 text-green-500" />
+                            <TrendingUp className="w-3 h-3 text-brand-primary" />
                             <p className="text-[9px] text-gray-400 font-semibold">Points Earned</p>
                           </div>
                           <p className="text-lg font-extrabold text-gray-900 leading-none">1,240</p>
-                          <p className="text-[9px] text-green-500 font-bold mt-1">+120 this week</p>
+                          <p className="text-[9px] text-brand-primary font-bold mt-1">
+                            +120 this week
+                          </p>
                         </div>
                         <div className="bg-white rounded-2xl p-3 shadow-sm">
                           <div className="flex items-center gap-1 mb-1">

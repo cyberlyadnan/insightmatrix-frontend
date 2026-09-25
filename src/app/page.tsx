@@ -2,11 +2,13 @@ import { Metadata } from "next";
 import Hero from "@/components/hero/Hero";
 import TrendingInsightsSection from "@/components/home/TrendingInsightsSection";
 import TrustSection from "@/components/home/TrustSection";
+import TrustedBy from "@/components/home/TrustedBy";
 import WhyInsightMatrix from "@/components/home/WhyInsightMatrix";
 import OurServicesSection from "@/components/home/OurServicesSection";
 import ResearchProcessSection from "@/components/home/ResearchProcessSection";
 import IndustriesSection from "@/components/home/IndustriesSection";
 import GlobalCoverageSection from "@/components/home/GlobalCoverageSection";
+import PanelCommunity from "@/components/home/PanelCommunity";
 import QualitySection from "@/components/home/QualitySection";
 import CtaSection from "@/components/home/CtaSection";
 import { HOME_PAGE_DATA } from "@/constants/site-content";
@@ -28,25 +30,31 @@ export default function Home() {
       {/* 3. TRUST & CREDENTIALS SECTION */}
       <TrustSection />
 
-      {/* 4. WHY INSIGHTMATRIX */}
+      {/* 4. TRUSTED BY GLOBAL LEADERS & CASE STUDIES */}
+      <TrustedBy />
+
+      {/* 5. WHY INSIGHTMATRIX */}
       <WhyInsightMatrix />
 
-      {/* 5. OUR SERVICES & SOLUTIONS */}
+      {/* 6. OUR SERVICES & SOLUTIONS */}
       <OurServicesSection />
 
-      {/* 6. RESEARCH PROCESS */}
+      {/* 7. RESEARCH PROCESS */}
       <ResearchProcessSection />
 
-      {/* 7. INDUSTRIES WE SERVE */}
+      {/* 8. INDUSTRIES WE SERVE */}
       <IndustriesSection />
 
-      {/* 8. GLOBAL COVERAGE */}
+      {/* 9. GLOBAL COVERAGE */}
       <GlobalCoverageSection />
 
-      {/* 9. QUALITY & FRAUD PREVENTION */}
+      {/* 10. PANEL COMMUNITY SHOWCASE */}
+      <PanelCommunity />
+
+      {/* 11. QUALITY & FRAUD PREVENTION */}
       <QualitySection />
 
-      {/* 10. CTA BANNER SECTION */}
+      {/* 12. CTA BANNER SECTION */}
       <CtaSection />
     </div>
   );

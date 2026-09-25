@@ -53,7 +53,7 @@ export default function Hero() {
 
             {/* Trust badge strip */}
             <div className="inline-flex items-center gap-3 py-2.5 px-4 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-slate-300 text-xs font-semibold">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-brand-light shrink-0" />
               <span>9-Stage Quality Controls • 80+ Markets Fieldwork Coverage • ISO Compliant</span>
             </div>
           </div>
@@ -63,12 +63,12 @@ export default function Hero() {
             <div className="relative bg-gradient-to-b from-white/15 to-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/20 p-8 lg:p-10 shadow-2xl">
               <div className="flex items-center justify-between pb-6 border-b border-white/15 mb-6">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand-light animate-pulse" />
                   <span className="text-xs font-black uppercase tracking-widest text-white/90">
                     Live Global Field Operations
                   </span>
                 </div>
-                <span className="text-xs font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 rounded-full">
+                <span className="text-xs font-bold text-brand-light bg-brand-primary/20 border border-brand-primary/30 px-3 py-1 rounded-full">
                   80+ MARKETS
                 </span>
               </div>
@@ -81,7 +81,7 @@ export default function Hero() {
                     className="flex items-center gap-3.5 p-4 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md hover:bg-white/15 transition-all"
                   >
                     <div className="w-8 h-8 rounded-xl bg-brand-primary/30 text-brand-light flex items-center justify-center shrink-0 border border-brand-primary/30">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-300" />
+                      <CheckCircle2 className="w-5 h-5 text-brand-light" />
                     </div>
                     <span className="text-sm md:text-base font-bold text-white tracking-wide">
                       {stat}

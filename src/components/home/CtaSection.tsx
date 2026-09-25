@@ -16,7 +16,7 @@ export default function CtaSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-black uppercase tracking-widest text-white mb-6">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+            <Sparkles className="w-3.5 h-3.5 text-brand-light" />
             <span>Better Insights. Smarter Decisions.</span>
           </div>
 
@@ -48,7 +48,7 @@ export default function CtaSection() {
 
           <div className="mt-12 pt-8 border-t border-white/15 flex flex-wrap items-center justify-center gap-6 text-xs text-white/80 font-bold uppercase tracking-wider">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-green-300" /> Fast Feasibility & Quotes
+              <ShieldCheck className="w-4 h-4 text-brand-light" /> Fast Feasibility & Quotes
             </div>
             <span>•</span>
             <div>24/7 Dedicated PM</div>

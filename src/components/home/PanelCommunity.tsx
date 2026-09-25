@@ -1,217 +1,204 @@
+"use client";
+
 import Link from "next/link";
-import { Star, Bell, ChevronRight, Users, TrendingUp, Shield } from "lucide-react";
+import { Star, Bell, Menu, Coins } from "lucide-react";
 import { ImxLogo } from "@/components/brand";
 
 const floatingAvatars = [
-  { img: 11, label: "/spending habits", pos: { top: "5%", left: "2%" } },
-  { img: 12, label: "/social behaviour", pos: { top: "26%", left: "-1%" } },
-  { img: 13, label: "/brands loved", pos: { top: "50%", left: "2%" } },
-  { img: 14, label: "/stream gaming", pos: { top: "72%", left: "-1%" } },
-  { img: 15, label: "/browsing history", pos: { top: "90%", left: "3%" } },
-  { img: 16, label: "/amazon shopping", pos: { top: "5%", right: "2%" } },
-  { img: 17, label: "/brand surveys", pos: { top: "26%", right: "-1%" } },
-  { img: 18, label: "/netflix history", pos: { top: "50%", right: "2%" } },
-  { img: 19, label: "/gaming history", pos: { top: "72%", right: "-1%" } },
-  { img: 20, label: "/banking txns", pos: { top: "90%", right: "3%" } },
+  // Left Side Avatars
+  {
+    img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+    label: "/spending habits",
+    pos: "top-4 left-2 lg:-left-12 xl:-left-20",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    label: "/social behaviour",
+    pos: "top-32 left-0 lg:-left-16 xl:-left-24",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    label: "/steam gaming",
+    pos: "top-64 left-2 lg:-left-12 xl:-left-20",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+    label: "/political views",
+    pos: "bottom-8 left-1 lg:-left-14 xl:-left-22",
+  },
+
+  // Right Side Avatars
+  {
+    img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+    label: "/amazon shopping",
+    pos: "top-6 right-2 lg:-right-12 xl:-right-20",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80",
+    label: "/brand surveys",
+    pos: "top-36 right-0 lg:-right-16 xl:-right-24",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&auto=format&fit=crop&q=80",
+    label: "/gaming history",
+    pos: "top-72 right-2 lg:-right-12 xl:-right-20",
+  },
+  {
+    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
+    label: "/banking txns",
+    pos: "bottom-12 right-1 lg:-right-14 xl:-right-22",
+  },
 ];
 
 export default function PanelCommunity() {
   return (
-    <section className="relative py-32 bg-white overflow-hidden">
-      {/* Background gradient wash */}
-      <div className="absolute inset-x-0 top-0 h-[700px] bg-gradient-to-b from-brand-subtle/80 via-sky-50/40 to-transparent pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1100px] h-[600px] rounded-full bg-gradient-to-r from-brand-light/40 via-sky-100/50 to-brand-subtle blur-3xl opacity-50 pointer-events-none" />
+    <section className="relative py-24 sm:py-32 bg-[#f8faff] overflow-hidden">
+      {/* Background Lighting Orbs */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] rounded-full bg-brand-primary/5 blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* ── Section Header ── */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <span className="inline-block mb-4 px-4 py-1.5 rounded-full bg-brand-subtle border border-brand-light text-brand-primary text-sm font-bold tracking-wide uppercase">
-            Our Community
-          </span>
-          <h2 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent1">
-            Engaged panelists
-            <br className="hidden sm:block" /> share their realities
-          </h2>
-          <p className="text-gray-500 text-xl leading-relaxed">
-            At the heart of InsightMatrix is a global online community of responsive panel members,
-            across all demographics, sharing their opinions, behaviour and lived reality.
-          </p>
-        </div>
-
-        {/* ── Main Visual Area ── */}
-        <div className="relative min-h-[680px] flex items-center justify-center">
-          {/* Floating avatars — desktop only */}
-          {floatingAvatars.map((av, i) => (
+        <div className="relative max-w-5xl mx-auto">
+          {/* Floating Avatars (Desktop / Wide screens) */}
+          {floatingAvatars.map((item, idx) => (
             <div
-              key={i}
-              className="absolute hidden xl:flex flex-col items-center gap-1.5 z-10"
-              style={{
-                top: av.pos.top,
-                ...(av.pos.left != null ? { left: av.pos.left } : {}),
-                ...(av.pos.right != null ? { right: av.pos.right } : {}),
-              }}
+              key={idx}
+              className={`absolute hidden lg:flex flex-col items-center gap-1 z-30 transition-all duration-300 hover:scale-110 ${item.pos}`}
             >
               <img
-                src={`https://i.pravatar.cc/100?img=${av.img}`}
-                alt="panelist"
-                className="w-16 h-16 rounded-full border-4 border-white shadow-xl object-cover"
+                src={item.img}
+                alt={item.label}
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-4 border-white shadow-xl object-cover"
               />
-              <span className="text-[11px] font-bold text-gray-500 bg-white/90 backdrop-blur-sm px-2.5 py-0.5 rounded-full shadow-md border border-gray-100 whitespace-nowrap">
-                {av.label}
+              <span className="text-[11px] font-bold text-gray-700 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full shadow-md border border-slate-100 whitespace-nowrap">
+                {item.label}
               </span>
             </div>
           ))}
 
-          {/* Central content */}
-          <div className="flex flex-col lg:flex-row items-stretch gap-8 w-full xl:w-[72%] z-20">
-            {/* Left dark card */}
-            <div className="flex-1 rounded-3xl bg-gradient-to-br from-gray-900 via-[#1a1040] to-gray-900 p-10 flex flex-col justify-between gap-10 shadow-2xl shadow-gray-900/40 min-h-[480px]">
-              {/* Top decorative glow */}
-              <div className="absolute top-0 left-0 w-48 h-48 rounded-full bg-brand-primary/20 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Main Blue Container Card */}
+          <div className="relative rounded-[2.5rem] bg-[#0b4fd9] p-8 sm:p-12 lg:p-16 shadow-2xl text-white flex flex-col lg:flex-row items-center justify-between min-h-[440px]">
+            {/* Left Main Content */}
+            <div className="lg:w-6/12 z-20 text-left mb-10 lg:mb-0 pr-0 lg:pr-6">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.12] mb-6">
+                &quot;The best survey app ever&quot;
+              </h2>
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed font-medium mb-10">
+                Our 30 million members say our surveys are interesting, our app is easy to use, they
+                appreciate the rewards &amp; love seeing their opinions reported around the world.
+              </p>
 
-              <div className="relative">
-                {/* Quote marks */}
-                <div className="text-6xl font-serif text-brand-primary/30 leading-none mb-2">{`"`}</div>
-                <p className="text-3xl font-extrabold text-white leading-snug mb-5">
-                  The best survey
-                  <br />
-                  platform ever
-                </p>
-                <p className="text-gray-400 text-base leading-relaxed">
-                  Our 2 million members say surveys are interesting, the platform is beautifully
-                  easy to use, they love the rewards &amp; genuinely enjoy seeing their opinions
-                  shape real products and decisions around the world.
-                </p>
-              </div>
-
-              {/* Stats row */}
-              <div className="relative grid grid-cols-3 gap-4 py-6 border-t border-white/10">
-                <div className="text-center">
-                  <p className="text-3xl font-extrabold text-white">2M+</p>
-                  <p className="text-gray-500 text-xs font-semibold mt-1">Active Members</p>
-                </div>
-                <div className="text-center border-x border-white/10">
-                  <p className="text-3xl font-extrabold text-white">120+</p>
-                  <p className="text-gray-500 text-xs font-semibold mt-1">Countries</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-3xl font-extrabold text-white">$15M</p>
-                  <p className="text-gray-500 text-xs font-semibold mt-1">Rewards Paid</p>
-                </div>
-              </div>
-
-              <div className="relative flex flex-col gap-4">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-gray-900 font-bold text-base hover:bg-gray-100 transition shadow-lg w-full sm:w-auto text-center"
-                >
-                  <Users className="w-5 h-5" />
-                  Join the community
-                </Link>
-                {/* Trustpilot */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-white text-xs font-semibold">Excellent</span>
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-brand-light text-brand-light" />
-                    ))}
-                  </div>
-                  <span className="text-gray-500 text-xs">100k+ reviews on Trustpilot</span>
-                </div>
-              </div>
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center px-9 py-4 rounded-full bg-white text-[#0b4fd9] font-black text-base hover:bg-slate-100 transition-all shadow-xl hover:scale-105 active:scale-95"
+              >
+                Join the community
+              </Link>
             </div>
 
-            {/* Right phone mockup — enlarged */}
-            <div className="flex-1 flex items-center justify-center">
-              <div className="relative w-[240px] sm:w-[270px]">
-                {/* Glow behind phone */}
-                <div className="absolute inset-0 scale-110 rounded-[3rem] bg-gradient-to-br from-brand-primary/30 to-brand-accent1/20 blur-2xl" />
-
-                <div className="relative rounded-[3rem] border-[10px] border-gray-800 bg-gray-900 shadow-2xl shadow-gray-900/60 overflow-hidden">
-                  {/* Notch */}
-                  <div className="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-5 bg-gray-800 rounded-full z-10" />
-
-                  {/* Screen */}
-                  <div className="bg-[#f5f5f7] min-h-[500px] flex flex-col">
-                    {/* App top bar */}
-                    <div className="bg-white px-4 pt-10 pb-3 flex items-center justify-between shadow-sm">
-                      <ImxLogo size="xs" surface="light" href={null} className="max-w-[5.5rem]" />
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-                        <Users className="w-2.5 h-2.5" /> 2,400 &rsaquo;
-                      </div>
+            {/* Right Side Phone Mockup (Overlapping visually) */}
+            <div className="lg:w-6/12 relative z-20 flex justify-center lg:justify-end w-full">
+              <div className="w-[290px] sm:w-[310px] bg-white rounded-[2.5rem] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] border-4 border-slate-200 overflow-hidden text-gray-900 transform lg:translate-x-4 lg:scale-105 transition-transform">
+                {/* Header Bar */}
+                <div className="bg-white px-5 pt-6 pb-3 flex items-center justify-between border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <Menu className="w-5 h-5 text-gray-800" />
+                      <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
+                        1
+                      </span>
                     </div>
+                    <ImxLogo size="xs" surface="light" href={null} className="max-w-[5.5rem]" />
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-slate-100 px-3 py-1 rounded-full text-xs font-extrabold text-gray-800">
+                    <Coins className="w-3.5 h-3.5 text-amber-500" />
+                    <span>1,200 &rsaquo;</span>
+                  </div>
+                </div>
 
-                    <div className="px-4 py-4 flex flex-col gap-3.5">
-                      <p className="text-sm font-bold text-gray-800">Hello, Alex! 👋</p>
+                {/* App Screen Content */}
+                <div className="p-5 bg-slate-50 space-y-4">
+                  <h3 className="text-base font-black text-gray-900">Hello, Michael !</h3>
 
-                      {/* Active survey card */}
-                      <div className="rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent1 p-4 text-white shadow-lg shadow-brand-primary/30">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Bell className="w-3.5 h-3.5 opacity-90" />
-                          <span className="text-[11px] font-bold opacity-90">Research Survey</span>
+                  {/* Horizontal Scroll / Feature Card */}
+                  <div className="relative">
+                    <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-1">
+                      {/* Card 1: Pink/Orange Gradient */}
+                      <div className="w-[85%] shrink-0 rounded-2xl bg-gradient-to-br from-rose-500 via-pink-500 to-orange-400 p-5 text-white shadow-md">
+                        <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-3">
+                          <Bell className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <p className="text-[12px] font-semibold leading-tight mb-3 opacity-90">
-                          Earn points for taking this research survey.
+                        <h4 className="text-sm font-black mb-1">Research survey</h4>
+                        <p className="text-[11px] text-white/95 font-medium mb-4 leading-tight">
+                          Earn points for taking this research survey
                         </p>
-                        <button className="bg-white/20 border border-white/30 rounded-full px-4 py-1.5 text-[11px] font-bold backdrop-blur-sm flex items-center gap-1">
-                          Start now <ChevronRight className="w-3 h-3" />
+                        <button
+                          type="button"
+                          className="px-4 py-1.5 rounded-full border border-white text-[11px] font-black text-white hover:bg-white/20 transition backdrop-blur-sm"
+                        >
+                          Start now
                         </button>
                       </div>
 
-                      {/* Stat cards */}
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <div className="bg-white rounded-2xl p-3 shadow-sm">
-                          <div className="flex items-center gap-1 mb-1">
-                            <TrendingUp className="w-3 h-3 text-brand-primary" />
-                            <p className="text-[9px] text-gray-400 font-semibold">Points Earned</p>
-                          </div>
-                          <p className="text-lg font-extrabold text-gray-900 leading-none">1,240</p>
-                          <p className="text-[9px] text-brand-primary font-bold mt-1">
-                            +120 this week
-                          </p>
-                        </div>
-                        <div className="bg-white rounded-2xl p-3 shadow-sm">
-                          <div className="flex items-center gap-1 mb-1">
-                            <Shield className="w-3 h-3 text-brand-primary" />
-                            <p className="text-[9px] text-gray-400 font-semibold">Surveys Done</p>
-                          </div>
-                          <p className="text-lg font-extrabold text-gray-900 leading-none">34</p>
-                          <p className="text-[9px] text-brand-primary font-bold mt-1">Top 5%</p>
-                        </div>
-                      </div>
+                      {/* Card 2 Peek */}
+                      <div className="w-[15%] shrink-0 rounded-2xl bg-brand-primary p-4 text-white opacity-80" />
+                    </div>
 
-                      {/* Daily question photo card */}
-                      <div className="relative rounded-2xl overflow-hidden h-28 shadow-md">
-                        <img
-                          src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=600&q=80"
-                          alt="Daily questions"
-                          className="absolute inset-0 w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent" />
-                        <span className="absolute bottom-2.5 left-3 text-[11px] font-extrabold text-white z-10">
-                          Daily questions
-                        </span>
-                      </div>
+                    {/* Pagination Dots */}
+                    <div className="flex items-center justify-center gap-1.5 mt-3">
+                      <span className="w-2 h-2 rounded-full bg-brand-primary" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                    </div>
+                  </div>
+
+                  {/* Daily Questions Photo Card */}
+                  <div className="relative rounded-2xl overflow-hidden shadow-md h-32 border border-slate-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=600&q=80"
+                      alt="Daily questions"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                    <div className="absolute bottom-3 left-4 text-white">
+                      <h4 className="text-sm font-black tracking-tight">Daily questions</h4>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Mobile avatar strip */}
-        <div className="flex xl:hidden items-center justify-center gap-3 flex-wrap mt-14">
-          {[11, 12, 13, 14, 15, 16, 17, 18].map((i) => (
-            <img
-              key={i}
-              src={`https://i.pravatar.cc/80?img=${i}`}
-              alt="panelist"
-              className="w-12 h-12 rounded-full border-2 border-white shadow-md object-cover"
-            />
-          ))}
-          <div className="w-12 h-12 rounded-full bg-brand-primary text-white text-[10px] font-bold flex items-center justify-center shadow-md border-2 border-white">
-            2M+
+          {/* Bottom Trustpilot Bar */}
+          <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm font-bold text-gray-800">
+            <span className="font-black text-gray-900 text-base">Excellent</span>
+            <div className="flex items-center gap-1 bg-[#00b67a] text-white px-2.5 py-1 rounded">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 fill-white text-white" />
+              ))}
+            </div>
+            <span className="underline decoration-slate-300 font-semibold text-gray-600">
+              117,871 reviews on
+            </span>
+            <span className="font-black text-gray-900 text-base flex items-center gap-1">
+              ★ Trustpilot
+            </span>
+          </div>
+
+          {/* Mobile Responsive Avatars Grid (Displays on small screens) */}
+          <div className="flex lg:hidden items-center justify-center gap-2.5 flex-wrap mt-10">
+            {floatingAvatars.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-1.5 bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm text-xs font-bold text-gray-700"
+              >
+                <img
+                  src={item.img}
+                  alt={item.label}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+                <span>{item.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

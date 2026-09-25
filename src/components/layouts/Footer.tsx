@@ -236,9 +236,23 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <div>
-            © {currentYear}{" "}
-            {settings.copyrightText || "InsightMatrix Research. All rights reserved."}
+          <div className="flex flex-wrap items-center gap-2">
+            <span>
+              © {currentYear}{" "}
+              {settings.copyrightText || "InsightMatrix Research. All rights reserved."}
+            </span>
+            <span className="text-gray-700">|</span>
+            <span>
+              Developed by{" "}
+              <a
+                href="https://growthtechnos.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white font-medium underline underline-offset-2 transition-colors"
+              >
+                Growth Technos
+              </a>
+            </span>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-gray-400 transition-colors">

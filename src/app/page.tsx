@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Hero from "@/components/hero/Hero";
+import TrendingInsightsSection from "@/components/home/TrendingInsightsSection";
 import TrustSection from "@/components/home/TrustSection";
 import WhyInsightMatrix from "@/components/home/WhyInsightMatrix";
 import OurServicesSection from "@/components/home/OurServicesSection";
@@ -17,32 +18,35 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white">
       {/* 1. HERO SECTION */}
       <Hero />
 
-      {/* 2. TRUST SECTION */}
+      {/* 2. YOUGOV STYLE TRENDING INSIGHTS GRID */}
+      <TrendingInsightsSection />
+
+      {/* 3. TRUST & CREDENTIALS SECTION */}
       <TrustSection />
 
-      {/* 3. WHY INSIGHTMATRIX */}
+      {/* 4. WHY INSIGHTMATRIX */}
       <WhyInsightMatrix />
 
-      {/* 4. OUR SERVICES */}
+      {/* 5. OUR SERVICES & SOLUTIONS */}
       <OurServicesSection />
 
-      {/* 5. RESEARCH PROCESS */}
+      {/* 6. RESEARCH PROCESS */}
       <ResearchProcessSection />
 
-      {/* 6. INDUSTRIES WE SERVE */}
+      {/* 7. INDUSTRIES WE SERVE */}
       <IndustriesSection />
 
-      {/* 7. GLOBAL COVERAGE */}
+      {/* 8. GLOBAL COVERAGE */}
       <GlobalCoverageSection />
 
-      {/* 8. QUALITY SECTION */}
+      {/* 9. QUALITY & FRAUD PREVENTION */}
       <QualitySection />
 
-      {/* 9. CTA SECTION */}
+      {/* 10. CTA BANNER SECTION */}
       <CtaSection />
     </div>
   );

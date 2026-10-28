@@ -30,6 +30,7 @@ import {
   Shield,
   Layers,
   Mail,
+  Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -70,6 +71,13 @@ const sidebarSections: SidebarSection[] = [
     items: [
       { name: "Surveys", icon: ClipboardList, href: "/admin/surveys" },
       { name: "Survey Providers", icon: Building2, href: "/admin/companies" },
+      {
+        name: "SurveySherpa",
+        icon: Zap,
+        href: "/admin/surveysherpa",
+        badge: "API",
+        badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+      },
       { name: "Vendors", icon: Store, href: "/admin/vendors" },
       { name: "Vendor Allocations", icon: Share2, href: "/admin/vendor-allocations" },
     ],

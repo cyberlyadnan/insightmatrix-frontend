@@ -44,6 +44,11 @@ function formatCpi(val: unknown): string {
   return Number.isFinite(num) ? num.toFixed(2) : "0.00";
 }
 
+function getErrorMessage(err: unknown, fallback: string): string {
+  const ax = err as { response?: { data?: { message?: string } }; message?: string };
+  return ax?.response?.data?.message || ax?.message || fallback;
+}
+
 const STAT_TONES = {
   emerald: {
     cardBg: "bg-gradient-to-br from-emerald-50/90 via-teal-50/40 to-white",
@@ -141,8 +146,7 @@ export default function SurveySherpaAdminPage() {
       setShowConfig(false);
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Failed to update credentials";
-      toast.error(msg);
+      toast.error(getErrorMessage(err, "Failed to update credentials"));
     },
   });
 
@@ -156,8 +160,7 @@ export default function SurveySherpaAdminPage() {
       queryClient.invalidateQueries({ queryKey: ["panelSurveys"] });
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Failed to import survey";
-      toast.error(msg);
+      toast.error(getErrorMessage(err, "Failed to import survey"));
     },
   });
 
@@ -170,8 +173,7 @@ export default function SurveySherpaAdminPage() {
       queryClient.invalidateQueries({ queryKey: ["panelSurveys"] });
     },
     onError: (err: unknown) => {
-      const msg = err instanceof Error ? err.message : "Sync failed";
-      toast.error(msg);
+      toast.error(getErrorMessage(err, "Sync failed"));
     },
   });
 
@@ -189,7 +191,7 @@ export default function SurveySherpaAdminPage() {
       queryClient.invalidateQueries({ queryKey: ["surveysherpa"] });
     },
     onError: (err: unknown) => {
-      toast.error(err instanceof Error ? err.message : "Failed to sync stats");
+      toast.error(getErrorMessage(err, "Failed to sync stats"));
     },
   });
 

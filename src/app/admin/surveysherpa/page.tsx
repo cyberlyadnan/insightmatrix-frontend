@@ -153,9 +153,9 @@ export default function SurveySherpaAdminPage() {
   // Import single survey mutation
   const importMutation = useMutation({
     mutationFn: (surveyId: number) =>
-      surveySherpaApi.importSurvey(surveyId, { autoActivate: true }),
+      surveySherpaApi.importSurvey(surveyId, { autoActivate: true, surveyAudience: "internal" }),
     onSuccess: () => {
-      toast.success("Survey imported into InsightMatrix PanelSurveys!");
+      toast.success("Survey imported into InsightMatrix PanelSurveys (Internal)!");
       queryClient.invalidateQueries({ queryKey: ["surveysherpa"] });
       queryClient.invalidateQueries({ queryKey: ["panelSurveys"] });
     },
@@ -166,7 +166,12 @@ export default function SurveySherpaAdminPage() {
 
   // Sync all surveys mutation
   const syncAllMutation = useMutation({
-    mutationFn: () => surveySherpaApi.syncAll({ autoActivate: true, syncQualifications: true }),
+    mutationFn: () =>
+      surveySherpaApi.syncAll({
+        autoActivate: true,
+        syncQualifications: true,
+        surveyAudience: "internal",
+      }),
     onSuccess: (data) => {
       toast.success(`Sync complete: ${data.created} created, ${data.updated} updated.`);
       queryClient.invalidateQueries({ queryKey: ["surveysherpa"] });

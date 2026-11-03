@@ -134,11 +134,11 @@ export const surveySherpaApi = {
    */
   async importSurvey(
     surveyId: number,
-    options?: { autoActivate?: boolean; defaultStatus?: string }
+    options?: { autoActivate?: boolean; defaultStatus?: string; surveyAudience?: string }
   ): Promise<{ survey: unknown; isNew: boolean }> {
     const res = await apiClient.post<{ data: { survey: unknown; isNew: boolean } }>(
       `/surveysherpa/surveys/${surveyId}/import`,
-      options
+      { surveyAudience: "internal", ...options }
     );
     return res.data.data;
   },
@@ -150,6 +150,7 @@ export const surveySherpaApi = {
     autoActivate?: boolean;
     syncQualifications?: boolean;
     defaultStatus?: string;
+    surveyAudience?: string;
   }): Promise<{
     totalRemote: number;
     created: number;
@@ -165,7 +166,7 @@ export const surveySherpaApi = {
         failed: number;
         errors: string[];
       };
-    }>("/surveysherpa/sync", options);
+    }>("/surveysherpa/sync", { surveyAudience: "internal", ...options });
     return res.data.data;
   },
 };

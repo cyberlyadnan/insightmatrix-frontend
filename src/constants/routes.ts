@@ -62,6 +62,7 @@ export const ROUTES = {
     surveys: "/vendor/surveys",
     survey: (allocationId: string) => `/vendor/surveys/${allocationId}`,
     start: (routingSlug: string) => `/vendor/start/${routingSlug}`,
+    integration: "/vendor/integration",
   },
   surveyStart: (id: string) => `/survey/start/${id}`,
   /** Partner redirect targets — each records a different outcome via POST to the API */

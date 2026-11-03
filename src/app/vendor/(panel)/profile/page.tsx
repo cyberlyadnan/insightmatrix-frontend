@@ -9,16 +9,13 @@ import { toast } from "sonner";
 import {
   Building2,
   CheckCircle2,
-  Globe,
   KeyRound,
   Lock,
   Mail,
-  Phone,
   Radio,
   Save,
   ShieldCheck,
   Store,
-  User,
   Zap,
 } from "lucide-react";
 

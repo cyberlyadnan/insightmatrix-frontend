@@ -4,19 +4,7 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import {
-  ArrowRight,
-  Calendar,
-  CheckCircle2,
-  ClipboardList,
-  Filter,
-  Layers,
-  Loader2,
-  Search,
-  Sparkles,
-  TrendingUp,
-  X,
-} from "lucide-react";
+import { ArrowRight, Calendar, ClipboardList, Layers, Loader2, Search, X } from "lucide-react";
 
 import { CopyRoutingLinkButton } from "@/components/vendor/copy-routing-link-button";
 import {

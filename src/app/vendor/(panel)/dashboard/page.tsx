@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
   AlertTriangle,
   ArrowRight,
   BarChart3,
-  Check,
   CheckCircle2,
-  Copy,
   DollarSign,
   ExternalLink,
   Layers,
@@ -22,7 +19,6 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { ROUTES } from "@/constants/routes";
 import { getVendorDashboardSummary } from "@/services/vendor-portal";
@@ -30,11 +26,9 @@ import { listVendorPortalSurveys } from "@/services/vendor-portal/vendor-surveys
 import { queryKeys } from "@/services/queries";
 import { useVendorAuthStore } from "@/store/vendorAuthStore";
 import { CopyRoutingLinkButton } from "@/components/vendor/copy-routing-link-button";
-import { VendorIntegrationModal } from "@/components/vendor/vendor-integration-modal";
 import {
   VENDOR_ALLOCATION_STATUS_LABELS,
   VENDOR_ALLOCATION_STATUS_STYLES,
-  type VendorAllocationStatus,
 } from "@/constants/vendor-allocation";
 
 const STAT_TONES = {
@@ -141,11 +135,10 @@ function MetricCard({
 
 export default function VendorDashboardPage() {
   const vendor = useVendorAuthStore((s) => s.vendor);
-  const [specsOpen, setSpecsOpen] = useState(false);
 
   const {
     data: summaryData,
-    isLoading: isSummaryLoading,
+
     refetch: refetchSummary,
     isRefetching,
   } = useQuery({
@@ -240,14 +233,13 @@ export default function VendorDashboardPage() {
               <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
               Sync
             </button>
-            <button
-              type="button"
-              onClick={() => setSpecsOpen(true)}
+            <Link
+              href={ROUTES.vendor.integration}
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-brand-primary/30 hover:brightness-110 transition-all"
             >
               <Zap className="h-4 w-4 text-amber-300" />
               Integration Specs
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -667,21 +659,14 @@ export default function VendorDashboardPage() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setSpecsOpen(true)}
+        <Link
+          href={ROUTES.vendor.integration}
           className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-xs font-bold text-white hover:bg-black transition-colors shadow-sm"
         >
           View Documentation
           <ArrowRight className="h-3.5 w-3.5" />
-        </button>
+        </Link>
       </div>
-
-      <VendorIntegrationModal
-        isOpen={specsOpen}
-        onClose={() => setSpecsOpen(false)}
-        vendorCode={vendor?.vendorCode}
-      />
     </div>
   );
 }

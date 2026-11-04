@@ -14,10 +14,12 @@ import {
   CheckCircle2,
   Copy,
   DollarSign,
+  HelpCircle,
   Info,
   Layers,
   Link as LinkIcon,
   Loader2,
+  Radio,
   ShieldCheck,
   TrendingUp,
   XCircle,
@@ -25,6 +27,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { CopyRoutingLinkButton } from "@/components/vendor/copy-routing-link-button";
 import {
   VENDOR_ALLOCATION_STATUS_LABELS,
   VENDOR_ALLOCATION_STATUS_STYLES,
@@ -107,7 +110,7 @@ export default function VendorSurveyDetailPage() {
   });
 
   const allocation = data?.allocation;
-  // analytics
+  const analytics = data?.analytics;
 
   if (!allocationId) {
     return (
@@ -413,7 +416,7 @@ export default function VendorSurveyDetailPage() {
               <span className="text-[10px] font-bold uppercase text-sky-600">Status 3</span>
             </div>
             <p className="font-mono text-[11px] text-gray-500 truncate">
-              {vendor?.callbackUrls?.quota_full || "Not configured (Set in Profile)"}
+              {vendor?.callbackUrls?.quotafull || "Not configured (Set in Profile)"}
             </p>
           </div>
 
@@ -423,7 +426,7 @@ export default function VendorSurveyDetailPage() {
               <span className="text-[10px] font-bold uppercase text-rose-600">Status 4</span>
             </div>
             <p className="font-mono text-[11px] text-gray-500 truncate">
-              {vendor?.callbackUrls?.quality_reject || "Not configured (Set in Profile)"}
+              {vendor?.callbackUrls?.qualityreject || "Not configured (Set in Profile)"}
             </p>
           </div>
         </div>

@@ -416,7 +416,7 @@ export default function VendorSurveyDetailPage() {
               <span className="text-[10px] font-bold uppercase text-sky-600">Status 3</span>
             </div>
             <p className="font-mono text-[11px] text-gray-500 truncate">
-              {vendor?.callbackUrls?.quotafull || "Not configured (Set in Profile)"}
+              {vendor?.callbackUrls?.quota_full || "Not configured (Set in Profile)"}
             </p>
           </div>
 
@@ -426,7 +426,7 @@ export default function VendorSurveyDetailPage() {
               <span className="text-[10px] font-bold uppercase text-rose-600">Status 4</span>
             </div>
             <p className="font-mono text-[11px] text-gray-500 truncate">
-              {vendor?.callbackUrls?.qualityreject || "Not configured (Set in Profile)"}
+              {vendor?.callbackUrls?.quality_reject || "Not configured (Set in Profile)"}
             </p>
           </div>
         </div>

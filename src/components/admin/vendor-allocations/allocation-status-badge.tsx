@@ -1,6 +1,9 @@
 import {
+  VENDOR_ALLOCATION_RESPONSE_LABELS,
+  VENDOR_ALLOCATION_RESPONSE_STYLES,
   VENDOR_ALLOCATION_STATUS_LABELS,
   VENDOR_ALLOCATION_STATUS_STYLES,
+  type VendorAllocationResponseStatus,
   type VendorAllocationStatus,
 } from "@/constants/vendor-allocation";
 
@@ -10,6 +13,22 @@ export function AllocationStatusBadge({ status }: { status: VendorAllocationStat
       className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${VENDOR_ALLOCATION_STATUS_STYLES[status]}`}
     >
       {VENDOR_ALLOCATION_STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+export function VendorResponseStatusBadge({
+  status = "pending",
+}: {
+  status?: VendorAllocationResponseStatus;
+}) {
+  const resolved: VendorAllocationResponseStatus =
+    status === "accepted" || status === "rejected" || status === "pending" ? status : "pending";
+  return (
+    <span
+      className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border leading-none ${VENDOR_ALLOCATION_RESPONSE_STYLES[resolved]}`}
+    >
+      {VENDOR_ALLOCATION_RESPONSE_LABELS[resolved]}
     </span>
   );
 }

@@ -16,6 +16,7 @@ export async function listVendorPortalSurveys(params?: {
   page?: number;
   pageSize?: number;
   status?: string;
+  vendorResponseStatus?: string;
 }) {
   const { data } = await vendorApiClient.get<ApiEnvelope<VendorPortalAllocation[]>>(
     "/vendor-portal/surveys",
@@ -28,5 +29,19 @@ export async function getVendorPortalSurvey(allocationId: string) {
   const { data } = await vendorApiClient.get<
     ApiEnvelope<{ allocation: VendorPortalAllocation; analytics: VendorAllocationAnalytics }>
   >(`/vendor-portal/surveys/${allocationId}`);
+  return data.data;
+}
+
+export async function acceptVendorPortalSurvey(allocationId: string) {
+  const { data } = await vendorApiClient.post<ApiEnvelope<VendorPortalAllocation>>(
+    `/vendor-portal/surveys/${allocationId}/accept`
+  );
+  return data.data;
+}
+
+export async function rejectVendorPortalSurvey(allocationId: string) {
+  const { data } = await vendorApiClient.post<ApiEnvelope<VendorPortalAllocation>>(
+    `/vendor-portal/surveys/${allocationId}/reject`
+  );
   return data.data;
 }

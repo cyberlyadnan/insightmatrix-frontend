@@ -1,4 +1,16 @@
-import type { VendorAllocationStatus } from "@/constants/vendor-allocation";
+import type {
+  VendorAllocationResponseStatus,
+  VendorAllocationStatus,
+} from "@/constants/vendor-allocation";
+
+export type VendorPortalQuotaGroup = {
+  id: string;
+  groupName: string;
+  groupDescription: string;
+  totalQuota: number;
+  remainingQuota: number;
+  status: string;
+};
 
 export type VendorSurveyAllocation = {
   id: string;
@@ -13,6 +25,9 @@ export type VendorSurveyAllocation = {
     surveyStatus: string;
     remainingQuota: number;
     totalQuota: number;
+    targetCountries?: string[];
+    estimatedLOI?: number | null;
+    incidenceRate?: number | null;
   } | null;
   vendor: {
     id: string;
@@ -21,6 +36,8 @@ export type VendorSurveyAllocation = {
     status: string;
   } | null;
   status: VendorAllocationStatus;
+  vendorResponseStatus: VendorAllocationResponseStatus;
+  vendorRespondedAt: string | null;
   allocatedQuota: number;
   startedCount: number;
   completedCount: number;
@@ -46,7 +63,10 @@ export type VendorPortalAllocation = {
   allocationCode: string;
   surveyName: string;
   surveyCode: string;
+  surveyStatus: string;
   status: VendorAllocationStatus;
+  vendorResponseStatus: VendorAllocationResponseStatus;
+  vendorRespondedAt: string | null;
   allocatedQuota: number;
   startedCount: number;
   completedCount: number;
@@ -57,9 +77,30 @@ export type VendorPortalAllocation = {
   conversionRate: number;
   incidenceRate: number;
   vendorCpi: number;
-  routingLink: string;
+  /** Null until vendor accepts the allocation */
+  routingLink: string | null;
   startDate: string | null;
   endDate: string | null;
+  allocationNotes: string;
+  createdAt: string | null;
+  // Full safe survey specifications
+  targetCountries: string[];
+  targetGender: string;
+  targetAgeMin: number | null;
+  targetAgeMax: number | null;
+  targetProfessions: string[];
+  targetIndustries: string[];
+  targetCompanySizes: string[];
+  targetDevices: string[];
+  targetLanguages: string[];
+  estimatedLOI: number | null;
+  surveyIncidenceRate: number | null;
+  surveyTotalQuota: number;
+  surveyRemainingQuota: number;
+  dynamicQuotaGroups: VendorPortalQuotaGroup[];
+  surveyStartDate: string | null;
+  surveyEndDate: string | null;
+  surveyNotes: string;
 };
 
 export type VendorAllocationAnalytics = {

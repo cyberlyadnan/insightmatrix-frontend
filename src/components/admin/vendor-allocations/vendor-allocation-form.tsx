@@ -1,14 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AlertTriangle, CheckCircle2, Shield, TrendingUp } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Layers, Shield, Sparkles, TrendingUp } from "lucide-react";
 import type { CreateVendorAllocationPayload } from "@/services/vendor-allocation/vendor-allocation-api";
 import { FormActionBar, getFormSubmitIntent } from "@/components/crm/form-action-bar";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import type { PanelSurvey } from "@/services/panel-survey/panel-survey-api";
 import type { Vendor } from "@/types/vendor";
-import { SurveySearchSelect } from "./survey-search-select";
+import {
+  isSurveySherpaSurvey,
+  SurveySearchSelect,
+  type SurveySourceFilter,
+} from "./survey-search-select";
 import { VendorSearchSelect } from "./vendor-search-select";
 
 export type VendorAllocationFormValues = {
@@ -71,11 +75,15 @@ export function VendorAllocationForm({
     panelSurveyIds: initialSurveyIds,
   });
 
+  const [sourceFilter, setSourceFilter] = useState<SurveySourceFilter>("all");
   const [formErrors, setFormErrors] = useState<{
     panelSurveyIds?: string;
     vendorId?: string;
     allocatedQuota?: string;
   }>({});
+
+  const sherpaSurveysCount = useMemo(() => surveys.filter(isSurveySherpaSurvey).length, [surveys]);
+  const otherSurveysCount = surveys.length - sherpaSurveysCount;
 
   const selectedSurveys = useMemo(
     () => surveys.filter((s) => values.panelSurveyIds.includes(s.id)),
@@ -183,6 +191,92 @@ export function VendorAllocationForm({
           </span>
         </div>
 
+        {/* Survey Source Filter (All / SurveySherpa Only / Other) */}
+        {!surveyLocked && (
+          <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3.5 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-brand-primary" />
+                Survey Source Filter
+              </span>
+              <span className="text-[11px] text-slate-500">
+                Apply SurveySherpa filter to pick strictly from imported Sherpa studies
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSourceFilter("all")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all border",
+                  sourceFilter === "all"
+                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                )}
+              >
+                <span>All Surveys</span>
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 py-0.5 text-[10px] font-extrabold",
+                    sourceFilter === "all"
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 text-slate-600"
+                  )}
+                >
+                  {surveys.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSourceFilter("sherpa")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all border",
+                  sourceFilter === "sherpa"
+                    ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                    : "bg-indigo-50/80 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+                )}
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>SurveySherpa Only</span>
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 py-0.5 text-[10px] font-extrabold",
+                    sourceFilter === "sherpa"
+                      ? "bg-indigo-500 text-white"
+                      : "bg-indigo-100 text-indigo-800"
+                  )}
+                >
+                  {sherpaSurveysCount}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSourceFilter("other")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all border",
+                  sourceFilter === "other"
+                    ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                )}
+              >
+                <span>Direct / Other Providers</span>
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 py-0.5 text-[10px] font-extrabold",
+                    sourceFilter === "other"
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-100 text-slate-600"
+                  )}
+                >
+                  {otherSurveysCount}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Multi-Survey Picker */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
@@ -190,13 +284,17 @@ export function VendorAllocationForm({
               Panel Surveys <span className="text-rose-500">*</span>
             </label>
             <span className="text-xs text-indigo-600 font-medium">
-              Multi-selection enabled (select multiple surveys at once)
+              {sourceFilter === "sherpa"
+                ? "Showing SurveySherpa surveys only · Multi-selection enabled"
+                : "Multi-selection enabled (select multiple surveys at once)"}
             </span>
           </div>
           <SurveySearchSelect
             values={values.panelSurveyIds}
             onChange={handleSurveysChange}
             surveys={surveys}
+            sourceFilter={sourceFilter}
+            onSourceFilterChange={setSourceFilter}
             locked={surveyLocked}
             required
             error={formErrors.panelSurveyIds}

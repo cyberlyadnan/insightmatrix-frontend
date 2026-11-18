@@ -20,10 +20,16 @@ import {
 import { PageHelp } from "@/components/crm/page-help";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { AllocationQuotaBar } from "@/components/admin/vendor-allocations/allocation-quota-bar";
-import { AllocationStatusBadge } from "@/components/admin/vendor-allocations/allocation-status-badge";
+import {
+  AllocationStatusBadge,
+  VendorResponseStatusBadge,
+} from "@/components/admin/vendor-allocations/allocation-status-badge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import {
+  VENDOR_ALLOCATION_RESPONSE_LABELS,
+  VENDOR_ALLOCATION_RESPONSE_STATUSES,
   VENDOR_ALLOCATION_STATUSES,
+  type VendorAllocationResponseStatus,
   type VendorAllocationStatus,
 } from "@/constants/vendor-allocation";
 import { ROUTES } from "@/constants/routes";
@@ -44,6 +50,9 @@ export default function AdminVendorAllocationsPage() {
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [status, setStatus] = useState<VendorAllocationStatus | "">("");
+  const [vendorResponseStatus, setVendorResponseStatus] = useState<
+    VendorAllocationResponseStatus | ""
+  >("");
   const [surveyId, setSurveyId] = useState(() => surveyFromUrl);
   const [vendorId, setVendorId] = useState("");
   const [copiedAllocationId, setCopiedAllocationId] = useState<string | null>(null);
@@ -66,12 +75,13 @@ export default function AdminVendorAllocationsPage() {
     () => ({
       search: deferredSearch,
       status: status || undefined,
+      vendorResponseStatus: vendorResponseStatus || undefined,
       panelSurveyId: surveyId || undefined,
       vendorId: vendorId || undefined,
       page,
       pageSize,
     }),
-    [deferredSearch, status, surveyId, vendorId, page, pageSize]
+    [deferredSearch, status, vendorResponseStatus, surveyId, vendorId, page, pageSize]
   );
 
   const { data, isLoading } = useQuery({
@@ -178,6 +188,21 @@ export default function AdminVendorAllocationsPage() {
                 ))}
               </select>
               <select
+                value={vendorResponseStatus}
+                onChange={(e) => {
+                  setVendorResponseStatus(e.target.value as VendorAllocationResponseStatus | "");
+                  setPage(1);
+                }}
+                className={adminFilterSelectClass}
+              >
+                <option value="">All vendor responses</option>
+                {VENDOR_ALLOCATION_RESPONSE_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {VENDOR_ALLOCATION_RESPONSE_LABELS[s]}
+                  </option>
+                ))}
+              </select>
+              <select
                 value={surveyId}
                 onChange={(e) => {
                   setSurveyId(e.target.value);
@@ -230,6 +255,7 @@ export default function AdminVendorAllocationsPage() {
                     <th className="px-3 py-2 whitespace-nowrap">Survey</th>
                     <th className="px-3 py-2 whitespace-nowrap">Vendor</th>
                     <th className="px-3 py-2 whitespace-nowrap">Status</th>
+                    <th className="px-3 py-2 whitespace-nowrap">Vendor Response</th>
                     <th className="px-3 py-2 whitespace-nowrap">Progress</th>
                     <th className="px-3 py-2 whitespace-nowrap">Revenue</th>
                     <th className="px-3 py-2 text-right whitespace-nowrap">Actions</th>
@@ -275,6 +301,9 @@ export default function AdminVendorAllocationsPage() {
                         </td>
                         <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                           <AllocationStatusBadge status={row.status} />
+                        </td>
+                        <td className="px-3 py-1.5 whitespace-nowrap align-middle">
+                          <VendorResponseStatusBadge status={row.vendorResponseStatus} />
                         </td>
                         <td className="px-3 py-1.5 whitespace-nowrap align-middle">
                           <AllocationQuotaBar

@@ -9,7 +9,10 @@ import { ArrowLeft, ExternalLink, Loader2, Pause, Play, Trash2, XCircle } from "
 import { toast } from "sonner";
 
 import { AllocationQuotaBar } from "@/components/admin/vendor-allocations/allocation-quota-bar";
-import { AllocationStatusBadge } from "@/components/admin/vendor-allocations/allocation-status-badge";
+import {
+  AllocationStatusBadge,
+  VendorResponseStatusBadge,
+} from "@/components/admin/vendor-allocations/allocation-status-badge";
 import { ConfirmDialog } from "@/components/crm/confirm-dialog";
 import { CopyRoutingLinkButton } from "@/components/vendor/copy-routing-link-button";
 import { ROUTES } from "@/constants/routes";
@@ -146,7 +149,10 @@ export default function VendorAllocationDetailPage() {
             Vendor: {allocation.vendor?.companyName} ({allocation.vendor?.vendorCode})
           </p>
         </div>
-        <AllocationStatusBadge status={allocation.status} />
+        <div className="flex flex-wrap items-center gap-2">
+          <AllocationStatusBadge status={allocation.status} />
+          <VendorResponseStatusBadge status={allocation.vendorResponseStatus} />
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">

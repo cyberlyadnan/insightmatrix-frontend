@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { createVendorAllocation } from "@/services/vendor-allocation/vendor-allocation-api";
 import { listVendors } from "@/services/vendor/vendor-api";
-import { listPanelSurveys } from "@/services/panel-survey/panel-survey-api";
+import { listPanelSurveys, type PanelSurvey } from "@/services/panel-survey/panel-survey-api";
 import { queryKeys } from "@/services/queries";
 
 export default function CreateVendorAllocationPage() {
@@ -24,8 +24,14 @@ export default function CreateVendorAllocationPage() {
 
   // Fetch all surveys without status filtering so admin can select any survey
   const { data: surveysData, isLoading: surveysLoading } = useQuery({
-    queryKey: queryKeys.panelSurveys.list({ pageSize: 500 }),
-    queryFn: () => listPanelSurveys({ pageSize: 500 }),
+    queryKey: queryKeys.panelSurveys.list({ pageSize: 1000 }),
+    queryFn: () => listPanelSurveys({ pageSize: 1000 }),
+  });
+
+  // Also fetch SurveySherpa surveys explicitly so Sherpa filter always has the full Sherpa catalog
+  const { data: sherpaSurveysData, isLoading: sherpaLoading } = useQuery({
+    queryKey: queryKeys.panelSurveys.list({ pageSize: 1000, source: "sherpa" }),
+    queryFn: () => listPanelSurveys({ pageSize: 1000, source: "sherpa" }),
   });
 
   // Fetch all vendors without status filtering so admin can select any vendor
@@ -33,6 +39,17 @@ export default function CreateVendorAllocationPage() {
     queryKey: queryKeys.vendors.list({ pageSize: 500 }),
     queryFn: () => listVendors({ pageSize: 500 }),
   });
+
+  const surveys = useMemo(() => {
+    const map = new Map<string, PanelSurvey>();
+    for (const s of surveysData?.items ?? []) {
+      map.set(s.id, s);
+    }
+    for (const s of sherpaSurveysData?.items ?? []) {
+      map.set(s.id, s);
+    }
+    return Array.from(map.values());
+  }, [surveysData?.items, sherpaSurveysData?.items]);
 
   const createBatchMut = useMutation({
     mutationFn: async (payloads: Parameters<typeof createVendorAllocation>[0][]) => {
@@ -60,9 +77,8 @@ export default function CreateVendorAllocationPage() {
     onError: (e) => toast.error(parseApiError(e)),
   });
 
-  const surveys = surveysData?.items ?? [];
   const vendors = vendorsData?.items ?? [];
-  const loading = surveysLoading || vendorsLoading;
+  const loading = surveysLoading || sherpaLoading || vendorsLoading;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 text-gray-900 pb-16">

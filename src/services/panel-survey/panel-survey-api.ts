@@ -191,6 +191,7 @@ export async function listPanelSurveys(params?: {
   pageSize?: number;
   search?: string;
   providerId?: string;
+  source?: "all" | "sherpa" | "other";
   country?: string;
   surveyStatus?: PanelSurveyStatus | "";
   surveyAudience?: PanelSurveyAudience | "";
@@ -203,6 +204,7 @@ export async function listPanelSurveys(params?: {
       surveyStatus: params?.surveyStatus === "" ? undefined : params?.surveyStatus,
       surveyAudience: params?.surveyAudience === "" ? undefined : params?.surveyAudience,
       providerId: params?.providerId || undefined,
+      source: params?.source && params.source !== "all" ? params.source : undefined,
     },
   });
   return {

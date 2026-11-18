@@ -9,17 +9,28 @@ import {
   ChevronDown,
   Search,
   SlidersHorizontal,
+  Sparkles,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PanelSurvey } from "@/services/panel-survey/panel-survey-api";
 
 export type SurveyItem = PanelSurvey;
+export type SurveySourceFilter = "all" | "sherpa" | "other";
+
+export function isSurveySherpaSurvey(survey: SurveyItem): boolean {
+  const code = (survey.provider?.companyCode ?? "").trim().toUpperCase();
+  const name = (survey.provider?.companyName ?? "").trim().toLowerCase();
+  const surveyCode = (survey.surveyCode ?? "").trim().toUpperCase();
+  return code === "SURVEYSHERPA" || name.includes("sherpa") || surveyCode.startsWith("SS-");
+}
 
 type SurveySearchSelectProps = {
   values: string[];
   onChange: (surveyIds: string[], surveys?: SurveyItem[]) => void;
   surveys: SurveyItem[];
+  sourceFilter?: SurveySourceFilter;
+  onSourceFilterChange?: (source: SurveySourceFilter) => void;
   locked?: boolean;
   disabled?: boolean;
   required?: boolean;
@@ -58,6 +69,8 @@ export function SurveySearchSelect({
   values,
   onChange,
   surveys,
+  sourceFilter: controlledSourceFilter,
+  onSourceFilterChange,
   locked = false,
   disabled = false,
   required = false,
@@ -66,8 +79,18 @@ export function SurveySearchSelect({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [internalSourceFilter, setInternalSourceFilter] = useState<SurveySourceFilter>("all");
   const containerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const sourceFilter = controlledSourceFilter ?? internalSourceFilter;
+  const setSourceFilter = (next: SurveySourceFilter) => {
+    if (onSourceFilterChange) {
+      onSourceFilterChange(next);
+    } else {
+      setInternalSourceFilter(next);
+    }
+  };
 
   const selectedSurveys = useMemo(
     () => surveys.filter((s) => values.includes(s.id)),
@@ -119,20 +142,33 @@ export function SurveySearchSelect({
     }
   }, [open]);
 
-  // Unique status counts
+  // Surveys filtered by source (All / Sherpa Only / Other)
+  const sourceFilteredSurveys = useMemo(() => {
+    if (sourceFilter === "sherpa") {
+      return surveys.filter(isSurveySherpaSurvey);
+    }
+    if (sourceFilter === "other") {
+      return surveys.filter((s) => !isSurveySherpaSurvey(s));
+    }
+    return surveys;
+  }, [surveys, sourceFilter]);
+
+  const sherpaCount = useMemo(() => surveys.filter(isSurveySherpaSurvey).length, [surveys]);
+
+  // Unique status counts (scoped to current source filter)
   const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: surveys.length };
-    for (const s of surveys) {
+    const counts: Record<string, number> = { all: sourceFilteredSurveys.length };
+    for (const s of sourceFilteredSurveys) {
       const st = s.surveyStatus || "draft";
       counts[st] = (counts[st] || 0) + 1;
     }
     return counts;
-  }, [surveys]);
+  }, [sourceFilteredSurveys]);
 
   // Filtered surveys
   const filteredSurveys = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return surveys.filter((s) => {
+    return sourceFilteredSurveys.filter((s) => {
       if (statusFilter !== "all" && s.surveyStatus !== statusFilter) {
         return false;
       }
@@ -151,7 +187,7 @@ export function SurveySearchSelect({
         nameMatch || codeMatch || extMatch || pidMatch || providerMatch || countryMatch
       );
     });
-  }, [surveys, search, statusFilter]);
+  }, [sourceFilteredSurveys, search, statusFilter]);
 
   // Toggle selection for a survey
   const handleToggleSurvey = (survey: SurveyItem) => {
@@ -271,7 +307,13 @@ export function SurveySearchSelect({
           <div className="flex items-center justify-between p-3.5 min-h-[50px]">
             <div className="flex items-center gap-2.5 text-gray-500 text-sm">
               <Search className="h-4 w-4 text-gray-400" />
-              <span>Select surveys ({surveys.length} available — click to select multiple)…</span>
+              <span>
+                {sourceFilter === "sherpa"
+                  ? `Select SurveySherpa surveys (${sourceFilteredSurveys.length} available — click to select multiple)…`
+                  : sourceFilter === "other"
+                    ? `Select direct/other surveys (${sourceFilteredSurveys.length} available — click to select multiple)…`
+                    : `Select surveys (${sourceFilteredSurveys.length} available — click to select multiple)…`}
+              </span>
             </div>
             <ChevronDown
               className={cn(
@@ -314,13 +356,37 @@ export function SurveySearchSelect({
               )}
             </div>
 
-            {/* Quick Status Filter Tabs & Bulk Actions */}
+            {/* Quick Source & Status Filter Tabs & Bulk Actions */}
             <div className="flex items-center justify-between gap-2 flex-wrap text-xs">
               <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
                 <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider pl-1 flex items-center gap-1">
                   <SlidersHorizontal className="h-3 w-3" />
                   Filter:
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setSourceFilter(sourceFilter === "sherpa" ? "all" : "sherpa")}
+                  className={cn(
+                    "px-2.5 py-1 rounded-lg font-semibold transition whitespace-nowrap flex items-center gap-1.5 text-xs border",
+                    sourceFilter === "sherpa"
+                      ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
+                      : "bg-indigo-50/70 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+                  )}
+                >
+                  <Sparkles className="h-3 w-3" />
+                  <span>Sherpa Only</span>
+                  <span
+                    className={cn(
+                      "px-1.5 py-0.2 rounded-full text-[10px] font-bold",
+                      sourceFilter === "sherpa"
+                        ? "bg-indigo-500 text-white"
+                        : "bg-indigo-100 text-indigo-700"
+                    )}
+                  >
+                    {sherpaCount}
+                  </span>
+                </button>
+                <span className="h-4 w-px bg-gray-200 mx-0.5" />
                 {(["all", "active", "draft", "paused", "closed"] as const).map((st) => {
                   const count = statusCounts[st] ?? 0;
                   if (st !== "all" && count === 0) return null;
@@ -438,10 +504,19 @@ export function SurveySearchSelect({
                     </span>
 
                     {/* Provider Name */}
-                    <span className="text-xs text-gray-500 shrink-0 inline-flex items-center gap-1 font-medium max-w-[140px] truncate">
-                      <Building2 className="h-3.5 w-3.5 text-gray-400 shrink-0" />
-                      <span className="truncate">{survey.provider?.companyName || "Internal"}</span>
-                    </span>
+                    {isSurveySherpaSurvey(survey) ? (
+                      <span className="text-[11px] shrink-0 inline-flex items-center gap-1 font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <Sparkles className="h-3 w-3 text-indigo-500 shrink-0" />
+                        <span>SurveySherpa</span>
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-500 shrink-0 inline-flex items-center gap-1 font-medium max-w-[140px] truncate">
+                        <Building2 className="h-3.5 w-3.5 text-gray-400 shrink-0" />
+                        <span className="truncate">
+                          {survey.provider?.companyName || "Internal"}
+                        </span>
+                      </span>
+                    )}
 
                     {/* Remaining Quota Pill */}
                     <span

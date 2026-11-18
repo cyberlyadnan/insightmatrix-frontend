@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
   AlertTriangle,
@@ -11,7 +11,9 @@ import {
   CheckCircle2,
   DollarSign,
   ExternalLink,
+  Globe,
   Layers,
+  Lock,
   Radio,
   RefreshCw,
   ShieldCheck,
@@ -20,17 +22,23 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { ROUTES } from "@/constants/routes";
+import { parseApiError } from "@/services/api/errors";
 import { getVendorDashboardSummary } from "@/services/vendor-portal";
-import { listVendorPortalSurveys } from "@/services/vendor-portal/vendor-surveys-api";
+import {
+  acceptVendorPortalSurvey,
+  listVendorPortalSurveys,
+  rejectVendorPortalSurvey,
+} from "@/services/vendor-portal/vendor-surveys-api";
 import { queryKeys } from "@/services/queries";
 import { useVendorAuthStore } from "@/store/vendorAuthStore";
 import { CopyRoutingLinkButton } from "@/components/vendor/copy-routing-link-button";
 import {
-  VENDOR_ALLOCATION_STATUS_LABELS,
-  VENDOR_ALLOCATION_STATUS_STYLES,
-} from "@/constants/vendor-allocation";
+  AllocationStatusBadge,
+  VendorResponseStatusBadge,
+} from "@/components/admin/vendor-allocations/allocation-status-badge";
 
 const STAT_TONES = {
   emerald: {
@@ -135,6 +143,7 @@ function MetricCard({
 }
 
 export default function VendorDashboardPage() {
+  const qc = useQueryClient();
   const vendor = useVendorAuthStore((s) => s.vendor);
 
   const {
@@ -150,6 +159,26 @@ export default function VendorDashboardPage() {
   const { data: surveysData, isLoading: isSurveysLoading } = useQuery({
     queryKey: queryKeys.vendorPortalSurveys.list({ pageSize: 5 }),
     queryFn: () => listVendorPortalSurveys({ pageSize: 5 }),
+  });
+
+  const acceptMut = useMutation({
+    mutationFn: acceptVendorPortalSurvey,
+    onSuccess: async () => {
+      toast.success("Allocation accepted! Routing link unlocked.");
+      await qc.invalidateQueries({ queryKey: queryKeys.vendorPortalSurveys.all });
+      await qc.invalidateQueries({ queryKey: queryKeys.vendorAuth.dashboard });
+    },
+    onError: (err) => toast.error(parseApiError(err, "Could not accept allocation")),
+  });
+
+  const rejectMut = useMutation({
+    mutationFn: rejectVendorPortalSurvey,
+    onSuccess: async () => {
+      toast.success("Allocation rejected.");
+      await qc.invalidateQueries({ queryKey: queryKeys.vendorPortalSurveys.all });
+      await qc.invalidateQueries({ queryKey: queryKeys.vendorAuth.dashboard });
+    },
+    onError: (err) => toast.error(parseApiError(err, "Could not reject allocation")),
   });
 
   const summary = summaryData ?? {
@@ -542,19 +571,20 @@ export default function VendorDashboardPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-wider text-gray-400">
-                  <th className="pb-3 pl-1">Campaign</th>
-                  <th className="pb-3">Status</th>
-                  <th className="pb-3">Quota Progress</th>
-                  <th className="pb-3 text-center">CPI</th>
-                  <th className="pb-3 text-center">CR</th>
-                  <th className="pb-3 pr-1 text-right">Routing Link</th>
+          <div className="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200/90 bg-white shadow-sm">
+            <table className="w-full min-w-[780px] text-left text-xs text-slate-800">
+              <thead className="bg-[#091428] text-white">
+                <tr className="text-[10px] font-extrabold uppercase tracking-wider text-slate-100">
+                  <th className="px-3 py-2.5 whitespace-nowrap">Campaign</th>
+                  <th className="px-3 py-2.5 whitespace-nowrap">Country</th>
+                  <th className="px-3 py-2.5 whitespace-nowrap">Status</th>
+                  <th className="px-3 py-2.5 whitespace-nowrap">Response</th>
+                  <th className="px-3 py-2.5 whitespace-nowrap">Quota Progress</th>
+                  <th className="px-3 py-2.5 text-center whitespace-nowrap">CPI</th>
+                  <th className="px-3 py-2.5 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100">
                 {recentSurveys.map((alloc) => {
                   const pct =
                     alloc.allocatedQuota > 0
@@ -563,33 +593,50 @@ export default function VendorDashboardPage() {
                           Math.round((alloc.completedCount / alloc.allocatedQuota) * 100)
                         )
                       : 0;
+                  const isAccepted = alloc.vendorResponseStatus === "accepted";
+                  const canRespond =
+                    alloc.vendorResponseStatus === "pending" &&
+                    alloc.status !== "closed" &&
+                    alloc.status !== "completed";
 
                   return (
-                    <tr key={alloc.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3.5 pl-1 max-w-[240px]">
-                        <p className="text-[10px] font-mono font-bold text-brand-primary">
+                    <tr key={alloc.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-3 py-2.5 max-w-[220px]">
+                        <p className="text-[10px] font-mono font-bold text-blue-600">
                           {alloc.allocationCode}
                         </p>
                         <Link
                           href={ROUTES.vendor.survey(alloc.id)}
-                          className="font-bold text-gray-900 hover:text-brand-primary line-clamp-1"
+                          className="font-bold text-slate-900 hover:text-blue-600 line-clamp-1"
                         >
                           {alloc.surveyName}
                         </Link>
-                        <p className="text-[11px] text-gray-400">{alloc.surveyCode}</p>
+                        <p className="text-[10px] font-mono text-slate-400">{alloc.surveyCode}</p>
                       </td>
 
-                      <td className="py-3.5">
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                            VENDOR_ALLOCATION_STATUS_STYLES[alloc.status]
-                          }`}
-                        >
-                          {VENDOR_ALLOCATION_STATUS_LABELS[alloc.status]}
-                        </span>
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        {alloc.targetCountries?.length ? (
+                          <span className="inline-flex items-center gap-1 rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700">
+                            <Globe className="h-2.5 w-2.5 text-slate-400" />
+                            {alloc.targetCountries.slice(0, 2).join(", ")}
+                            {alloc.targetCountries.length > 2
+                              ? ` +${alloc.targetCountries.length - 2}`
+                              : ""}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-slate-400">Global</span>
+                        )}
                       </td>
 
-                      <td className="py-3.5 min-w-[160px]">
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        <AllocationStatusBadge status={alloc.status} />
+                      </td>
+
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        <VendorResponseStatusBadge status={alloc.vendorResponseStatus} />
+                      </td>
+
+                      <td className="px-3 py-2.5 min-w-[150px]">
                         <div className="flex items-center justify-between text-[11px] font-semibold text-gray-700 mb-1">
                           <span>
                             {alloc.completedCount} / {alloc.allocatedQuota}
@@ -604,23 +651,48 @@ export default function VendorDashboardPage() {
                         </div>
                       </td>
 
-                      <td className="py-3.5 text-center font-bold text-gray-900">
+                      <td className="px-3 py-2.5 text-center font-bold text-emerald-700 whitespace-nowrap">
                         ${alloc.vendorCpi}
                       </td>
 
-                      <td className="py-3.5 text-center font-bold text-emerald-600">
-                        {alloc.conversionRate}%
-                      </td>
-
-                      <td className="py-3.5 pr-1 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <CopyRoutingLinkButton
-                            routingLink={alloc.routingLink}
-                            className="h-8 px-2.5 text-xs"
-                          />
+                      <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {canRespond && (
+                            <>
+                              <button
+                                type="button"
+                                disabled={acceptMut.isPending || rejectMut.isPending}
+                                onClick={() => acceptMut.mutate(alloc.id)}
+                                className="h-7 px-2 inline-flex items-center gap-1 rounded-md bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                              >
+                                <CheckCircle2 className="h-3 w-3" />
+                                Accept
+                              </button>
+                              <button
+                                type="button"
+                                disabled={acceptMut.isPending || rejectMut.isPending}
+                                onClick={() => rejectMut.mutate(alloc.id)}
+                                className="h-7 px-2 inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 text-rose-700 font-bold text-[11px] hover:bg-rose-100 transition-colors disabled:opacity-50"
+                              >
+                                <XCircle className="h-3 w-3" />
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          {isAccepted && alloc.routingLink ? (
+                            <CopyRoutingLinkButton
+                              routingLink={`${alloc.routingLink}?toid=RESPONDENT_ID`}
+                              className="h-7 px-2 text-[11px]"
+                            />
+                          ) : !canRespond ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-400 mr-1">
+                              <Lock className="h-3 w-3" />
+                              Link locked
+                            </span>
+                          ) : null}
                           <Link
                             href={ROUTES.vendor.survey(alloc.id)}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-slate-100 hover:text-gray-900 transition-colors"
+                            className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-slate-100 hover:text-gray-900 transition-colors"
                             title="Allocation Details"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />

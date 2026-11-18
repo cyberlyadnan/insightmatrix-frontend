@@ -36,6 +36,7 @@ export async function listVendorAllocations(params?: {
   panelSurveyId?: string;
   vendorId?: string;
   status?: string;
+  vendorResponseStatus?: string;
   search?: string;
 }) {
   const { data } = await apiClient.get<ApiEnvelope<VendorSurveyAllocation[]>>(

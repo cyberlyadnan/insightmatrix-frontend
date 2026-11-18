@@ -15,6 +15,21 @@ export const VENDOR_ALLOCATION_STATUS_STYLES: Record<VendorAllocationStatus, str
   closed: "bg-rose-50 text-rose-700 border border-rose-200",
 };
 
+export const VENDOR_ALLOCATION_RESPONSE_STATUSES = ["pending", "accepted", "rejected"] as const;
+export type VendorAllocationResponseStatus = (typeof VENDOR_ALLOCATION_RESPONSE_STATUSES)[number];
+
+export const VENDOR_ALLOCATION_RESPONSE_LABELS: Record<VendorAllocationResponseStatus, string> = {
+  pending: "Pending",
+  accepted: "Accepted",
+  rejected: "Rejected",
+};
+
+export const VENDOR_ALLOCATION_RESPONSE_STYLES: Record<VendorAllocationResponseStatus, string> = {
+  pending: "bg-amber-50 text-amber-700 border border-amber-200",
+  accepted: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  rejected: "bg-rose-50 text-rose-700 border border-rose-200",
+};
+
 export const VENDOR_RESPONDENT_SESSION_STATUSES = [
   "started",
   "redirected",

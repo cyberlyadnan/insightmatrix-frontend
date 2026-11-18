@@ -20,6 +20,7 @@ import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { getSecurityAnalytics, listSecurityLogs } from "@/services/security-logs/security-logs-api";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatNumber, formatPercent } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export default function AdminSecurityLogsPage() {
   const [search, setSearch] = useState("");
@@ -136,7 +137,7 @@ export default function AdminSecurityLogsPage() {
           onExport={handleExport}
           exportDisabled={items.length === 0}
           filters={
-            <select
+            <CustomDropdown
               value={decision}
               onChange={(e) => {
                 setDecision(e.target.value);
@@ -148,7 +149,7 @@ export default function AdminSecurityLogsPage() {
               <option value="allow">Allow</option>
               <option value="block">Block</option>
               <option value="review">Review</option>
-            </select>
+            </CustomDropdown>
           }
         />
 

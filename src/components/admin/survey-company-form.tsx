@@ -23,6 +23,7 @@ import {
 import type { SurveyCompany } from "@/services/survey-company";
 import { useFormHydrateFromDefaults } from "@/hooks/use-form-hydrate-from-defaults";
 import { surveyCompanyFormSchema, type SurveyCompanyFormValues } from "@/validations";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export const emptySurveyCompanyFormValues: SurveyCompanyFormValues = {
   companyName: "",
@@ -137,7 +138,7 @@ export function SurveyCompanyForm({
                 <FormItem className="md:col-span-2">
                   <FormLabel className="text-gray-700 font-bold">Provider type</FormLabel>
                   <FormControl>
-                    <select
+                    <CustomDropdown
                       className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
                       {...field}
                     >
@@ -146,7 +147,7 @@ export function SurveyCompanyForm({
                           {SURVEY_PROVIDER_LABELS[t]}
                         </option>
                       ))}
-                    </select>
+                    </CustomDropdown>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,13 +160,13 @@ export function SurveyCompanyForm({
                 <FormItem>
                   <FormLabel className="text-gray-700 font-bold">Status</FormLabel>
                   <FormControl>
-                    <select
+                    <CustomDropdown
                       className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
                       {...field}
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
-                    </select>
+                    </CustomDropdown>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

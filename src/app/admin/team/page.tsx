@@ -26,6 +26,7 @@ import { crmToast } from "@/lib/crm-toast";
 import { parseApiError } from "@/services/api/errors";
 import { queryKeys } from "@/services/queries";
 import { deleteUser, listUsers, updateUser, type AdminUserListItem } from "@/services/users";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export default function AdminTeamPage() {
   const qc = useQueryClient();
@@ -102,7 +103,7 @@ export default function AdminTeamPage() {
             />
           </div>
 
-          <select
+          <CustomDropdown
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value as "" | "admin" | "user")}
             className="px-4 py-3 bg-white border border-gray-200 text-gray-700 font-bold text-xs rounded-2xl focus:outline-none focus:border-brand-primary"
@@ -110,7 +111,7 @@ export default function AdminTeamPage() {
             <option value="admin">Administrators</option>
             <option value="user">Panel Members</option>
             <option value="">All Account Roles</option>
-          </select>
+          </CustomDropdown>
 
           <button
             type="button"

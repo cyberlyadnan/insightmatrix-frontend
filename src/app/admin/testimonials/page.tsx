@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const initialTestimonials = [
   {
@@ -208,11 +209,11 @@ export default function TestimonialsAdmin() {
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                       Star Rating
                     </label>
-                    <select className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm text-gray-900 outline-none focus:ring-2 focus:ring-brand-primary/10 transition-all appearance-none cursor-pointer">
+                    <CustomDropdown className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm text-gray-900 outline-none focus:ring-2 focus:ring-brand-primary/10 transition-all appearance-none cursor-pointer">
                       <option>5 Stars</option>
                       <option>4 Stars</option>
                       <option>3 Stars</option>
-                    </select>
+                    </CustomDropdown>
                   </div>
                   <div className="flex-1 space-y-4">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">

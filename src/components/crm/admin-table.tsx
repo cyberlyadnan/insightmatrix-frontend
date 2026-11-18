@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { Download, Filter, Search } from "lucide-react";
 
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 import { cn } from "@/lib/utils";
 
 type AdminTableToolbarProps = {
@@ -96,10 +97,11 @@ export function AdminPagination({
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {onPageSizeChange && pageSize != null ? (
-          <select
+          <CustomDropdown
             value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="h-10 rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900"
+            onValueChange={(val) => onPageSizeChange(Number(val))}
+            searchable={false}
+            className="h-10 min-w-[118px] rounded-xl text-sm font-semibold text-gray-900"
             aria-label="Rows per page"
           >
             {pageSizeOptions.map((n) => (
@@ -107,7 +109,7 @@ export function AdminPagination({
                 {n} / page
               </option>
             ))}
-          </select>
+          </CustomDropdown>
         ) : null}
         <button
           type="button"
@@ -165,7 +167,7 @@ export function AdminTableSkeleton({ rows = 6 }: { rows?: number }) {
 
 /** Shared select styling for table filters. */
 export const adminFilterSelectClass =
-  "h-10 rounded-xl border border-gray-200 px-3 text-xs text-gray-800 bg-white max-w-[200px] focus:outline-none focus:ring-2 focus:ring-brand-primary/20 shadow-sm transition-colors";
+  "h-10 rounded-xl border border-slate-200/90 px-3 text-xs text-slate-800 bg-white min-w-[155px] max-w-[230px] shadow-xs";
 
 export const adminTableWrapClass =
   "rounded-2xl border border-slate-200/90 bg-white p-5 md:p-6 shadow-sm";

@@ -29,6 +29,7 @@ import {
   Eye,
 } from "lucide-react";
 import type { ServiceCmsRecord } from "@/services/services-cms/services-cms-api";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const ICON_OPTIONS = [
   { name: "Database", icon: Database },
@@ -432,7 +433,7 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting, mode }: Servi
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                 Category
               </label>
-              <select
+              <CustomDropdown
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
@@ -442,21 +443,21 @@ export function ServiceForm({ initialData, onSubmit, isSubmitting, mode }: Servi
                     {opt.label}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
                 Publishing Status
               </label>
-              <select
+              <CustomDropdown
                 value={status}
                 onChange={(e) => setStatus(e.target.value as "published" | "draft")}
                 className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm font-semibold text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
               >
                 <option value="published">Published (Live on Website)</option>
                 <option value="draft">Draft (Hidden from Public)</option>
-              </select>
+              </CustomDropdown>
             </div>
 
             <div>

@@ -23,6 +23,7 @@ import { listSurveyRespondentProfiles } from "@/services/survey-respondent-profi
 import { resolveTrackingParticipantId } from "@/lib/survey-respondent-tracking";
 import { queryKeys } from "@/services/queries";
 import { downloadCsv } from "@/utils/download-csv";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export default function SurveyRespondentsPage() {
   const [search, setSearch] = useState("");
@@ -99,7 +100,7 @@ export default function SurveyRespondentsPage() {
           exportDisabled={items.length === 0}
           filters={
             <>
-              <select
+              <CustomDropdown
                 value={status}
                 onChange={(e) => {
                   setStatus(e.target.value);
@@ -114,7 +115,7 @@ export default function SurveyRespondentsPage() {
                 <option value="terminate">Terminate</option>
                 <option value="quota_full">Quota full</option>
                 <option value="quality_reject">Quality reject</option>
-              </select>
+              </CustomDropdown>
               <Link
                 href={ROUTES.admin.respondentExports}
                 className="h-11 inline-flex items-center rounded-xl border border-gray-200 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"

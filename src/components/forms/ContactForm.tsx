@@ -21,6 +21,7 @@ import { parseApiError } from "@/services/api/errors";
 import { listContactSubjects, submitContactQuery } from "@/services/contact-query";
 import { queryKeys } from "@/services/queries";
 import { contactFormSchema, type ContactFormValues } from "@/validations";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export default function ContactForm() {
   const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
@@ -121,7 +122,7 @@ export default function ContactForm() {
               <FormItem>
                 <FormLabel className="text-gray-700">Subject</FormLabel>
                 <FormControl>
-                  <select
+                  <CustomDropdown
                     {...field}
                     className="w-full h-10 rounded-md border border-input bg-gray-50 px-3 text-sm text-gray-900 focus:bg-white transition-colors"
                   >
@@ -131,7 +132,7 @@ export default function ContactForm() {
                         {subject}
                       </option>
                     ))}
-                  </select>
+                  </CustomDropdown>
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -54,6 +54,7 @@ import { queryKeys } from "@/services/queries";
 import type { VendorPortalAllocation } from "@/types/vendor-allocation";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatCurrency, formatNumber } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 function resolveCategory(item: VendorPortalAllocation): string {
   if (item.targetIndustries?.length) return item.targetIndustries[0];
@@ -447,7 +448,7 @@ export default function VendorSurveysPage() {
                     Important
                   </span>
                 </label>
-                <select
+                <CustomDropdown
                   value={draftFilters.country}
                   onChange={(e) => {
                     const next = { ...draftFilters, country: e.target.value };
@@ -474,13 +475,13 @@ export default function VendorSurveysPage() {
                       </option>
                     ))}
                   </optgroup>
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Project Category */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Project Category</label>
-                <select
+                <CustomDropdown
                   value={draftFilters.category}
                   onChange={(e) => {
                     const next = { ...draftFilters, category: e.target.value };
@@ -496,13 +497,13 @@ export default function VendorSurveysPage() {
                       {cat}
                     </option>
                   ))}
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Project Status */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Project Status</label>
-                <select
+                <CustomDropdown
                   value={draftFilters.status}
                   onChange={(e) => {
                     const next = {
@@ -521,7 +522,7 @@ export default function VendorSurveysPage() {
                       {VENDOR_ALLOCATION_STATUS_LABELS[st]}
                     </option>
                   ))}
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Project Title */}
@@ -539,7 +540,7 @@ export default function VendorSurveysPage() {
               {/* Is Accepted */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Is Accepted</label>
-                <select
+                <CustomDropdown
                   value={draftFilters.isAccepted}
                   onChange={(e) => {
                     const next = {
@@ -558,7 +559,7 @@ export default function VendorSurveysPage() {
                       {VENDOR_ALLOCATION_RESPONSE_LABELS[st]}
                     </option>
                   ))}
-                </select>
+                </CustomDropdown>
               </div>
             </div>
 

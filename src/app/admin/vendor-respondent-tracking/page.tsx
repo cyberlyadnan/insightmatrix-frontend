@@ -21,6 +21,7 @@ import { listVendorRespondentSessions } from "@/services/vendor-respondent-track
 import { queryKeys } from "@/services/queries";
 import { VENDOR_RESPONDENT_SESSION_STATUSES } from "@/constants/vendor-allocation";
 import { downloadCsv } from "@/utils/download-csv";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -118,7 +119,7 @@ export default function VendorRespondentTrackingPage() {
           exportDisabled={items.length === 0}
           filters={
             <>
-              <select
+              <CustomDropdown
                 value={status}
                 onChange={(e) => {
                   setStatus(e.target.value);
@@ -132,8 +133,8 @@ export default function VendorRespondentTrackingPage() {
                     {s}
                   </option>
                 ))}
-              </select>
-              <select
+              </CustomDropdown>
+              <CustomDropdown
                 value={callbackForwarded}
                 onChange={(e) => {
                   setCallbackForwarded(e.target.value as "" | "true" | "false");
@@ -144,7 +145,7 @@ export default function VendorRespondentTrackingPage() {
                 <option value="">Callback: any</option>
                 <option value="true">Forwarded</option>
                 <option value="false">Not forwarded</option>
-              </select>
+              </CustomDropdown>
             </>
           }
         />

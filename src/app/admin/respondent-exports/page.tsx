@@ -18,6 +18,7 @@ import { exportSurveyRespondents } from "@/services/survey-respondent-profile/su
 import { listVendors } from "@/services/vendor";
 import { queryKeys } from "@/services/queries";
 import { cn } from "@/lib/utils";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 type ExportFormat = "csv" | "xlsx" | "pdf";
 
@@ -214,7 +215,7 @@ export default function RespondentExportsPage() {
               <span className={labelClass}>
                 Export Format <span className="text-rose-500">*</span>
               </span>
-              <select
+              <CustomDropdown
                 value={format}
                 onChange={(e) => setFormat(e.target.value as ExportFormat)}
                 className={fieldClass}
@@ -223,12 +224,12 @@ export default function RespondentExportsPage() {
                 <option value="csv">CSV</option>
                 <option value="xlsx">Excel (XLSX)</option>
                 <option value="pdf">PDF</option>
-              </select>
+              </CustomDropdown>
             </label>
 
             <label className="block">
               <span className={labelClass}>Status</span>
-              <select
+              <CustomDropdown
                 value={surveyStatus}
                 onChange={(e) => setSurveyStatus(e.target.value)}
                 className={fieldClass}
@@ -238,7 +239,7 @@ export default function RespondentExportsPage() {
                     {opt.label}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             </label>
 
             <label className="block">
@@ -318,7 +319,7 @@ export default function RespondentExportsPage() {
         >
           <label className="block">
             <span className={labelClass}>Vendor</span>
-            <select
+            <CustomDropdown
               value={vendorId}
               onChange={(e) => setVendorId(e.target.value)}
               className={fieldClass}
@@ -330,7 +331,7 @@ export default function RespondentExportsPage() {
                   {v.companyName} ({v.vendorCode})
                 </option>
               ))}
-            </select>
+            </CustomDropdown>
           </label>
           {selectedVendor ? (
             <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm mt-3">

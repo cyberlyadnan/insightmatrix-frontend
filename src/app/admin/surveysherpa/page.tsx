@@ -38,6 +38,7 @@ import {
 import { PageHeader } from "@/components/crm/page-help";
 import { adminFilterSelectClass } from "@/components/crm/admin-table";
 import { downloadCsv } from "@/utils/download-csv";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 function formatCpi(val: unknown): string {
   const num = Number(val);
@@ -597,7 +598,7 @@ export default function SurveySherpaAdminPage() {
             </span>
 
             {/* Language dropdown */}
-            <select
+            <CustomDropdown
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
               className={adminFilterSelectClass}
@@ -608,10 +609,10 @@ export default function SurveySherpaAdminPage() {
                   {l.name}
                 </option>
               ))}
-            </select>
+            </CustomDropdown>
 
             {/* Import Status dropdown */}
-            <select
+            <CustomDropdown
               value={importFilter}
               onChange={(e) =>
                 setImportFilter(e.target.value as "all" | "imported" | "not_imported")
@@ -621,7 +622,7 @@ export default function SurveySherpaAdminPage() {
               <option value="all">All Statuses</option>
               <option value="imported">Imported in IMX</option>
               <option value="not_imported">Not In Catalog</option>
-            </select>
+            </CustomDropdown>
 
             {/* Export CSV */}
             <button

@@ -10,6 +10,7 @@ import { parseApiError } from "@/services/api/errors";
 import { createUser, type CreateUserPayload } from "@/services/users";
 import { queryKeys } from "@/services/queries";
 import type { UserRole } from "@/types/user";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -224,28 +225,28 @@ export function CreateUserModal({
                 <label className="text-[10px] font-black uppercase tracking-wider text-gray-600 block">
                   Account Role
                 </label>
-                <select
+                <CustomDropdown
                   value={role}
                   onChange={(e) => setRole(e.target.value as UserRole)}
                   className="w-full h-12 px-4 rounded-2xl border border-gray-200 text-sm font-bold text-gray-900 bg-white focus:outline-none focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary transition-all"
                 >
                   <option value="user">Panel Member (User)</option>
                   <option value="admin">Administrator (Admin)</option>
-                </select>
+                </CustomDropdown>
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-wider text-gray-600 block">
                   Account Status
                 </label>
-                <select
+                <CustomDropdown
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="w-full h-12 px-4 rounded-2xl border border-gray-200 text-sm font-bold text-gray-900 bg-white focus:outline-none focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary transition-all"
                 >
                   <option value="active">Active</option>
                   <option value="suspended">Suspended</option>
-                </select>
+                </CustomDropdown>
               </div>
             </div>
 

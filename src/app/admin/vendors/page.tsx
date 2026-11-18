@@ -25,6 +25,7 @@ import { queryKeys } from "@/services/queries";
 import type { Vendor } from "@/types/vendor";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatNumber } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const primaryActionClass =
   "h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0 transition-colors";
@@ -134,7 +135,7 @@ export default function AdminVendorsPage() {
           onExport={handleExport}
           exportDisabled={items.length === 0}
           filters={
-            <select
+            <CustomDropdown
               className={adminFilterSelectClass}
               value={status}
               onChange={(e) => {
@@ -148,7 +149,7 @@ export default function AdminVendorsPage() {
                   {o.label}
                 </option>
               ))}
-            </select>
+            </CustomDropdown>
           }
         />
 

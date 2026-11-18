@@ -22,6 +22,7 @@ import {
 import { queryKeys } from "@/services/queries";
 import { usePrescreenBuilderStore } from "@/store";
 import type { PrescreenForm, PrescreenQuestionType } from "@/types/prescreen";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const schema = z.object({
   title: z.string().min(2, "Title is required"),
@@ -213,29 +214,29 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
             </div>
             <div>
               <p className="text-xs text-gray-500 font-bold mb-2">Status</p>
-              <select
+              <CustomDropdown
                 {...form.register("status")}
                 className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
                 <option value="archived">Archived</option>
-              </select>
+              </CustomDropdown>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-bold mb-2">Visibility</p>
-              <select
+              <CustomDropdown
                 {...form.register("visibility")}
                 className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
               >
                 <option value="internal">Internal</option>
                 <option value="private">Private</option>
                 <option value="public">Public</option>
-              </select>
+              </CustomDropdown>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-bold mb-2">Category</p>
-              <select
+              <CustomDropdown
                 {...form.register("category")}
                 className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
               >
@@ -245,7 +246,7 @@ export function PrescreenBuilder({ initialData, mode, prescreenId }: Props) {
                     {item.name}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-bold mb-2">Tags (comma separated)</p>

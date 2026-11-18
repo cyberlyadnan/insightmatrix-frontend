@@ -40,6 +40,7 @@ import {
 } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
 import { downloadCsv } from "@/utils/download-csv";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 type SortField = "companyName" | "companyCode" | "createdAt" | "providerType" | "status";
 
@@ -209,7 +210,7 @@ export default function AdminSurveyCompaniesPage() {
           onExport={handleExport}
           exportDisabled={items.length === 0}
           filters={
-            <select
+            <CustomDropdown
               value={statusFilter}
               onChange={(e) => handleStatusFilterChange(e.target.value as "" | SurveyCompanyStatus)}
               className={adminFilterSelectClass}
@@ -217,7 +218,7 @@ export default function AdminSurveyCompaniesPage() {
               <option value="">All statuses</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
-            </select>
+            </CustomDropdown>
           }
         />
 

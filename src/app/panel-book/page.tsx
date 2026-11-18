@@ -27,6 +27,7 @@ import {
   panelBookLeadFormSchema,
   type PanelBookLeadFormValues,
 } from "@/validations/panel-book-lead.schema";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const countryOptions = getCountrySelectOptions();
 
@@ -276,13 +277,13 @@ export default function PanelBookPage() {
                                 Organization type *
                               </FormLabel>
                               <FormControl>
-                                <select className={selectClassName} {...field}>
+                                <CustomDropdown className={selectClassName} {...field}>
                                   {PANEL_BOOK_ORG_TYPES.map((v) => (
                                     <option key={v} value={v}>
                                       {PANEL_BOOK_ORG_LABELS[v]}
                                     </option>
                                   ))}
-                                </select>
+                                </CustomDropdown>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -316,7 +317,7 @@ export default function PanelBookPage() {
                                 Country / region *
                               </FormLabel>
                               <FormControl>
-                                <select
+                                <CustomDropdown
                                   className={selectClassName}
                                   value={field.value}
                                   onChange={(e) => field.onChange(e.target.value)}
@@ -328,7 +329,7 @@ export default function PanelBookPage() {
                                       {c.label}
                                     </option>
                                   ))}
-                                </select>
+                                </CustomDropdown>
                               </FormControl>
                               <FormMessage />
                             </FormItem>

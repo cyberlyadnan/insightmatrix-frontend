@@ -62,6 +62,7 @@ import {
   panelSurveyFormSchema,
   type PanelSurveyFormValues,
 } from "@/validations/panel-survey.schema";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 /** Binds `<input type="number">` so RHF stores integers, not strings (matches Zod + API). */
 function intInputBind(
@@ -444,7 +445,7 @@ export function PanelSurveyForm({
                   <FormItem>
                     <FormLabel className="font-bold text-gray-700">Status</FormLabel>
                     <FormControl>
-                      <select
+                      <CustomDropdown
                         className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
                         {...field}
                       >
@@ -453,7 +454,7 @@ export function PanelSurveyForm({
                             {PANEL_SURVEY_STATUS_LABELS[s]}
                           </option>
                         ))}
-                      </select>
+                      </CustomDropdown>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -778,7 +779,7 @@ export function PanelSurveyForm({
                           <FormItem className="md:col-span-2">
                             <FormLabel className="text-gray-700 font-bold">Status</FormLabel>
                             <FormControl>
-                              <select
+                              <CustomDropdown
                                 className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
                                 {...f}
                               >
@@ -787,7 +788,7 @@ export function PanelSurveyForm({
                                     {PANEL_QUOTA_GROUP_STATUS_LABELS[s]}
                                   </option>
                                 ))}
-                              </select>
+                              </CustomDropdown>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -852,7 +853,7 @@ export function PanelSurveyForm({
                   <FormItem>
                     <FormLabel className="font-bold text-gray-700">Gender targeting</FormLabel>
                     <FormControl>
-                      <select
+                      <CustomDropdown
                         className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
                         {...field}
                       >
@@ -861,7 +862,7 @@ export function PanelSurveyForm({
                             {label}
                           </option>
                         ))}
-                      </select>
+                      </CustomDropdown>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

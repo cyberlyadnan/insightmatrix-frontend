@@ -29,6 +29,7 @@ import {
   updateContactQueryStatus,
 } from "@/services/contact-query";
 import { queryKeys } from "@/services/queries";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const LABEL_OPTIONS = ["Sales", "Support", "Partnership", "Technical", "Priority"];
 
@@ -180,7 +181,7 @@ export default function AdminQueries() {
               className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-xl text-sm text-gray-900 placeholder:text-gray-500"
             />
           </div>
-          <select
+          <CustomDropdown
             value={statusFilter}
             onChange={(e) =>
               setStatusFilter(
@@ -203,8 +204,8 @@ export default function AdminQueries() {
             <option value="read">Read</option>
             <option value="resolved">Resolved</option>
             <option value="completed">Completed</option>
-          </select>
-          <select
+          </CustomDropdown>
+          <CustomDropdown
             value={labelFilter}
             onChange={(e) => setLabelFilter(e.target.value)}
             className="h-12 rounded-xl border border-gray-100 px-3 text-sm text-gray-900 bg-white"
@@ -215,7 +216,7 @@ export default function AdminQueries() {
                 {label}
               </option>
             ))}
-          </select>
+          </CustomDropdown>
         </div>
       </div>
 
@@ -373,7 +374,7 @@ export default function AdminQueries() {
                     >
                       <Trash2 size={20} />
                     </button>
-                    <select
+                    <CustomDropdown
                       value={selectedQuery.status}
                       onChange={(e) =>
                         statusMutation.mutate({
@@ -389,7 +390,7 @@ export default function AdminQueries() {
                       <option value="completed">Completed</option>
                       <option value="unread">Unread</option>
                       <option value="read">Read</option>
-                    </select>
+                    </CustomDropdown>
                   </div>
                 </div>
 

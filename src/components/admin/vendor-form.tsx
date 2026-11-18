@@ -22,6 +22,7 @@ import { useFormHydrateFromDefaults } from "@/hooks/use-form-hydrate-from-defaul
 import type { Vendor } from "@/types/vendor";
 import { normalizeVendorCallbackUrls } from "@/utils/vendor-callback";
 import { vendorCreateFormSchema, vendorEditFormSchema, type VendorFormValues } from "@/validations";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export { emptyVendorFormValues } from "@/validations";
 
@@ -214,7 +215,7 @@ export function VendorForm({
                 <FormItem>
                   <FormLabel className="text-gray-700 font-bold">Status</FormLabel>
                   <FormControl>
-                    <select
+                    <CustomDropdown
                       className="w-full h-11 rounded-xl border border-gray-200 px-3 text-sm text-gray-900 bg-white"
                       value={field.value ?? "active"}
                       onChange={field.onChange}
@@ -223,7 +224,7 @@ export function VendorForm({
                       <option value="active">Active</option>
                       <option value="paused">Paused</option>
                       <option value="suspended">Suspended</option>
-                    </select>
+                    </CustomDropdown>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

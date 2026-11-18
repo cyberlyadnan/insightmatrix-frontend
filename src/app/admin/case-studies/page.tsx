@@ -102,12 +102,12 @@ export default function AdminCaseStudies() {
           <button className="px-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-600 flex items-center gap-2 hover:bg-gray-50 transition-colors">
             <Filter size={18} /> Filters
           </button>
-          <select className="px-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-600 outline-none hover:bg-gray-50 transition-colors cursor-pointer">
+          <CustomDropdown className="px-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-600 outline-none hover:bg-gray-50 transition-colors cursor-pointer">
             <option>Recently Added</option>
             <option>Most Viewed</option>
             <option>Published Only</option>
             <option>Drafts</option>
-          </select>
+          </CustomDropdown>
         </div>
       </div>
 
@@ -344,3 +344,4 @@ export default function AdminCaseStudies() {
 }
 
 import { X } from "lucide-react";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";

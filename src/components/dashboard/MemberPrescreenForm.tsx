@@ -11,6 +11,7 @@ import { PANEL_COUNTRY_OPTIONS } from "@/constants/panel-targeting-options";
 import { COUNTRY_ISO_BY_NAME } from "@/constants/country-iso-codes";
 import { ROUTES } from "@/constants/routes";
 import type { PrescreenForm, PrescreenQuestion } from "@/types/prescreen";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 type Props = {
   form: PrescreenForm;
@@ -327,7 +328,7 @@ export function MemberPrescreenForm({
             ) : null}
 
             {!isCountry && q.type === "dropdown" ? (
-              <select
+              <CustomDropdown
                 value={String(answers[q.id] ?? "")}
                 onChange={(e) => setVal(q.id, e.target.value)}
                 className="w-full h-9 rounded-lg border border-gray-200 px-3 text-xs text-gray-900 bg-white"
@@ -339,7 +340,7 @@ export function MemberPrescreenForm({
                     {opt.label}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             ) : null}
 
             {!isCountry && q.type === "radio" ? (

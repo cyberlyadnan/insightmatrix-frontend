@@ -56,6 +56,7 @@ import { listSurveyCompanies } from "@/services/survey-company";
 import { queryKeys } from "@/services/queries";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatNumber, formatPercent } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 function surveyProgressPercent(row: PanelSurvey): number {
   const total = row.totalQuota ?? 0;
@@ -351,7 +352,7 @@ export default function AdminPanelSurveysPage() {
                     Important
                   </span>
                 </label>
-                <select
+                <CustomDropdown
                   value={country}
                   onChange={(e) => {
                     setCountry(e.target.value);
@@ -365,7 +366,7 @@ export default function AdminPanelSurveysPage() {
                       {c.name} ({c.code})
                     </option>
                   ))}
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Project Title / Code */}
@@ -388,7 +389,7 @@ export default function AdminPanelSurveysPage() {
               {/* Project Status */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Project Status</label>
-                <select
+                <CustomDropdown
                   value={statusFilter}
                   onChange={(e) => {
                     setStatusFilter(e.target.value as "" | PanelSurveyStatus);
@@ -402,13 +403,13 @@ export default function AdminPanelSurveysPage() {
                       {PANEL_SURVEY_STATUS_LABELS[s]}
                     </option>
                   ))}
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Survey Source (Sherpa Filter) */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Survey Source</label>
-                <select
+                <CustomDropdown
                   value={sourceFilter}
                   onChange={(e) => {
                     setSourceFilter(e.target.value as "all" | "sherpa" | "other");
@@ -419,13 +420,13 @@ export default function AdminPanelSurveysPage() {
                   <option value="all">All Sources</option>
                   <option value="sherpa">SurveySherpa Only</option>
                   <option value="other">Direct / Other Providers</option>
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Provider */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Provider</label>
-                <select
+                <CustomDropdown
                   value={providerId}
                   onChange={(e) => {
                     setProviderId(e.target.value);
@@ -439,13 +440,13 @@ export default function AdminPanelSurveysPage() {
                       {p.companyName}
                     </option>
                   ))}
-                </select>
+                </CustomDropdown>
               </div>
 
               {/* Audience */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700">Audience</label>
-                <select
+                <CustomDropdown
                   value={audienceFilter}
                   onChange={(e) => {
                     setAudienceFilter(e.target.value as "" | PanelSurveyAudience);
@@ -456,7 +457,7 @@ export default function AdminPanelSurveysPage() {
                   <option value="">All audiences</option>
                   <option value="public">Public (User Panel)</option>
                   <option value="internal">Internal / Private</option>
-                </select>
+                </CustomDropdown>
               </div>
             </div>
 

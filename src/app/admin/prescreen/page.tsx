@@ -30,6 +30,7 @@ import { queryKeys } from "@/services/queries";
 import type { PrescreenForm } from "@/types/prescreen";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatNumber } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 export default function AdminPrescreenListPage() {
   const qc = useQueryClient();
@@ -137,7 +138,7 @@ export default function AdminPrescreenListPage() {
           onExport={handleExport}
           exportDisabled={items.length === 0}
           filters={
-            <select
+            <CustomDropdown
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               className={adminFilterSelectClass}
@@ -146,7 +147,7 @@ export default function AdminPrescreenListPage() {
               <option value="draft">Draft</option>
               <option value="published">Published</option>
               <option value="archived">Archived</option>
-            </select>
+            </CustomDropdown>
           }
         />
 

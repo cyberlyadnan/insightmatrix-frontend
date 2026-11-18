@@ -39,6 +39,7 @@ import { listPanelSurveys } from "@/services/panel-survey";
 import { queryKeys } from "@/services/queries";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatCurrency, formatNumber, formatPercent } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 const primaryBtn =
   "h-11 px-5 rounded-xl bg-gray-900 text-white inline-flex items-center justify-center gap-2 font-bold hover:bg-black shrink-0";
@@ -172,7 +173,7 @@ export default function AdminVendorAllocationsPage() {
           exportDisabled={items.length === 0}
           filters={
             <>
-              <select
+              <CustomDropdown
                 value={status}
                 onChange={(e) => {
                   setStatus(e.target.value as VendorAllocationStatus | "");
@@ -186,8 +187,8 @@ export default function AdminVendorAllocationsPage() {
                     {s}
                   </option>
                 ))}
-              </select>
-              <select
+              </CustomDropdown>
+              <CustomDropdown
                 value={vendorResponseStatus}
                 onChange={(e) => {
                   setVendorResponseStatus(e.target.value as VendorAllocationResponseStatus | "");
@@ -201,8 +202,8 @@ export default function AdminVendorAllocationsPage() {
                     {VENDOR_ALLOCATION_RESPONSE_LABELS[s]}
                   </option>
                 ))}
-              </select>
-              <select
+              </CustomDropdown>
+              <CustomDropdown
                 value={surveyId}
                 onChange={(e) => {
                   setSurveyId(e.target.value);
@@ -216,8 +217,8 @@ export default function AdminVendorAllocationsPage() {
                     {s.surveyCode} — {s.surveyName}
                   </option>
                 ))}
-              </select>
-              <select
+              </CustomDropdown>
+              <CustomDropdown
                 value={vendorId}
                 onChange={(e) => {
                   setVendorId(e.target.value);
@@ -231,7 +232,7 @@ export default function AdminVendorAllocationsPage() {
                     {v.vendorCode}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             </>
           }
         />

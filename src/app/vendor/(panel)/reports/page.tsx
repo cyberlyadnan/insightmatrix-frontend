@@ -40,6 +40,7 @@ import {
 } from "@/services/vendor-portal/vendor-portal-api";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatCurrency, formatNumber } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 type ReportTab = "hourly" | "market" | "revenue" | "conversion";
 
@@ -476,7 +477,7 @@ export default function VendorHourlyReportsPage() {
               <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
                 Assigned Survey
               </label>
-              <select
+              <CustomDropdown
                 value={allocationId}
                 onChange={(e) => setAllocationId(e.target.value)}
                 className={cn(adminFilterSelectClass, "w-full max-w-none")}
@@ -487,14 +488,14 @@ export default function VendorHourlyReportsPage() {
                     {a.allocationCode} — {a.surveyName}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             </div>
 
             <div>
               <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
                 Market / Country
               </label>
-              <select
+              <CustomDropdown
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
                 className={cn(adminFilterSelectClass, "w-full max-w-none")}
@@ -505,14 +506,14 @@ export default function VendorHourlyReportsPage() {
                     {c}
                   </option>
                 ))}
-              </select>
+              </CustomDropdown>
             </div>
 
             <div>
               <label className="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1.5">
                 Traffic Outcome Filter
               </label>
-              <select
+              <CustomDropdown
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
                 className={cn(adminFilterSelectClass, "w-full max-w-none")}
@@ -523,7 +524,7 @@ export default function VendorHourlyReportsPage() {
                 <option value="quota_full">Quota Full Only</option>
                 <option value="quality_reject">Quality Rejects Only</option>
                 <option value="redirected">Redirected Only</option>
-              </select>
+              </CustomDropdown>
             </div>
           </div>
         </div>

@@ -26,6 +26,7 @@ import { queryKeys } from "@/services/queries";
 import type { UserRole } from "@/types/user";
 import { downloadCsv } from "@/utils/download-csv";
 import { formatNumber } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -149,7 +150,7 @@ export default function AdminUsersPage() {
         onExport={handleExport}
         filters={
           <>
-            <select
+            <CustomDropdown
               className={adminFilterSelectClass}
               value={role}
               onChange={(e) => {
@@ -161,8 +162,8 @@ export default function AdminUsersPage() {
               <option value="">All roles</option>
               <option value="user">Panel members</option>
               <option value="admin">Admins</option>
-            </select>
-            <select
+            </CustomDropdown>
+            <CustomDropdown
               className={adminFilterSelectClass}
               value={status}
               onChange={(e) => {
@@ -175,8 +176,8 @@ export default function AdminUsersPage() {
               <option value="active">Active</option>
               <option value="suspended">Suspended</option>
               <option value="deactivated">Deactivated</option>
-            </select>
-            <select
+            </CustomDropdown>
+            <CustomDropdown
               className={adminFilterSelectClass}
               value={prescreen}
               onChange={(e) => {
@@ -188,8 +189,8 @@ export default function AdminUsersPage() {
               <option value="">Any prescreen</option>
               <option value="complete">Prescreen complete</option>
               <option value="incomplete">Prescreen incomplete</option>
-            </select>
-            <select
+            </CustomDropdown>
+            <CustomDropdown
               className={adminFilterSelectClass}
               value={verified}
               onChange={(e) => {
@@ -201,7 +202,7 @@ export default function AdminUsersPage() {
               <option value="">Any verification</option>
               <option value="true">Verified</option>
               <option value="false">Unverified</option>
-            </select>
+            </CustomDropdown>
           </>
         }
       />

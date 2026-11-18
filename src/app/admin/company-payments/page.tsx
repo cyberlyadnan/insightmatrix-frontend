@@ -27,6 +27,7 @@ import { listSurveyCompanies, type SurveyCompany } from "@/services/survey-compa
 import { queryKeys } from "@/services/queries";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatPercent } from "@/utils/format";
+import { CustomDropdown } from "@/components/ui/custom-dropdown";
 
 function companyLabel(c: CompanySurveyPaymentRow["surveyCompanyId"]): string {
   if (c && typeof c === "object" && "companyName" in c) return String(c.companyName ?? "—");
@@ -413,7 +414,7 @@ export default function AdminCompanyPaymentsPage() {
 
       <div className="rounded-[2rem] border border-gray-200 bg-white p-5 md:p-6 shadow-sm">
         <div className="flex flex-wrap gap-3 mb-6">
-          <select
+          <CustomDropdown
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value as "" | CompanyPaymentStatus);
@@ -427,7 +428,7 @@ export default function AdminCompanyPaymentsPage() {
                 {s.charAt(0).toUpperCase() + s.slice(1)}
               </option>
             ))}
-          </select>
+          </CustomDropdown>
         </div>
 
         {isLoading ? (
@@ -491,7 +492,7 @@ export default function AdminCompanyPaymentsPage() {
                         {formatCurrency(row.totalAmount, row.currency || "INR")}
                       </td>
                       <td className="py-1.5 px-3 whitespace-nowrap align-middle">
-                        <select
+                        <CustomDropdown
                           value={row.status}
                           disabled={statusMutation.isPending}
                           onChange={(e) =>
@@ -507,7 +508,7 @@ export default function AdminCompanyPaymentsPage() {
                               {s}
                             </option>
                           ))}
-                        </select>
+                        </CustomDropdown>
                       </td>
                       <td className="py-1.5 px-3 text-right align-middle whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1 flex-nowrap whitespace-nowrap shrink-0">
@@ -540,7 +541,7 @@ export default function AdminCompanyPaymentsPage() {
                 >
                   <div className="flex justify-between gap-2 items-center">
                     <span className="font-mono text-xs font-bold">{row.invoiceNumber}</span>
-                    <select
+                    <CustomDropdown
                       value={row.status}
                       disabled={statusMutation.isPending}
                       onChange={(e) =>
@@ -556,7 +557,7 @@ export default function AdminCompanyPaymentsPage() {
                           {s}
                         </option>
                       ))}
-                    </select>
+                    </CustomDropdown>
                   </div>
                   <p className="text-sm font-bold">{companyLabel(row.surveyCompanyId)}</p>
                   <p className="text-xs text-gray-600 truncate">{surveyLabel(row.panelSurveyId)}</p>

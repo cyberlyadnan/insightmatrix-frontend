@@ -48,6 +48,7 @@ export type VendorPublicProfile = {
 
 export type VendorDashboardSummary = {
   activeAssignments: number;
+  totalStarts?: number;
   totalCompletes: number;
   totalTerminates: number;
   totalQuotaFull: number;

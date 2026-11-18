@@ -74,6 +74,12 @@ export const queryKeys = {
   vendorAuth: {
     profile: ["vendor-auth", "profile"] as const,
     dashboard: ["vendor-auth", "dashboard"] as const,
+    dashboardRange: (filters: Record<string, unknown>) =>
+      ["vendor-auth", "dashboard", filters] as const,
+  },
+  vendorPortalReports: {
+    hourly: (filters: Record<string, unknown>) =>
+      ["vendor-portal", "reports", "hourly", filters] as const,
   },
   vendorAllocations: {
     all: ["vendor-allocations"] as const,

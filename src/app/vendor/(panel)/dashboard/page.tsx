@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -20,7 +20,6 @@ import {
   Store,
   TrendingUp,
   XCircle,
-  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -39,6 +38,11 @@ import {
   AllocationStatusBadge,
   VendorResponseStatusBadge,
 } from "@/components/admin/vendor-allocations/allocation-status-badge";
+import {
+  DateRangeFilter,
+  createDateRangeValue,
+  type DateRangeValue,
+} from "@/components/shared/DateRangeFilter";
 
 const STAT_TONES = {
   emerald: {
@@ -145,6 +149,12 @@ function MetricCard({
 export default function VendorDashboardPage() {
   const qc = useQueryClient();
   const vendor = useVendorAuthStore((s) => s.vendor);
+  const [dateRange, setDateRange] = useState<DateRangeValue>(() => createDateRangeValue("all"));
+
+  const rangeParams =
+    dateRange.dateFrom || dateRange.dateTo
+      ? { dateFrom: dateRange.dateFrom, dateTo: dateRange.dateTo }
+      : undefined;
 
   const {
     data: summaryData,
@@ -152,8 +162,10 @@ export default function VendorDashboardPage() {
     refetch: refetchSummary,
     isRefetching,
   } = useQuery({
-    queryKey: queryKeys.vendorAuth.dashboard,
-    queryFn: getVendorDashboardSummary,
+    queryKey: rangeParams
+      ? queryKeys.vendorAuth.dashboardRange(rangeParams)
+      : queryKeys.vendorAuth.dashboard,
+    queryFn: () => getVendorDashboardSummary(rangeParams),
   });
 
   const { data: surveysData, isLoading: isSurveysLoading } = useQuery({
@@ -225,11 +237,13 @@ export default function VendorDashboardPage() {
   return (
     <div className="space-y-8 pb-10">
       {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-gray-200/80 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 md:p-8 text-white shadow-xl">
-        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand-primary/20 blur-3xl" />
-        <div className="absolute right-32 -bottom-20 h-56 w-56 rounded-full bg-cyan-500/15 blur-2xl" />
+      <div className="relative z-20 rounded-3xl border border-gray-200/80 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 md:p-8 text-white shadow-xl">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand-primary/20 blur-3xl" />
+          <div className="absolute right-32 -bottom-20 h-56 w-56 rounded-full bg-cyan-500/15 blur-2xl" />
+        </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-400 backdrop-blur-md border border-white/10">
@@ -242,6 +256,11 @@ export default function VendorDashboardPage() {
                   {vendor.vendorCode}
                 </span>
               )}
+              {dateRange.preset !== "all" && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-cyan-500/20 px-3 py-1 text-[11px] font-bold text-cyan-200 border border-cyan-400/30">
+                  Period: {dateRange.label}
+                </span>
+              )}
             </div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">
               {vendor?.companyName ? `Welcome, ${vendor.companyName}` : "Vendor Partner Portal"}
@@ -252,23 +271,29 @@ export default function VendorDashboardPage() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <DateRangeFilter
+              value={dateRange}
+              onChange={setDateRange}
+              surface="dark"
+              align="right"
+            />
             <button
               type="button"
               onClick={() => refetchSummary()}
               disabled={isRefetching}
-              className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 px-3.5 py-2.5 text-xs font-bold text-white backdrop-blur-md border border-white/10 transition-colors shadow-sm disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/15 px-3.5 h-10 text-xs font-bold text-white backdrop-blur-md border border-white/15 transition-colors shadow-sm disabled:opacity-50"
               title="Refresh live metrics"
             >
               <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} />
               Sync
             </button>
             <Link
-              href={ROUTES.vendor.integration}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-brand-primary/30 hover:brightness-110 transition-all"
+              href={ROUTES.vendor.reports}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary to-indigo-600 px-4 h-10 text-xs font-bold text-white shadow-lg shadow-brand-primary/30 hover:brightness-110 transition-all"
             >
-              <Zap className="h-4 w-4 text-amber-300" />
-              Integration Specs
+              <BarChart3 className="h-4 w-4 text-cyan-200" />
+              Hourly Reports
             </Link>
           </div>
         </div>

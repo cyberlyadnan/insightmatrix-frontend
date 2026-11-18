@@ -7,11 +7,13 @@ import {
   Check,
   CheckSquare,
   ChevronDown,
+  Globe,
   Search,
   SlidersHorizontal,
   Sparkles,
   X,
 } from "lucide-react";
+import { formatCountryName } from "@/constants/country-iso-codes";
 import { cn } from "@/lib/utils";
 import type { PanelSurvey } from "@/services/panel-survey/panel-survey-api";
 
@@ -502,6 +504,29 @@ export function SurveySearchSelect({
                     <span className="text-sm font-semibold text-gray-900 truncate flex-1 min-w-0">
                       {survey.surveyName}
                     </span>
+
+                    {/* Country Badge (Important) */}
+                    {survey.targetCountries && survey.targetCountries.length > 0 ? (
+                      <span
+                        className="text-[11px] shrink-0 inline-flex items-center gap-1 font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 max-w-[140px] truncate"
+                        title={survey.targetCountries
+                          .map((c) => `${formatCountryName(c)} (${c})`)
+                          .join(", ")}
+                      >
+                        <Globe className="h-3 w-3 text-blue-600 shrink-0" />
+                        <span className="truncate">
+                          {formatCountryName(survey.targetCountries[0])}
+                          {survey.targetCountries.length > 1
+                            ? ` +${survey.targetCountries.length - 1}`
+                            : ""}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className="text-[10px] shrink-0 inline-flex items-center gap-1 font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                        <Globe className="h-3 w-3 text-amber-600 shrink-0" />
+                        <span>Global</span>
+                      </span>
+                    )}
 
                     {/* Provider Name */}
                     {isSurveySherpaSurvey(survey) ? (

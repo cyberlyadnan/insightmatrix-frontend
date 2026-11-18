@@ -241,3 +241,32 @@ export const COUNTRY_ISO_BY_NAME: Record<string, string> = {
   "Netherlands Antilles": "AN",
   "Saint Barthelemy": "BL",
 };
+
+/** Reverse lookup: ISO 3166-1 alpha-2 code (uppercase) -> Country name */
+export const COUNTRY_NAME_BY_ISO: Record<string, string> = (() => {
+  const map: Record<string, string> = {
+    UK: "United Kingdom",
+  };
+  for (const [name, iso] of Object.entries(COUNTRY_ISO_BY_NAME)) {
+    const code = iso.toUpperCase();
+    if (!map[code]) {
+      map[code] = name;
+    }
+  }
+  return map;
+})();
+
+/** Resolve an ISO code (e.g. "US") or country name into a readable country name */
+export function formatCountryName(codeOrName: string): string {
+  const trimmed = String(codeOrName ?? "").trim();
+  if (!trimmed) return "";
+  const upper = trimmed.toUpperCase();
+  return COUNTRY_NAME_BY_ISO[upper] ?? trimmed;
+}
+
+/** Sorted list of { code, name } for Country filter dropdowns */
+export const COUNTRY_SELECT_OPTIONS: Array<{ code: string; name: string }> = Object.entries(
+  COUNTRY_ISO_BY_NAME
+)
+  .map(([name, code]) => ({ code: code.toUpperCase(), name }))
+  .sort((a, b) => a.name.localeCompare(b.name));

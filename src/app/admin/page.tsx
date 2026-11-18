@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
@@ -21,6 +21,11 @@ import {
 } from "lucide-react";
 import { PageHelp } from "@/components/crm/page-help";
 import { DashboardCharts } from "@/components/admin/dashboard-charts";
+import {
+  DateRangeFilter,
+  createDateRangeValue,
+  type DateRangeValue,
+} from "@/components/shared/DateRangeFilter";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
 import { ROUTES } from "@/constants/routes";
 import { listPanelSurveys } from "@/services/panel-survey/panel-survey-api";
@@ -112,6 +117,12 @@ export default function AdminOverview() {
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
   const today = todayIsoDate();
+  const [dateRange, setDateRange] = useState<DateRangeValue>(() => createDateRangeValue("all"));
+
+  const analyticsFilter = {
+    dateFrom: dateRange.dateFrom,
+    dateTo: dateRange.dateTo,
+  };
 
   const { data: deletionRequests = [], isLoading: isDeletionLoading } = useQuery({
     queryKey: queryKeys.admin.deletionRequests,
@@ -142,25 +153,19 @@ export default function AdminOverview() {
     queryFn: () => listSurveyCompanies({ page: 1, pageSize: 1 }),
   });
 
-  const { data: todayRespondentsData, isLoading: loadingToday } = useQuery({
-    queryKey: queryKeys.surveyRespondentProfiles.list({
-      page: 1,
-      pageSize: 1,
-      dateFrom: today,
-      dateTo: today,
-    }),
-    queryFn: () =>
-      listSurveyRespondentProfiles({
-        page: 1,
-        pageSize: 1,
-        dateFrom: today,
-        dateTo: today,
-      }),
+  const respondentListFilter =
+    dateRange.dateFrom || dateRange.dateTo
+      ? { page: 1, pageSize: 1, dateFrom: dateRange.dateFrom, dateTo: dateRange.dateTo }
+      : { page: 1, pageSize: 1, dateFrom: today, dateTo: today };
+
+  const { data: periodRespondentsData, isLoading: loadingToday } = useQuery({
+    queryKey: queryKeys.surveyRespondentProfiles.list(respondentListFilter),
+    queryFn: () => listSurveyRespondentProfiles(respondentListFilter),
   });
 
   const { data: respondentSummary, isLoading: loadingSummary } = useQuery({
-    queryKey: queryKeys.surveyRespondentProfiles.analytics({}),
-    queryFn: () => getRespondentAnalyticsSummary({}),
+    queryKey: queryKeys.surveyRespondentProfiles.analytics(analyticsFilter),
+    queryFn: () => getRespondentAnalyticsSummary(analyticsFilter),
   });
 
   const { data: pendingQueriesData, isLoading: loadingQueries } = useQuery({
@@ -202,20 +207,21 @@ export default function AdminOverview() {
       hint: "Client companies",
     },
     {
-      label: "Today's Respondents",
-      value: todayRespondentsData?.meta?.total ?? 0,
+      label:
+        dateRange.preset === "all" ? "Today's Respondents" : `Respondents (${dateRange.label})`,
+      value: periodRespondentsData?.meta?.total ?? 0,
       icon: Users,
       tone: "sky" as const,
       href: ROUTES.admin.surveyRespondents,
-      hint: "Traffic today",
+      hint: dateRange.preset === "all" ? "Traffic today" : dateRange.label,
     },
     {
-      label: "Total Completes",
+      label: dateRange.preset === "all" ? "Total Completes" : `Completes (${dateRange.label})`,
       value: respondentSummary?.completes ?? 0,
       icon: CheckCircle2,
       tone: "teal" as const,
       href: ROUTES.admin.respondentAnalytics,
-      hint: "All-time completes",
+      hint: dateRange.preset === "all" ? "All-time completes" : dateRange.label,
     },
     {
       label: "Pending Queries",
@@ -246,8 +252,14 @@ export default function AdminOverview() {
               Monitor surveys, vendors, and respondent performance from one place.
             </p>
           </div>
-          <div className="flex items-end gap-4 shrink-0">
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-3 min-w-[100px]">
+          <div className="flex flex-wrap items-end gap-3 shrink-0">
+            <DateRangeFilter
+              value={dateRange}
+              onChange={setDateRange}
+              surface="dark"
+              align="right"
+            />
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-2.5 min-w-[100px]">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
                 Conversion
               </p>
@@ -255,7 +267,7 @@ export default function AdminOverview() {
                 {loadingSummary ? "—" : `${(respondentSummary?.conversionRate ?? 0).toFixed(1)}%`}
               </p>
             </div>
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-3 min-w-[100px]">
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-2.5 min-w-[100px]">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">
                 Completes
               </p>

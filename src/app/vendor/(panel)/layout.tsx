@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
   ClipboardList,
   Code2,
   LayoutDashboard,
@@ -48,6 +49,13 @@ const sidebarSections: SidebarSection[] = [
         name: "Dashboard",
         icon: LayoutDashboard,
         href: ROUTES.vendor.dashboard,
+      },
+      {
+        name: "Hourly Reports",
+        icon: BarChart3,
+        href: ROUTES.vendor.reports,
+        badge: "New",
+        badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
       },
     ],
   },
@@ -114,6 +122,7 @@ export default function VendorPanelLayout({ children }: { children: React.ReactN
 
   const getBreadcrumbs = () => {
     if (pathname === ROUTES.vendor.dashboard) return ["Vendor Portal", "Dashboard"];
+    if (pathname === ROUTES.vendor.reports) return ["Vendor Portal", "Hourly Reports"];
     if (pathname === ROUTES.vendor.surveys) return ["Vendor Portal", "Assigned Surveys"];
     if (pathname.startsWith("/vendor/surveys/"))
       return ["Vendor Portal", "Surveys", "Allocation Details"];

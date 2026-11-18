@@ -8,14 +8,19 @@ import {
   ArrowUp,
   BarChart3,
   Check,
+  ChevronDown,
   ClipboardList,
   Copy,
+  Download,
   Eye,
+  Globe,
   MoreHorizontal,
   Pencil,
   Pause,
   Play,
   Plus,
+  RotateCcw,
+  Search,
   Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -26,12 +31,11 @@ import {
   AdminPagination,
   AdminProgressBar,
   AdminTableSkeleton,
-  AdminTableToolbar,
-  adminFilterSelectClass,
 } from "@/components/crm/admin-table";
 import { PageHeader } from "@/components/crm/page-help";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ADMIN_PAGE_HELP } from "@/constants/admin-page-help";
+import { COUNTRY_SELECT_OPTIONS, formatCountryName } from "@/constants/country-iso-codes";
 import {
   PANEL_SURVEY_AUDIENCE_LABELS,
   PANEL_SURVEY_STATUS_LABELS,
@@ -136,9 +140,11 @@ function AudienceBadge({ audience }: { audience?: PanelSurveyAudience }) {
 
 export default function AdminPanelSurveysPage() {
   const qc = useQueryClient();
+  const [filterOpen, setFilterOpen] = useState(true);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [providerId, setProviderId] = useState("");
+  const [sourceFilter, setSourceFilter] = useState<"all" | "sherpa" | "other">("all");
   const [country, setCountry] = useState("");
   const [statusFilter, setStatusFilter] = useState<"" | PanelSurveyStatus>("");
   const [audienceFilter, setAudienceFilter] = useState<"" | PanelSurveyAudience>("");
@@ -173,6 +179,7 @@ export default function AdminPanelSurveysPage() {
     () => ({
       search: deferredSearch.trim() || undefined,
       providerId: providerId || undefined,
+      source: sourceFilter !== "all" ? sourceFilter : undefined,
       country: country.trim().toUpperCase() || undefined,
       surveyStatus: statusFilter || undefined,
       surveyAudience: audienceFilter || undefined,
@@ -184,6 +191,7 @@ export default function AdminPanelSurveysPage() {
     [
       deferredSearch,
       providerId,
+      sourceFilter,
       country,
       statusFilter,
       audienceFilter,
@@ -192,6 +200,20 @@ export default function AdminPanelSurveysPage() {
       sortBy,
       sortOrder,
     ]
+  );
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setProviderId("");
+    setSourceFilter("all");
+    setCountry("");
+    setStatusFilter("");
+    setAudienceFilter("");
+    setPage(1);
+  };
+
+  const hasActiveFilters = Boolean(
+    search || providerId || sourceFilter !== "all" || country || statusFilter || audienceFilter
   );
 
   const { data, isLoading, isFetching } = useQuery({
@@ -292,73 +314,180 @@ export default function AdminPanelSurveysPage() {
         }
       />
 
-      <div className="p-6 md:p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm space-y-6">
-        <AdminTableToolbar
-          search={search}
-          onSearchChange={(v) => {
-            setSearch(v);
-            setPage(1);
-          }}
-          searchPlaceholder="Search survey name, code, PID, or ext ID…"
-          onExport={handleExport}
-          exportDisabled={items.length === 0}
-          filters={
-            <>
-              <select
-                value={providerId}
-                onChange={(e) => {
-                  setProviderId(e.target.value);
-                  setPage(1);
-                }}
-                className={adminFilterSelectClass}
-              >
-                <option value="">All providers</option>
-                {providers.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.companyName}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={audienceFilter}
-                onChange={(e) => {
-                  setAudienceFilter(e.target.value as "" | PanelSurveyAudience);
-                  setPage(1);
-                }}
-                className={adminFilterSelectClass}
-              >
-                <option value="">All audiences</option>
-                <option value="public">Public (User Panel)</option>
-                <option value="internal">Internal / Private</option>
-              </select>
-              <input
-                value={country}
-                onChange={(e) => {
-                  setCountry(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="Country (e.g. MX)"
-                className={`${adminFilterSelectClass} uppercase placeholder:normal-case`}
-              />
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value as "" | PanelSurveyStatus);
-                  setPage(1);
-                }}
-                className={adminFilterSelectClass}
-              >
-                <option value="">All statuses</option>
-                {(Object.keys(PANEL_SURVEY_STATUS_LABELS) as PanelSurveyStatus[]).map((s) => (
-                  <option key={s} value={s}>
-                    {PANEL_SURVEY_STATUS_LABELS[s]}
-                  </option>
-                ))}
-              </select>
-            </>
-          }
-        />
+      {/* Collapsible SEARCH PROJECT Filter Card */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white shadow-sm overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setFilterOpen((prev) => !prev)}
+          className="w-full px-5 py-3.5 border-b border-slate-100 flex items-center justify-between text-left hover:bg-slate-50/70 transition-colors"
+        >
+          <span className="inline-flex items-center gap-2 text-xs sm:text-sm font-black uppercase tracking-[0.12em] text-indigo-600">
+            <Search className="h-4 w-4" />
+            SEARCH PROJECT LIST
+            {hasActiveFilters && (
+              <span className="ml-1 rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-extrabold text-indigo-700 normal-case tracking-normal">
+                Filtered
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 text-indigo-500 transition-transform duration-200 ${
+              filterOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
 
+        {filterOpen && (
+          <div className="p-5 space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Project Country (Important) */}
+              <div className="space-y-1.5">
+                <label className="flex items-center justify-between text-xs font-bold text-slate-700">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Globe className="h-3.5 w-3.5 text-indigo-600" />
+                    Project Country
+                  </span>
+                  <span className="rounded bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-amber-800">
+                    Important
+                  </span>
+                </label>
+                <select
+                  value={country}
+                  onChange={(e) => {
+                    setCountry(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                >
+                  <option value="">Select Country (All Markets)</option>
+                  {COUNTRY_SELECT_OPTIONS.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Project Title / Code */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">
+                  Project Title / Code / PID
+                </label>
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Search survey name, code, PID, or ext ID…"
+                  className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                />
+              </div>
+
+              {/* Project Status */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">Project Status</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value as "" | PanelSurveyStatus);
+                    setPage(1);
+                  }}
+                  className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                >
+                  <option value="">All Project Statuses</option>
+                  {(Object.keys(PANEL_SURVEY_STATUS_LABELS) as PanelSurveyStatus[]).map((s) => (
+                    <option key={s} value={s}>
+                      {PANEL_SURVEY_STATUS_LABELS[s]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Survey Source (Sherpa Filter) */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">Survey Source</label>
+                <select
+                  value={sourceFilter}
+                  onChange={(e) => {
+                    setSourceFilter(e.target.value as "all" | "sherpa" | "other");
+                    setPage(1);
+                  }}
+                  className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                >
+                  <option value="all">All Sources</option>
+                  <option value="sherpa">SurveySherpa Only</option>
+                  <option value="other">Direct / Other Providers</option>
+                </select>
+              </div>
+
+              {/* Provider */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">Provider</label>
+                <select
+                  value={providerId}
+                  onChange={(e) => {
+                    setProviderId(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                >
+                  <option value="">All providers</option>
+                  {providers.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.companyName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Audience */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700">Audience</label>
+                <select
+                  value={audienceFilter}
+                  onChange={(e) => {
+                    setAudienceFilter(e.target.value as "" | PanelSurveyAudience);
+                    setPage(1);
+                  }}
+                  className="w-full h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15"
+                >
+                  <option value="">All audiences</option>
+                  <option value="public">Public (User Panel)</option>
+                  <option value="internal">Internal / Private</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div className="flex items-center gap-2">
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={handleResetFilters}
+                    className="h-9 px-4 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs font-bold hover:bg-slate-100 inline-flex items-center gap-1.5 transition-colors"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Reset Filters
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                disabled={items.length === 0}
+                onClick={handleExport}
+                className="h-9 px-3.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 inline-flex items-center gap-1.5 disabled:opacity-50 transition-colors shadow-2xs"
+              >
+                <Download className="h-3.5 w-3.5" />
+                Export CSV
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="p-5 md:p-6 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-5">
         {isLoading ? (
           <AdminTableSkeleton rows={8} />
         ) : items.length === 0 ? (
@@ -384,6 +513,12 @@ export default function AdminPanelSurveysPage() {
                         sortOrder={sortOrder}
                         onSort={toggleSort}
                       />
+                    </th>
+                    <th className="py-2 px-2.5 font-extrabold uppercase tracking-wider text-amber-300 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1">
+                        <Globe className="h-3 w-3" />
+                        Country
+                      </span>
                     </th>
                     <th className="py-2 px-2.5 font-extrabold uppercase tracking-wider text-slate-100 whitespace-nowrap">
                       Audience
@@ -439,6 +574,39 @@ export default function AdminPanelSurveysPage() {
                             ({row.surveyCode})
                           </span>
                         </div>
+                      </td>
+                      <td className="py-1.5 px-2.5 whitespace-nowrap align-middle">
+                        {row.targetCountries && row.targetCountries.length > 0 ? (
+                          <div
+                            className="flex flex-wrap items-center gap-1 max-w-[180px]"
+                            title={row.targetCountries
+                              .map((c) => `${formatCountryName(c)} (${c})`)
+                              .join(", ")}
+                          >
+                            {row.targetCountries.slice(0, 2).map((code) => (
+                              <span
+                                key={code}
+                                className="inline-flex items-center gap-1 rounded-md bg-blue-50 border border-blue-200 px-1.5 py-0.5 text-[10px] font-bold text-blue-900"
+                              >
+                                <Globe className="h-2.5 w-2.5 text-blue-600 shrink-0" />
+                                <span>{formatCountryName(code)}</span>
+                                <span className="font-mono text-[9px] text-blue-600">
+                                  ({code.toUpperCase()})
+                                </span>
+                              </span>
+                            ))}
+                            {row.targetCountries.length > 2 && (
+                              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
+                                +{row.targetCountries.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[10px] font-bold text-amber-800">
+                            <Globe className="h-2.5 w-2.5 text-amber-600" />
+                            Not Set
+                          </span>
+                        )}
                       </td>
                       <td className="py-1.5 px-2.5 whitespace-nowrap align-middle">
                         <AudienceBadge audience={row.surveyAudience} />

@@ -818,7 +818,16 @@ export function PanelSurveyForm({
                 name="countriesLine"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel className="font-bold text-gray-700">Target countries</FormLabel>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <FormLabel className="font-bold text-gray-800">Target Countries</FormLabel>
+                      <span className="inline-flex items-center rounded-full bg-amber-100 border border-amber-200 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-800">
+                        Important
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Specify which country this survey targets so vendors and respondents clearly
+                      see the study&apos;s market.
+                    </p>
                     <FormControl>
                       <TargetingMultiSelect
                         value={field.value}

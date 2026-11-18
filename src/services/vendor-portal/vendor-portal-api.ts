@@ -106,6 +106,113 @@ export async function getVendorHourlyReport(
   return data.data;
 }
 
+export type VendorApiTrafficRow = {
+  id: string;
+  respondentId: string;
+  internalSessionToken: string;
+  surveyId: string;
+  allocationCode: string;
+  projectName: string;
+  market: string;
+  countryCode: string;
+  entryTime: string | null;
+  exitTime: string | null;
+  rawStatus: string;
+  status: string;
+  cpi: number;
+  revenue: number;
+  redirectStatus: string;
+  device: "desktop" | "mobile" | "tablet";
+  entryUrl: string | null;
+  exitUrl: string | null;
+};
+
+export type VendorApiTrafficReport = {
+  items: VendorApiTrafficRow[];
+  meta: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+  summary: {
+    totalAttempts: number;
+    completes: number;
+    terminates: number;
+    dropOuts: number;
+    quotaFull: number;
+    qualityRejects: number;
+    totalRevenue: number;
+    conversionRate: number;
+  };
+  availableCountries: string[];
+};
+
+export type VendorApiTrafficReportQuery = {
+  dateFrom?: string;
+  dateTo?: string;
+  country?: string;
+  status?: string;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+export type VendorLiveInventoryRow = {
+  countryCode: string;
+  liveSurveys: number;
+  liveInventories: number;
+  totalAllocatedQuota: number;
+  avgCpi: number;
+  avgLoi: number | null;
+  avgIr: number | null;
+};
+
+export type VendorLiveInventory = {
+  items: VendorLiveInventoryRow[];
+  summary: {
+    totalCountries: number;
+    totalLiveSurveys: number;
+    totalLiveInventories: number;
+    topCountryCode: string | null;
+  };
+  availableCountries: string[];
+};
+
+export async function getVendorApiTrafficReport(
+  params?: VendorApiTrafficReportQuery
+): Promise<VendorApiTrafficReport> {
+  const { data } = await vendorApiClient.get<ApiEnvelope<VendorApiTrafficReport>>(
+    "/vendor-portal/reports/traffic",
+    {
+      params: {
+        dateFrom: params?.dateFrom || undefined,
+        dateTo: params?.dateTo || undefined,
+        country: params?.country || undefined,
+        status: params?.status && params.status !== "all" ? params.status : undefined,
+        search: params?.search?.trim() || undefined,
+        page: params?.page,
+        pageSize: params?.pageSize,
+      },
+    }
+  );
+  return data.data;
+}
+
+export async function getVendorLiveInventory(params?: {
+  country?: string;
+}): Promise<VendorLiveInventory> {
+  const { data } = await vendorApiClient.get<ApiEnvelope<VendorLiveInventory>>(
+    "/vendor-portal/inventory/live",
+    {
+      params: {
+        country: params?.country || undefined,
+      },
+    }
+  );
+  return data.data;
+}
+
 export async function updateVendorProfile(payload: {
   companyName?: string;
   contactPerson?: string;

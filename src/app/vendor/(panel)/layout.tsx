@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Activity,
   BarChart3,
   ClipboardList,
   Code2,
+  Globe,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -54,7 +56,12 @@ const sidebarSections: SidebarSection[] = [
         name: "Hourly Reports",
         icon: BarChart3,
         href: ROUTES.vendor.reports,
-        badge: "New",
+      },
+      {
+        name: "API Traffic Report",
+        icon: Activity,
+        href: ROUTES.vendor.trafficReport,
+        badge: "Live",
         badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
       },
     ],
@@ -66,8 +73,15 @@ const sidebarSections: SidebarSection[] = [
         name: "Assigned Surveys",
         icon: ClipboardList,
         href: ROUTES.vendor.surveys,
-        badge: "Live",
+        badge: "Active",
         badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+      },
+      {
+        name: "Live Inventory",
+        icon: Globe,
+        href: ROUTES.vendor.liveInventory,
+        badge: "Markets",
+        badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
       },
     ],
   },
@@ -123,6 +137,8 @@ export default function VendorPanelLayout({ children }: { children: React.ReactN
   const getBreadcrumbs = () => {
     if (pathname === ROUTES.vendor.dashboard) return ["Vendor Portal", "Dashboard"];
     if (pathname === ROUTES.vendor.reports) return ["Vendor Portal", "Hourly Reports"];
+    if (pathname === ROUTES.vendor.trafficReport) return ["Vendor Portal", "API Traffic Report"];
+    if (pathname === ROUTES.vendor.liveInventory) return ["Vendor Portal", "Live Inventory"];
     if (pathname === ROUTES.vendor.surveys) return ["Vendor Portal", "Assigned Surveys"];
     if (pathname.startsWith("/vendor/surveys/"))
       return ["Vendor Portal", "Surveys", "Allocation Details"];

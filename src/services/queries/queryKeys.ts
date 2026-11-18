@@ -80,6 +80,10 @@ export const queryKeys = {
   vendorPortalReports: {
     hourly: (filters: Record<string, unknown>) =>
       ["vendor-portal", "reports", "hourly", filters] as const,
+    traffic: (filters: Record<string, unknown>) =>
+      ["vendor-portal", "reports", "traffic", filters] as const,
+    liveInventory: (filters: Record<string, unknown>) =>
+      ["vendor-portal", "inventory", "live", filters] as const,
   },
   vendorAllocations: {
     all: ["vendor-allocations"] as const,

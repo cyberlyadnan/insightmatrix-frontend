@@ -92,13 +92,21 @@ const EMPTY_FILTERS: FilterFormState = {
   isAccepted: "",
 };
 
+function getInitialFiltersFromUrl(): FilterFormState {
+  if (typeof window === "undefined") return EMPTY_FILTERS;
+  const countryParam = (new URLSearchParams(window.location.search).get("country") ?? "")
+    .trim()
+    .toUpperCase();
+  return countryParam ? { ...EMPTY_FILTERS, country: countryParam } : EMPTY_FILTERS;
+}
+
 export default function VendorSurveysPage() {
   const qc = useQueryClient();
 
   // Draft & applied filter state so users can either hit Search or reset cleanly
   const [filterOpen, setFilterOpen] = useState(true);
-  const [draftFilters, setDraftFilters] = useState<FilterFormState>(EMPTY_FILTERS);
-  const [appliedFilters, setAppliedFilters] = useState<FilterFormState>(EMPTY_FILTERS);
+  const [draftFilters, setDraftFilters] = useState<FilterFormState>(getInitialFiltersFromUrl);
+  const [appliedFilters, setAppliedFilters] = useState<FilterFormState>(getInitialFiltersFromUrl);
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);

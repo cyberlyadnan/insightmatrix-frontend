@@ -59,6 +59,8 @@ export const ROUTES = {
     login: "/vendor/login",
     dashboard: "/vendor/dashboard",
     reports: "/vendor/reports",
+    trafficReport: "/vendor/traffic-report",
+    liveInventory: "/vendor/live-inventory",
     profile: "/vendor/profile",
     surveys: "/vendor/surveys",
     survey: (allocationId: string) => `/vendor/surveys/${allocationId}`,
